@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
+  
+  <ItemGroup>
+    <ProjectReference Include="..\EventService.Models.Db\EventService.Models.Db.csproj" />
+    <ProjectReference Include="..\EventService.Models.Dto\EventService.Models.Dto.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+
+</Project>
