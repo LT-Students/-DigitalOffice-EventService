@@ -1,22 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\EventService.Broker\EventService.Broker.csproj" />   
-    <ProjectReference Include="..\EventService.Business\EventService.Business.csproj" />   
-    <ProjectReference Include="..\EventService.Data.Provider.MsSql.Ef\EventService.Data.Provider.MsSql.Ef.csproj" />
-    <ProjectReference Include="..\EventService.Validation\EventService.Validation.csproj" />
+  <ItemGroup> 
+    <ProjectReference Include="..\EventService.Data.Provider.MsSql.Ef\EventService.Data.Provider.MsSql.Ef.csproj" /> 
+    <ProjectReference Include="..\EventService.Models.Dto\EventService.Models.Dto.csproj" />
 
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.8" />
-    <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.2" />
+    <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
-    <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />

@@ -25,9 +25,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup Condition="($(AssemblyName.Contains('.Provider')) Or $(AssemblyName.Contains('.Models.Db'))) And $(AssemblyName.Contains('.UnitTests')) != 'true'">
-  </ItemGroup>
-
   <ItemGroup Condition="$(AssemblyName.Contains('.UnitTests')) != 'true'">
 	<PackageReference Include="DigitalOffice.Kernel" Version="1.0.9" />
 	<PackageReference Include="DigitalOffice.Kernel.BrokerSupport" Version="1.0.4" />

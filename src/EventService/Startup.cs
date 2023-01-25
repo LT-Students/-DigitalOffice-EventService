@@ -1,4 +1,4 @@
-using EventService.Data.Provider.MsSql.Ef;
+﻿using EventService.Data.Provider.MsSql.Ef;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.EventService.Models.Dto.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
@@ -26,11 +26,33 @@ namespace EventService
 {
   public class Startup : BaseApiInfo
   {
+    private readonly BaseServiceInfoConfig _serviceInfoConfig;
+    private readonly RabbitMqConfig _rabbitMqConfig;
+
     public const string CorsPolicyName = "LtDoCorsPolicy";
     public IConfiguration Configuration { get; }
 
-    private readonly BaseServiceInfoConfig _serviceInfoConfig;
-    private readonly RabbitMqConfig _rabbitMqConfig;
+    private void ConfigureMassTransit(IServiceCollection services)
+    {
+      (string username, string password) = RabbitMqCredentialsHelper
+        .Get(_rabbitMqConfig, _serviceInfoConfig);
+
+      services.AddMassTransit(busConfigurator =>
+      {
+        busConfigurator.UsingRabbitMq((context, cfg) =>
+        {
+          cfg.Host(_rabbitMqConfig.Host, "/", host =>
+          {
+            host.Username(username);
+            host.Password(password);
+          });
+        });
+
+        busConfigurator.AddRequestClients(_rabbitMqConfig);
+      });
+
+      services.AddMassTransitHostedService();
+    }
 
     public Startup(IConfiguration configuration)
     {
@@ -50,7 +72,6 @@ namespace EventService
       ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";
     }
 
-    // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddCors(options =>
@@ -78,10 +99,6 @@ namespace EventService
       services.AddHealthChecks()
         .AddRabbitMqCheck()
         .AddSqlServer(dbConnStr);
-
-
-
-      services.AddControllers();
 
       services.Configure<TokenConfiguration>(Configuration.GetSection("CheckTokenMiddleware"));
       services.Configure<BaseServiceInfoConfig>(Configuration.GetSection(BaseServiceInfoConfig.SectionName));
@@ -131,28 +148,6 @@ namespace EventService
           ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
       });
-    }
-
-    private void ConfigureMassTransit(IServiceCollection services)
-    {
-      (string username, string password) = RabbitMqCredentialsHelper
-        .Get(_rabbitMqConfig, _serviceInfoConfig);
-
-      services.AddMassTransit(busConfigurator =>
-      {
-        busConfigurator.UsingRabbitMq((context, cfg) =>
-        {
-          cfg.Host(_rabbitMqConfig.Host, "/", host =>
-          {
-            host.Username(username);
-            host.Password(password);
-          });
-        });
-
-        busConfigurator.AddRequestClients(_rabbitMqConfig);
-      });
-
-      services.AddMassTransitHostedService();
     }
   }
 }
