@@ -7,7 +7,6 @@ namespace LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef.Migrations
 {
   [DbContext(typeof(EventServiceDbContext))]
   [Migration("20230126193800_InitialCreate")]
-
   public class _20230126193800_InitialCreate : Migration
   {
     private const string _KeyPrefix = "PK_";
@@ -18,12 +17,8 @@ namespace LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef.Migrations
     private const string _CommentTableName = "Comments";
     private const string _EventImageTableName = "EventsImages";
     private const string _EventFileTableName = "EventsFiles";
-
-
-
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-
       migrationBuilder.CreateTable(
       name: $"{_EventTableName}",
       columns: table => new
@@ -71,7 +66,8 @@ namespace LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef.Migrations
         Name = table.Column<string>(nullable: false),
         Color = table.Column<int>(nullable: false),
         CreatedBy = table.Column<Guid>(nullable: false),
-        CreatedAtUtc = table.Column<DateTime>(nullable: false)
+        CreatedAtUtc = table.Column<DateTime>(nullable: false),
+        IsActive = table.Column<bool>(nullable: false)
       },
 
       constraints: table =>
