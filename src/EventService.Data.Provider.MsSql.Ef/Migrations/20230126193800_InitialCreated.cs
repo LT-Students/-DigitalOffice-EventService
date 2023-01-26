@@ -109,7 +109,7 @@ namespace LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef.Migrations
             Id = table.Column<Guid>(nullable: false),
             UserId = table.Column<Guid>(nullable: false),
             EventId = table.Column<Guid>(nullable: false),
-            ParentCommand = table.Column<Guid>(nullable: true),
+            ParentComment = table.Column<Guid>(nullable: true),
             CreatedAtUtc = table.Column<DateTime>(nullable: false),
             ModifiedBy = table.Column<Guid>(nullable: true),
             ModifiedAtUtc = table.Column<DateTime>(nullable: true),
