@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using Microsoft.EntityFrameworkCore;
-using LT.DigitalOffice.EventService.Models.Db.Enums;
-using LT.DigitalOffice.EventService.Models.Db.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LT.DigitalOffice.EventService.Models.Db
 {
-  public record DbCategory
+  public class DbCategory
   {
     public const string TableName = "Category";
 
@@ -16,16 +15,25 @@ namespace LT.DigitalOffice.EventService.Models.Db
     public Color Color { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedAtUtc { get; set; }
+    public Guid? ModifiedBy { get; set; }
+    public DateTime? ModifiedAtUtc { get; set; }
+
     public ICollection<DbEventCategory> EventCategories { get; set; }
   }
+
   public class DbCategoryConfiguration : IEntityTypeConfiguration<DbCategory>
   {
     public void Configure(EntityTypeBuilder<DbCategory> builder)
     {
       builder
+        .ToTable(DbCategory.TableName);
+
+      builder
+        .HasKey(t => t.Id);
+
+      builder
         .HasMany(e => e.EventCategories)
-        .WithOne(ec => ec.Category)
-        .HasForeignKey(ec => ec.CategoryId);
+        .WithOne(ec => ec.Category);
     }
   }
 }

@@ -1,36 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Automatonymous;
-using LT.DigitalOffice.EventService.Models.Db.Enums;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LT.DigitalOffice.EventService.Models.Db
 {
-  public record DbEventUser
+  public class DbEventUser
   {
+    public const string TableName = "EventUser";
+
     public Guid Id { get; set; }
     public Guid EventId { get; set; }
-    public DbEvent Event { get; set; }
     public Guid UserId { get; set; }
     public Status Status { get; set; }
     public DateTime NotifiedAtUtc { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedAtUtc { get; set; }
-    public Guid ModifiedBy { get; set; }
-    public DateTime ModifiedAtUtc { get; set; }
+    public Guid? ModifiedBy { get; set; }
+    public DateTime? ModifiedAtUtc { get; set; }
+
+    public DbEvent Event { get; set; }
   }
+
   public class DbEventUserConfiguration : IEntityTypeConfiguration<DbEventUser>
   {
     public void Configure(EntityTypeBuilder<DbEventUser> builder)
     {
       builder
-          .HasOne(eu => eu.Event)
-          .WithMany(e => e.EventUsers)
-          .HasForeignKey(eu => eu.EventId);
+        .ToTable(DbEventUser.TableName);
+
+      builder
+        .HasKey(t => t.Id);
+
+      builder
+        .HasOne(eu => eu.Event)
+        .WithMany(e => e.EventUsers);
     }
   }
 }
