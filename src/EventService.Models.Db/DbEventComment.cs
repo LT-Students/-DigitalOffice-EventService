@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using LT.DigitalOffice.EventService.Models.Db.Models;
 
-namespace LT.DigitalOffice.EventService.Models.Db.Models
+namespace LT.DigitalOffice.EventService.Models.Db
 {
   public record DbComment
   {
@@ -26,7 +27,7 @@ namespace LT.DigitalOffice.EventService.Models.Db.Models
     public void Configure(EntityTypeBuilder<DbComment> builder)
     {
       builder
-          .HasOne<DbEvent>(e => e.Event)
+          .HasOne(e => e.Event)
           .WithMany(ec => ec.EventComments)
           .HasForeignKey(ec => ec.EventId);
 

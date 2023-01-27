@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 
-namespace LT.DigitalOffice.EventService.Models.Db.Models
+namespace LT.DigitalOffice.EventService.Models.Db
 {
   public record DbEventCategory
   {
@@ -23,12 +23,12 @@ namespace LT.DigitalOffice.EventService.Models.Db.Models
     public void Configure(EntityTypeBuilder<DbEventCategory> builder)
     {
       builder
-          .HasOne<DbEvent>(ec => ec.Event)
+          .HasOne(ec => ec.Event)
           .WithMany(e => e.EventCategories)
           .HasForeignKey(ec => ec.EventId);
 
       builder
-          .HasOne<DbCategory>(ec => ec.Category)
+          .HasOne(ec => ec.Category)
           .WithMany(c => c.EventCategories)
           .HasForeignKey(ec => ec.CategoryId);
     }

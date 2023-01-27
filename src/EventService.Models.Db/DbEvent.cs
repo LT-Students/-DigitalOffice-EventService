@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Models.Db.Enums;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using LT.DigitalOffice.EventService.Models.Db.Models;
 
-namespace LT.DigitalOffice.EventService.Models.Db.Models
+namespace LT.DigitalOffice.EventService.Models.Db
 {
   public record DbEvent
   {
     public Guid Id { get; set; }
     public string Name { get; set; }
     public string Address { get; set; }
-    public string? Description { get; set; }
+    public string Description { get; set; }
     public DateTime Date { get; set; }
     public FormatType FormatType { get; set; }
     public AccessType AccessType { get; set; }
@@ -42,22 +43,22 @@ namespace LT.DigitalOffice.EventService.Models.Db.Models
       public void Configure(EntityTypeBuilder<DbEvent> builder)
       {
         builder
-            .HasMany<DbEventCategory>(e => e.EventCategories)
+            .HasMany(e => e.EventCategories)
             .WithOne(ec => ec.Event)
             .HasForeignKey(ec => ec.EventId);
 
         builder
-            .HasMany<DbEventFile>(e => e.EventFiles)
+            .HasMany(e => e.EventFiles)
             .WithOne(ef => ef.Event)
             .HasForeignKey(ef => ef.EventId);
 
         builder
-            .HasMany<DbEventImage>(e => e.EventImages)
+            .HasMany(e => e.EventImages)
             .WithOne(ei => ei.Event)
             .HasForeignKey(ei => ei.EventId);
 
         builder
-            .HasMany<DbEventUser>(e => e.EventUsers)
+            .HasMany(e => e.EventUsers)
             .WithOne(eu => eu.Event)
             .HasForeignKey(eu => eu.EventId);
       }

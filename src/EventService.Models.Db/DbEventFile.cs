@@ -7,7 +7,7 @@ using Automatonymous;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 
-namespace LT.DigitalOffice.EventService.Models.Db.Models
+namespace LT.DigitalOffice.EventService.Models.Db
 {
   public record DbEventFile
   {
@@ -23,7 +23,7 @@ namespace LT.DigitalOffice.EventService.Models.Db.Models
     public void Configure(EntityTypeBuilder<DbEventFile> builder)
     {
       builder
-          .HasOne<DbEvent>(ef => ef.Event)
+          .HasOne(ef => ef.Event)
           .WithMany(e => e.EventFiles)
           .HasForeignKey(ef => ef.EventId);
     }

@@ -1,4 +1,4 @@
-﻿using LT.DigitalOffice.EventService.Models.Db.Models;
+﻿using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventService.Data.Provider.MsSql.Ef
@@ -11,7 +11,8 @@ namespace EventService.Data.Provider.MsSql.Ef
     public DbSet<DbEventFile> EventFiles { get; set; }
     public DbSet<DbEventImage> EventImages { get; set; }
     public DbSet<DbEventUser> EventUsers { get; set; }
-    public DbSet<DbComment> EventComments { get; set; }
+    public DbSet<DbEventComment> EventComments { get; set; }
+
     public EventServiceDbContext(DbContextOptions<EventServiceDbContext> options)
       : base(options)
     {
