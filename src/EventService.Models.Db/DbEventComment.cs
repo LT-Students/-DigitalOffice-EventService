@@ -34,7 +34,6 @@ namespace LT.DigitalOffice.EventService.Models.Db
       builder
         .HasOne(e => e.Event)
         .WithMany(ec => ec.EventComments);
-
     }
   }
 }
