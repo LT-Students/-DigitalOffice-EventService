@@ -19,6 +19,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
   public class DbEventImageConfiguration : IEntityTypeConfiguration<DbEventImage>
   {
+
     public void Configure(EntityTypeBuilder<DbEventImage> builder)
     {
       builder

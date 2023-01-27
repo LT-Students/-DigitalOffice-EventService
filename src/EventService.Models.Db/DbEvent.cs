@@ -40,6 +40,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
     public class DbEventConfiguration : IEntityTypeConfiguration<DbEvent>
     {
+
       public void Configure(EntityTypeBuilder<DbEvent> builder)
       {
         builder
