@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LT.DigitalOffice.EventService.Models.Db
 {
-  public class DbComment
+  public class DbEventComment
   {
     public const string TableName = "Comment";
 
@@ -21,13 +21,13 @@ namespace LT.DigitalOffice.EventService.Models.Db
     public DbEvent Event { get; set; }
   }
 
-  public class DbEventCommentsConfiguration : IEntityTypeConfiguration<DbComment>
+  public class DbEventCommentsConfiguration : IEntityTypeConfiguration<DbEventComment>
   {
 
-    public void Configure(EntityTypeBuilder<DbComment> builder)
+    public void Configure(EntityTypeBuilder<DbEventComment> builder)
     {
       builder
-        .ToTable(DbComment.TableName);
+        .ToTable(DbEventComment.TableName);
 
       builder
         .HasKey(t => t.Id);

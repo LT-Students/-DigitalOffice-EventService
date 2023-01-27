@@ -27,7 +27,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
     public ICollection<DbEventFile> EventFiles { get; set; }
     public ICollection<DbEventImage> EventImages { get; set; }
     public ICollection<DbEventUser> EventUsers { get; set; }
-    public ICollection<DbComment> EventComments { get; set; }
+    public ICollection<DbEventComment> EventComments { get; set; }
 
     public DbEvent()
     {
@@ -35,7 +35,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
       EventFiles = new HashSet<DbEventFile>();
       EventImages = new HashSet<DbEventImage>();
       EventUsers = new HashSet<DbEventUser>();
-      EventComments = new HashSet<DbComment>();
+      EventComments = new HashSet<DbEventComment>();
     }
 
     public class DbEventConfiguration : IEntityTypeConfiguration<DbEvent>
