@@ -23,7 +23,6 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
   public class DbCategoryConfiguration : IEntityTypeConfiguration<DbCategory>
   {
-
     public void Configure(EntityTypeBuilder<DbCategory> builder)
     {
       builder

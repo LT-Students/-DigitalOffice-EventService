@@ -24,7 +24,6 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
   public class DbEventUserConfiguration : IEntityTypeConfiguration<DbEventUser>
   {
-
     public void Configure(EntityTypeBuilder<DbEventUser> builder)
     {
       builder

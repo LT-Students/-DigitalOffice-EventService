@@ -23,7 +23,6 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
   public class DbEventCommentsConfiguration : IEntityTypeConfiguration<DbEventComment>
   {
-
     public void Configure(EntityTypeBuilder<DbEventComment> builder)
     {
       builder

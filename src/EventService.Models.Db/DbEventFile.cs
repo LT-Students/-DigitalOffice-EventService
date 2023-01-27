@@ -19,7 +19,6 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
   public class DbEventFileConfiguration : IEntityTypeConfiguration<DbEventFile>
   {
-
     public void Configure(EntityTypeBuilder<DbEventFile> builder)
     {
       builder
