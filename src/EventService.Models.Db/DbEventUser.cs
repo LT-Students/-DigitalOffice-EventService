@@ -7,13 +7,13 @@ namespace LT.DigitalOffice.EventService.Models.Db
 {
   public class DbEventUser
   {
-    public const string TableName = "EventUser";
+    public const string TableName = "EventUsers";
 
     public Guid Id { get; set; }
     public Guid EventId { get; set; }
     public Guid UserId { get; set; }
     public Status Status { get; set; }
-    public DateTime NotifiedAtUtc { get; set; }
+    public DateTime NotifyAtUtc { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public Guid? ModifiedBy { get; set; }
@@ -34,7 +34,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
       builder
         .HasOne(eu => eu.Event)
-        .WithMany(e => e.EventUsers);
+        .WithMany(e => e.Users);
     }
   }
 }

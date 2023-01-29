@@ -8,17 +8,18 @@ namespace LT.DigitalOffice.EventService.Models.Db
 {
   public class DbCategory
   {
-    public const string TableName = "Category";
+    public const string TableName = "Categories";
 
     public Guid Id { get; set; }
     public string Name { get; set; }
     public Color Color { get; set; }
+    public bool IsActive { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public Guid? ModifiedBy { get; set; }
     public DateTime? ModifiedAtUtc { get; set; }
 
-    public ICollection<DbEventCategory> EventCategories { get; set; }
+    public ICollection<DbEventCategory> EventsCategories { get; set; }
   }
 
   public class DbCategoryConfiguration : IEntityTypeConfiguration<DbCategory>
@@ -32,7 +33,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
         .HasKey(t => t.Id);
 
       builder
-        .HasMany(e => e.EventCategories)
+        .HasMany(e => e.EventsCategories)
         .WithOne(ec => ec.Category);
     }
   }

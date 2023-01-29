@@ -6,7 +6,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 {
   public class DbEventFile
   {
-    public const string TableName = "EventFile";
+    public const string TableName = "EventFiles";
 
     public Guid Id { get; set; }
     public Guid EventId { get; set; }
@@ -29,7 +29,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
       builder
         .HasOne(ef => ef.Event)
-        .WithMany(e => e.EventFiles);
+        .WithMany(e => e.Files);
     }
   }
 }

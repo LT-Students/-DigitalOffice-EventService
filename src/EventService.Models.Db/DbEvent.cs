@@ -8,7 +8,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 {
   public class DbEvent
   {
-    public const string TableName = "Event";
+    public const string TableName = "Events";
 
     public Guid Id { get; set; }
     public string Name { get; set; }
@@ -23,19 +23,19 @@ namespace LT.DigitalOffice.EventService.Models.Db
     public Guid? ModifiedBy { get; set; }
     public DateTime? ModifiedAtUtc { get; set; }
 
-    public ICollection<DbEventCategory> EventCategories { get; set; }
-    public ICollection<DbEventFile> EventFiles { get; set; }
-    public ICollection<DbEventImage> EventImages { get; set; }
-    public ICollection<DbEventUser> EventUsers { get; set; }
-    public ICollection<DbEventComment> EventComments { get; set; }
+    public ICollection<DbEventCategory> EventsCategories { get; set; }
+    public ICollection<DbEventFile> Files { get; set; }
+    public ICollection<DbEventImage> Images { get; set; }
+    public ICollection<DbEventUser> Users { get; set; }
+    public ICollection<DbEventComment> Comments { get; set; }
 
     public DbEvent()
     {
-      EventCategories = new HashSet<DbEventCategory>();
-      EventFiles = new HashSet<DbEventFile>();
-      EventImages = new HashSet<DbEventImage>();
-      EventUsers = new HashSet<DbEventUser>();
-      EventComments = new HashSet<DbEventComment>();
+      EventsCategories = new HashSet<DbEventCategory>();
+      Files = new HashSet<DbEventFile>();
+      Images = new HashSet<DbEventImage>();
+      Users = new HashSet<DbEventUser>();
+      Comments = new HashSet<DbEventComment>();
     }
 
     public class DbEventConfiguration : IEntityTypeConfiguration<DbEvent>
@@ -49,19 +49,19 @@ namespace LT.DigitalOffice.EventService.Models.Db
           .HasKey(t => t.Id);
 
         builder
-          .HasMany(e => e.EventCategories)
+          .HasMany(e => e.EventsCategories)
           .WithOne(ec => ec.Event);
 
         builder
-          .HasMany(e => e.EventFiles)
+          .HasMany(e => e.Files)
           .WithOne(ef => ef.Event);
 
         builder
-          .HasMany(e => e.EventImages)
+          .HasMany(e => e.Images)
           .WithOne(ei => ei.Event);
 
         builder
-          .HasMany(e => e.EventUsers)
+          .HasMany(e => e.Users)
           .WithOne(eu => eu.Event);
       }
     }

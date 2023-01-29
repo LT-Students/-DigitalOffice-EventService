@@ -6,7 +6,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 {
   public class DbEventCategory
   {
-    public const string TableName = "EventCategory";
+    public const string TableName = "EventsCategories";
 
     public Guid Id { get; set; }
     public Guid EventId { get; set; }
@@ -30,11 +30,11 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
       builder
         .HasOne(ec => ec.Event)
-        .WithMany(e => e.EventCategories);
+        .WithMany(e => e.EventsCategories);
 
       builder
         .HasOne(ec => ec.Category)
-        .WithMany(c => c.EventCategories);
+        .WithMany(c => c.EventsCategories);
     }
   }
 }

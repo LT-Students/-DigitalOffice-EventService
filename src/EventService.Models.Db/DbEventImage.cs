@@ -6,7 +6,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 {
   public class DbEventImage
   {
-    public const string TableName = "EventImage";
+    public const string TableName = "EventImages";
 
     public Guid Id { get; set; }
     public Guid EventId { get; set; }
@@ -29,7 +29,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 
       builder
         .HasOne(ei => ei.Event)
-        .WithMany(e => e.EventImages);
+        .WithMany(e => e.Images);
     }
   }
 }
