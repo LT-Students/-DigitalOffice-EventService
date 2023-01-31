@@ -7,7 +7,7 @@ namespace LT.DigitalOffice.EventService.Models.Db
 {
   public class DbEventUser
   {
-    public const string TableName = "EventUsers";
+    public const string TableName = "EventsUsers";
 
     public Guid Id { get; set; }
     public Guid EventId { get; set; }
