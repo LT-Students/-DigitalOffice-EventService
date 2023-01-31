@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef.Migrations;
 
 [DbContext(typeof(EventServiceDbContext))]
-[Migration("20230126193800_InitialMigration")]
+[Migration("20230126193800_InitialTables")]
 public class InitialTables : Migration
 {
   private void CreateEventsTable(MigrationBuilder migrationBuilder)
