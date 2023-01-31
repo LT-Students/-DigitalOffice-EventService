@@ -8,9 +8,9 @@ namespace LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef.Migrations;
 
 [DbContext(typeof(EventServiceDbContext))]
 [Migration("20230126193800_InitialMigration")]
-public class _20230126193800_InitialMigration : Migration
+public class InitialTables : Migration
 {
-  private void CreateEventTable(MigrationBuilder migrationBuilder)
+  private void CreateEventsTable(MigrationBuilder migrationBuilder)
   {
     migrationBuilder.CreateTable(
     DbEvent.TableName,
@@ -29,14 +29,13 @@ public class _20230126193800_InitialMigration : Migration
       ModifiedBy = table.Column<Guid>(nullable: true),
       ModifiedAtUtc = table.Column<DateTime>(nullable: true)
     },
-
     constraints: table =>
     {
       table.PrimaryKey($"PK_{DbEvent.TableName}", e => e.Id);
     });
   }
 
-  private void CreateEventCategoryTable(MigrationBuilder migrationBuilder)
+  private void CreateEventsCategoriesTable(MigrationBuilder migrationBuilder)
   {
     migrationBuilder.CreateTable(
     DbEventCategory.TableName,
@@ -48,14 +47,13 @@ public class _20230126193800_InitialMigration : Migration
       CreatedBy = table.Column<Guid>(nullable: false),
       CreatedAtUtc = table.Column<DateTime>(nullable: false)
     },
-
     constraints: table =>
     {
-      table.PrimaryKey($"PK_{DbEventCategory.TableName}", e => e.Id);
+      table.PrimaryKey($"PK_{DbEventCategory.TableName}", ec => ec.Id);
     });
   }
 
-  private void CreateCategoryTable(MigrationBuilder migrationBuilder)
+  private void CreateCategoriesTable(MigrationBuilder migrationBuilder)
   {
     migrationBuilder.CreateTable(
     DbCategory.TableName,
@@ -70,14 +68,13 @@ public class _20230126193800_InitialMigration : Migration
       ModifiedBy = table.Column<Guid>(nullable: true),
       ModifiedAtUtc = table.Column<DateTime>(nullable: true)
     },
-
     constraints: table =>
     {
-      table.PrimaryKey($"PK_{DbCategory.TableName}", e => e.Id);
+      table.PrimaryKey($"PK_{DbCategory.TableName}", c => c.Id);
     });
   }
 
-  private void CreateEventUserTable(MigrationBuilder migrationBuilder)
+  private void CreateEventsUsersTable(MigrationBuilder migrationBuilder)
   {
     migrationBuilder.CreateTable(
     DbEventUser.TableName,
@@ -93,14 +90,13 @@ public class _20230126193800_InitialMigration : Migration
       ModifiedBy = table.Column<Guid>(nullable: true),
       ModifiedAtUtc = table.Column<DateTime>(nullable: true)
     },
-
     constraints: table =>
     {
-      table.PrimaryKey($"PK_{DbEventUser.TableName}", e => e.Id);
+      table.PrimaryKey($"PK_{DbEventUser.TableName}", eu => eu.Id);
     });
   }
 
-  private void CreateEventCommentTable(MigrationBuilder migrationBuilder)
+  private void CreateEventsCommentsTable(MigrationBuilder migrationBuilder)
   {
     migrationBuilder.CreateTable(
     DbEventComment.TableName,
@@ -116,14 +112,13 @@ public class _20230126193800_InitialMigration : Migration
       ModifiedBy = table.Column<Guid>(nullable: true),
       ModifiedAtUtc = table.Column<DateTime>(nullable: true)        
     },
-
     constraints: table =>
     {
-      table.PrimaryKey($"PK_{DbEventComment.TableName}", e => e.Id);
+      table.PrimaryKey($"PK_{DbEventComment.TableName}", ec => ec.Id);
     });
   }
 
-  private void CreateEventImageTable(MigrationBuilder migrationBuilder)
+  private void CreateEventsImagesTable(MigrationBuilder migrationBuilder)
   {
     migrationBuilder.CreateTable(
     DbEventImage.TableName,
@@ -135,14 +130,13 @@ public class _20230126193800_InitialMigration : Migration
       CreatedBy = table.Column<Guid>(nullable: false),
       CreatedAtUtc = table.Column<DateTime>(nullable: false),
     },
-
     constraints: table =>
     {
-      table.PrimaryKey($"PK_{DbEventImage.TableName}", e => e.Id);
+      table.PrimaryKey($"PK_{DbEventImage.TableName}", ei => ei.Id);
     });
   }
 
-  private void CreateEventFileTable(MigrationBuilder migrationBuilder)
+  private void CreateEventsFilesTable(MigrationBuilder migrationBuilder)
   {
     migrationBuilder.CreateTable(
     DbEventFile.TableName,
@@ -154,22 +148,21 @@ public class _20230126193800_InitialMigration : Migration
       CreatedBy = table.Column<Guid>(nullable: false),
       CreatedAtUtc = table.Column<DateTime>(nullable: false),
     },
-
     constraints: table =>
     {
-      table.PrimaryKey($"PK_{DbEventFile.TableName}", e => e.Id);
+      table.PrimaryKey($"PK_{DbEventFile.TableName}", ef => ef.Id);
     });
   }
 
   protected override void Up(MigrationBuilder migrationBuilder)
   {
-    CreateEventTable(migrationBuilder);
-    CreateEventCategoryTable(migrationBuilder);
-    CreateCategoryTable(migrationBuilder);
-    CreateEventUserTable(migrationBuilder);
-    CreateEventCommentTable(migrationBuilder);
-    CreateEventImageTable(migrationBuilder);
-    CreateEventFileTable(migrationBuilder);
+    CreateEventsTable(migrationBuilder);
+    CreateEventsCategoriesTable(migrationBuilder);
+    CreateCategoriesTable(migrationBuilder);
+    CreateEventsUsersTable(migrationBuilder);
+    CreateEventsCommentsTable(migrationBuilder);
+    CreateEventsImagesTable(migrationBuilder);
+    CreateEventsFilesTable(migrationBuilder);
   }
 
   protected override void Down(MigrationBuilder migrationBuilder)
