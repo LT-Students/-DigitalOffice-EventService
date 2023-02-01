@@ -9,4 +9,8 @@
     <ProjectReference Include="..\EventService.Validation\EventService.Validation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\" />
+  </ItemGroup>
+
 </Project>
