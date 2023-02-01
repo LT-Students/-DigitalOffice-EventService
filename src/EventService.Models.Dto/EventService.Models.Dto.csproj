@@ -3,8 +3,7 @@
   <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
 
   <ItemGroup>
-    <Folder Include="Requests\" />
-    <Folder Include="Responses\"/>
+    <Folder Include="Responses\" />
   </ItemGroup>
 
 </Project>
