@@ -2,34 +2,33 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LT.DigitalOffice.EventService.Models.Db
+namespace LT.DigitalOffice.EventService.Models.Db;
+
+public class DbEventFile
 {
-  public class DbEventFile
+  public const string TableName = "EventFiles";
+
+  public Guid Id { get; set; }
+  public Guid EventId { get; set; }
+  public Guid FileId { get; set; }
+  public Guid CreatedBy { get; set; }
+  public DateTime CreatedAtUtc { get; set; }
+
+  public DbEvent Event { get; set; }
+}
+
+public class DbEventFileConfiguration : IEntityTypeConfiguration<DbEventFile>
+{
+  public void Configure(EntityTypeBuilder<DbEventFile> builder)
   {
-    public const string TableName = "EventFiles";
+    builder
+      .ToTable(DbEventFile.TableName);
 
-    public Guid Id { get; set; }
-    public Guid EventId { get; set; }
-    public Guid FileId { get; set; }
-    public Guid CreatedBy { get; set; }
-    public DateTime CreatedAtUtc { get; set; }
+    builder
+      .HasKey(t => t.Id);
 
-    public DbEvent Event { get; set; }
-  }
-
-  public class DbEventFileConfiguration : IEntityTypeConfiguration<DbEventFile>
-  {
-    public void Configure(EntityTypeBuilder<DbEventFile> builder)
-    {
-      builder
-        .ToTable(DbEventFile.TableName);
-
-      builder
-        .HasKey(t => t.Id);
-
-      builder
-        .HasOne(ef => ef.Event)
-        .WithMany(e => e.Files);
-    }
+    builder
+      .HasOne(ef => ef.Event)
+      .WithMany(e => e.Files);
   }
 }
