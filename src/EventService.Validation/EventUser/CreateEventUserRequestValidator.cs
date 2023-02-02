@@ -6,8 +6,6 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
 using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.EventService.Validation.EventUser;
 

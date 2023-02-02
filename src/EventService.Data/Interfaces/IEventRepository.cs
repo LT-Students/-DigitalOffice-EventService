@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.Kernel.Attributes;

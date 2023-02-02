@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Business.Commands.EventsUsers.Interfaces;
