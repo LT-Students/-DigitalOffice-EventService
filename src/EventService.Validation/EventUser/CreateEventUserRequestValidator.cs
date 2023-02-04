@@ -17,12 +17,14 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
       public CreateEventUserRequestValidator(IEventUserRepository eventUserRepository, IUserService userService, IEventRepository eventRepository)
       {
         RuleFor(request => request.Users)
-          //.Must(users =>
-          //{
-          //  List<Guid> usersIds = users.Select(r => r.UserId).ToList();
-          //  return usersIds.Distinct().Count() == usersIds.Count();
-          //})
-          //.WithMessage("Some users doubled.")
+          .NotEmpty()
+          .WithMessage("Empty user list.")
+          .Must(users =>
+          {
+            List<Guid> usersIds = users.Select(r => r.UserId).ToList();
+            return usersIds.Distinct().Count() == usersIds.Count();
+          })
+          .WithMessage("Some users doubled.")
           .MustAsync(async (users, _) =>
           {
             List<Guid> usersIds = users.Select(r => r.UserId).ToList();
@@ -46,7 +48,7 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
             }
             return true;
           })
-          .WithMessage("This user doesn't exist");
+          .WithMessage("This user is already invited to event.");
 
         When(request => request.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0, () =>
         {
@@ -57,7 +59,7 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
               return !req.Users.Any(user =>
                 user.NotifyAtUtc != null && (user.NotifyAtUtc < DateTime.UtcNow || user.NotifyAtUtc > evenTime));
             })
-            .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now and not later than event date");
+            .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now and not later than event date.");
         });
       }
 }
