@@ -6,9 +6,9 @@ using LT.DigitalOffice.Kernel.Responses;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.EventsUsers.Interfaces;
 
-  [AutoInject]
-  public interface ICreateEventUserCommand
-  {
-    public Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventUserRequest request);
-  }
+[AutoInject]
+public interface ICreateEventUserCommand
+{
+  public Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventUserRequest request);
+}
 
