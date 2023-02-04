@@ -7,6 +7,7 @@ using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Business.Commands.EventsUsers.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
+using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
 using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
@@ -46,38 +47,66 @@ namespace LT.DigitalOffice.EventService.Business.Commands.EventsUsers;
       _contextAccessor = contextAccessor;
       _eventRepository = eventRepository;
     }
-    public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventUserRequest request)
+    public async Task<OperationResultResponse<List<Guid>>> ExecuteAsync(CreateEventUserRequest request)
     {
+      Guid creatorId = _contextAccessor.HttpContext.GetUserId();
+      bool isAdmin = await _accessValidator.IsAdminAsync(creatorId);
+      AccessType evenType = (await _eventRepository.GetAsync(request.EventId)).Access;
+
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
       {
-        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden, 
-          new List<string>() {"you haven't rights to add users to event"});
+        return _responseCreator.CreateFailureResponse<List<Guid>>(HttpStatusCode.Forbidden, 
+          new List<string>() {"You haven't rights to add users to event."});
+      }
+
+      if (request.Users.Exists(x => x.UserId == creatorId) && request.Users.Count > 1)
+      {
+        return _responseCreator.CreateFailureResponse<List<Guid>>(HttpStatusCode.BadRequest);
+      }
+
+      if (request.Users.Exists(x => x.UserId == creatorId) &&
+          (await _eventRepository.GetAsync(request.EventId)).Access == AccessType.Closed &&
+          !isAdmin)
+      {
+        return _responseCreator.CreateFailureResponse<List<Guid>>(HttpStatusCode.BadRequest,
+          new List<string>() { "You can't add yourself to closed event." });
       }
 
       ValidationResult validationResult = await _validator.ValidateAsync(request);
 
-      if (request.UserId == _contextAccessor.HttpContext.GetUserId() &&
-          (await _eventRepository.GetAsync(request.EventId)).Access == AccessType.Closed &&
-          !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
-      {
-        return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden,
-          new List<string>() { "you can't add yourself to closed event" });
-      }
-
       if (!validationResult.IsValid)
       {
-        return _responseCreator.CreateFailureResponse<Guid?>(
+        return _responseCreator.CreateFailureResponse<List<Guid>>(
           HttpStatusCode.BadRequest,
           validationResult.Errors.Select(er => er.ErrorMessage).ToList());
       }
 
-      OperationResultResponse<Guid?> response = new();
+      if (isAdmin)
+      {
+        _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+        return new OperationResultResponse<List<Guid>>
+        {
+          Body = await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant))
+        };
+      }
 
-      response.Body = await _repository.CreateAsync(_mapper.Map(request));
+      if (evenType == AccessType.Opened)
+      {
+        _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+        return new OperationResultResponse <List<Guid>>
+        {
+          Body = await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant))
+        };
+      }
+
+      OperationResultResponse<List<Guid>> response = new() { Body = await _repository.CreateAsync(_mapper.Map(request)) };
 
       _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-      return response;
+      return new OperationResultResponse <List<Guid>>
+      {
+        Body = await _repository.CreateAsync(_mapper.Map(request))
+      };
     }
 	}
 

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
-using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
 using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.EventService.Validation.EventUser;
 
@@ -13,56 +16,48 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
 	{
       public CreateEventUserRequestValidator(IEventUserRepository eventUserRepository, IUserService userService, IEventRepository eventRepository)
       {
-        RuleFor(request => request.UserId)
-          .Cascade(CascadeMode.Stop)
-          .MustAsync(async (userId,_) => (await userService.CheckUsersExistenceAsync(new List<Guid> { userId }))?.Count == 1)
-          .WithMessage("This user doesn't exist");
+        RuleFor(request => request.Users)
+          //.Must(users =>
+          //{
+          //  List<Guid> usersIds = users.Select(r => r.UserId).ToList();
+          //  return usersIds.Distinct().Count() == usersIds.Count();
+          //})
+          //.WithMessage("Some users doubled.")
+          .MustAsync(async (users, _) =>
+          {
+            List<Guid> usersIds = users.Select(r => r.UserId).ToList();
+            return (await userService.CheckUsersExistenceAsync(usersIds)).Count == usersIds.Count;
+          })
+          .WithMessage("Some users doesn't exist.");
 
         RuleFor(request => request.EventId)
-          .Cascade(CascadeMode.Stop)
-          .MustAsync(async (eventId, _) => await eventRepository.IsEventExist(eventId))
-          .WithMessage("This event doesn't exist");
+          .MustAsync(async (eventId, _) => await eventRepository.DoesExistAsync(eventId))
+          .WithMessage("This event doesn't exist.");
 
         RuleFor(request => request)
-          .Cascade(CascadeMode.Stop)
-          .MustAsync(async (x, _) => !await eventUserRepository.IsUserAddedToEventAsync(x.UserId, x.EventId))
-          .WithMessage("User is already added to event");
+          .MustAsync(async (x, _) =>
+          {
+            foreach (var user in x.Users)
+            {
+              if (await eventUserRepository.DoesExistAsync(user.UserId, x.EventId))
+              {
+                return false;
+              }
+            }
+            return true;
+          })
+          .WithMessage("This user doesn't exist");
 
-    WhenAsync(async (request, _)=> request.UserStatus != EventUserStatus.Participant && 
-                                       (await eventRepository.GetAsync(request.EventId)).Access == AccessType.Opened , () =>
-        {
-          RuleFor(request => request.UserStatus)
-            .Cascade(CascadeMode.Stop)
-            .Must(status => status != EventUserStatus.Discarded)
-            .WithMessage("You can't add user with discarded status")
-            .Must(status => status != EventUserStatus.Refused)
-            .WithMessage("You can't add user with refused status")
-            .Must(status => status != EventUserStatus.Invited)
-            .WithMessage("You can't add user with invited status, choose participant status");
-        });
-
-        WhenAsync(async (request, _) => (request.UserStatus != EventUserStatus.Invited && 
-                                         (await eventRepository.GetAsync(request.EventId)).Access == AccessType.Closed),
-          () =>
-        {
-          RuleFor(request => request.UserStatus)
-            .Cascade(CascadeMode.Stop)
-            .Must(status => status != EventUserStatus.Discarded)
-            .WithMessage("You can't add user with discarded status")
-            .Must(status => status != EventUserStatus.Refused)
-            .WithMessage("You can't add user with refused status")
-            .Must(status => status != EventUserStatus.Participant)
-            .WithMessage("You must invite user to closed event");
-        });
-
-        When(request => request.NotifyAtUtc is not null, () =>
+        When(request => request.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0, () =>
         {
           RuleFor(request => request)
-            .Must(e => e.NotifyAtUtc > DateTime.UtcNow)
-            .WithMessage(
-              "Notification time is earlier than now") 
-            .MustAsync(async (e, _) => e.NotifyAtUtc < (await eventRepository.GetAsync(e.EventId)).Date)
-            .WithMessage("Notification time can't be later than event date");
+            .MustAsync(async (req, _) =>
+            {
+              DateTime evenTime = (await eventRepository.GetAsync(req.EventId)).Date;
+              return !req.Users.Any(user =>
+                user.NotifyAtUtc != null && (user.NotifyAtUtc < DateTime.UtcNow || user.NotifyAtUtc > evenTime));
+            })
+            .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now and not later than event date");
         });
       }
 }

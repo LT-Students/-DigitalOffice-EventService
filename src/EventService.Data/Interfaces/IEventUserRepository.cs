@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.Kernel.Attributes;
@@ -8,7 +9,7 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces;
   [AutoInject]
   public interface IEventUserRepository
   {
-    public Task<bool> IsUserAddedToEventAsync(Guid userId, Guid eventId);
-    public Task<Guid?> CreateAsync(DbEventUser dbEventUser);
+    public Task<bool> DoesExistAsync(Guid userId, Guid eventId);
+    public Task<List<Guid>> CreateAsync(List<DbEventUser> dbEventUsers);
   }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
 using LT.DigitalOffice.Kernel.Attributes;
@@ -9,6 +10,6 @@ namespace LT.DigitalOffice.EventService.Business.Commands.EventsUsers.Interfaces
   [AutoInject]
   public interface ICreateEventUserCommand
   {
-    public Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventUserRequest request);
+    public Task<OperationResultResponse<List<Guid>>> ExecuteAsync(CreateEventUserRequest request);
   }
 

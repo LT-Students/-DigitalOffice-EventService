@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 
 namespace LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
 
@@ -9,8 +11,6 @@ namespace LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
     [Required]
     public Guid EventId { get; set; }
     [Required]
-    public Guid UserId { get; set; }
-    public EventUserStatus UserStatus { get; set; }
-    public DateTime? NotifyAtUtc { get; set; }
+    public List<UserRequest> Users { get; set; }
   }
 

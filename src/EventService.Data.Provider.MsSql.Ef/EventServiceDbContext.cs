@@ -22,7 +22,7 @@ public class EventServiceDbContext : DbContext, IDataProvider
 
   public void Save()
   {
-    throw new System.NotImplementedException();
+    SaveChanges();
   }
 
   public async Task SaveAsync()
@@ -32,16 +32,19 @@ public class EventServiceDbContext : DbContext, IDataProvider
 
   public object MakeEntityDetached(object obj)
   {
-    throw new System.NotImplementedException();
+    Entry(obj).State = EntityState.Detached;
+
+    return Entry(obj).State;
+
   }
 
   public void EnsureDeleted()
   {
-    throw new System.NotImplementedException();
+    Database.EnsureDeleted();
   }
 
   public bool IsInMemory()
   {
-    throw new System.NotImplementedException();
+    return Database.IsInMemory();
   }
 }

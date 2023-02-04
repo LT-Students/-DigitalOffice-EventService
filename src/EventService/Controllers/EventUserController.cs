@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Business.Commands.EventsUsers.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
@@ -12,7 +13,7 @@ namespace LT.DigitalOffice.EventService.Controllers;
   public class EventUserController : ControllerBase
   {
     [HttpPost("create")]
-    public async Task<OperationResultResponse<Guid?>> CreateAsync(
+    public async Task<OperationResultResponse<List<Guid>>> CreateAsync(
       [FromServices] ICreateEventUserCommand command,
       [FromBody] CreateEventUserRequest request)
     {
