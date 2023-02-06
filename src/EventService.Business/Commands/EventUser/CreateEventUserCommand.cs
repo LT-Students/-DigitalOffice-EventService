@@ -81,19 +81,10 @@ namespace LT.DigitalOffice.EventService.Business.Commands.EventsUsers;
           validationResult.Errors.Select(er => er.ErrorMessage).ToList());
       }
 
-      if (isAdmin)
+      if (isAdmin || evenType == AccessType.Opened)
       {
         _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
         return new OperationResultResponse<List<Guid>>
-        {
-          Body = await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant))
-        };
-      }
-
-      if (evenType == AccessType.Opened)
-      {
-        _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
-        return new OperationResultResponse <List<Guid>>
         {
           Body = await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant))
         };
