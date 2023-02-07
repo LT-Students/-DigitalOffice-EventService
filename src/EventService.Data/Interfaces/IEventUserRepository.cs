@@ -9,7 +9,7 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces;
   [AutoInject]
   public interface IEventUserRepository
   {
-    public Task<bool> DoesExistAsync(Guid userId, Guid eventId);
+    public Task<bool> DoesExistAsync(List<Guid> userId, Guid eventId);
     public Task<List<Guid>> CreateAsync(List<DbEventUser> dbEventUsers);
   }
 

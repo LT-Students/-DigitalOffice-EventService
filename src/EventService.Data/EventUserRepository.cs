@@ -6,7 +6,6 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -19,9 +18,9 @@ namespace LT.DigitalOffice.EventService.Data;
       _provider = provider;
     }
 
-    public async Task<bool> DoesExistAsync(Guid userId, Guid eventId)
+    public async Task<bool> DoesExistAsync(List<Guid> userId, Guid eventId)
     {
-      return await _provider.EventsUsers.AnyAsync(eu => eu.EventId == eventId && eu.UserId == userId);
+      return await _provider.EventsUsers.AnyAsync(eu => userId.Contains(eu.UserId) && eu.EventId == eventId);
     }
 
     public async Task<List<Guid>> CreateAsync(List<DbEventUser> dbEventUsers)

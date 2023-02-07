@@ -4,12 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
-using LT.DigitalOffice.EventService.Business.Commands.EventsUsers.Interfaces;
+using LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
-using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
@@ -18,7 +17,7 @@ using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using Microsoft.AspNetCore.Http;
 
-namespace LT.DigitalOffice.EventService.Business.Commands.EventsUsers;
+namespace LT.DigitalOffice.EventService.Business.Commands.EventUser;
 
 	public class CreateEventUserCommand : ICreateEventUserCommand
   {
@@ -47,56 +46,53 @@ namespace LT.DigitalOffice.EventService.Business.Commands.EventsUsers;
       _contextAccessor = contextAccessor;
       _eventRepository = eventRepository;
     }
-    public async Task<OperationResultResponse<List<Guid>>> ExecuteAsync(CreateEventUserRequest request)
+    public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request)
     {
-      Guid creatorId = _contextAccessor.HttpContext.GetUserId();
-      bool isAdmin = await _accessValidator.IsAdminAsync(creatorId);
-      AccessType evenType = (await _eventRepository.GetAsync(request.EventId)).Access;
+      Guid senderId = _contextAccessor.HttpContext.GetUserId();
+      AccessType eventType = (await _eventRepository.GetAsync(request.EventId)).Access;
 
-      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
+      if (!await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers) ||
+          (eventType == AccessType.Closed && request.Users.Exists(x => x.UserId == senderId)))
       {
-        return _responseCreator.CreateFailureResponse<List<Guid>>(HttpStatusCode.Forbidden, 
-          new List<string>() {"You haven't rights to add users to event."});
+        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
       }
 
-      if (request.Users.Exists(x => x.UserId == creatorId) && request.Users.Count > 1)
+      if (request.Users.Exists(x => x.UserId == senderId) && request.Users.Count > 1)
       {
-        return _responseCreator.CreateFailureResponse<List<Guid>>(HttpStatusCode.BadRequest);
-      }
-
-      if (request.Users.Exists(x => x.UserId == creatorId) &&
-          (await _eventRepository.GetAsync(request.EventId)).Access == AccessType.Closed &&
-          !isAdmin)
-      {
-        return _responseCreator.CreateFailureResponse<List<Guid>>(HttpStatusCode.BadRequest,
-          new List<string>() { "You can't add yourself to closed event." });
+        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
       }
 
       ValidationResult validationResult = await _validator.ValidateAsync(request);
 
       if (!validationResult.IsValid)
       {
-        return _responseCreator.CreateFailureResponse<List<Guid>>(
+        return _responseCreator.CreateFailureResponse<bool>(
           HttpStatusCode.BadRequest,
           validationResult.Errors.Select(er => er.ErrorMessage).ToList());
       }
 
-      if (isAdmin || evenType == AccessType.Opened)
+      if (request.Users.Exists(x => x.UserId == senderId))
       {
-        _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
-        return new OperationResultResponse<List<Guid>>
+        OperationResultResponse<bool> response = new();
+
+        if (request.Users.Distinct().Count() != request.Users.Count())
         {
-          Body = await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant))
-        };
+          response.Errors = new List<string>() { "Some users were doubled" };
+          request.Users.Distinct();
+        }
+
+        await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant));
+        response.Body = true;
+        _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+        return response;
       }
 
-      OperationResultResponse<List<Guid>> response = new() { Body = await _repository.CreateAsync(_mapper.Map(request)) };
-
+      await _repository.CreateAsync(_mapper.Map(request));
       _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-      return new OperationResultResponse <List<Guid>>
+      return new OperationResultResponse <bool>
       {
-        Body = await _repository.CreateAsync(_mapper.Map(request))
+        Body = true
       };
     }
 	}

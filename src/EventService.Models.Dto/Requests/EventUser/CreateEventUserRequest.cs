@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using LT.DigitalOffice.EventService.Models.Dto.Enums;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 
-namespace LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
+namespace LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 
   public record CreateEventUserRequest
   {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
 
@@ -21,6 +21,7 @@ namespace LT.DigitalOffice.EventService.Mappers.Db;
     public List<DbEventUser> Map(CreateEventUserRequest request, EventUserStatus status = EventUserStatus.Invited)
     {
       List<DbEventUser> result = new List<DbEventUser>();
+
       foreach (var user in request.Users)
       {
         result.Add(new DbEventUser

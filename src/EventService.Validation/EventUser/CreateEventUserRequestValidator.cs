@@ -1,35 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.EventService.Validation.EventUser;
 
 	public class CreateEventUserRequestValidator : AbstractValidator<CreateEventUserRequest>, ICreateEventUserRequestValidator
 	{
-      public CreateEventUserRequestValidator(IEventUserRepository eventUserRepository, IUserService userService, IEventRepository eventRepository)
+      public CreateEventUserRequestValidator(
+        IEventUserRepository eventUserRepository, 
+        IUserService userService, 
+        IEventRepository eventRepository)
       {
         RuleFor(request => request.Users)
           .NotEmpty()
           .WithMessage("Empty user list.")
-          .Must(users =>
-          {
-            List<Guid> usersIds = users.Select(r => r.UserId).ToList();
-            return usersIds.Distinct().Count() == usersIds.Count();
-          })
           .WithMessage("Some users doubled.")
           .MustAsync(async (users, _) =>
-          {
-            List<Guid> usersIds = users.Select(r => r.UserId).ToList();
-            return (await userService.CheckUsersExistenceAsync(usersIds)).Count == usersIds.Count;
-          })
+            (await userService.CheckUsersExistenceAsync(users.Select(users => users.UserId).ToList())).Count() == users.Count)
           .WithMessage("Some users doesn't exist.");
 
         RuleFor(request => request.EventId)
@@ -38,19 +29,11 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
 
         RuleFor(request => request)
           .MustAsync(async (x, _) =>
-          {
-            foreach (var user in x.Users)
-            {
-              if (await eventUserRepository.DoesExistAsync(user.UserId, x.EventId))
-              {
-                return false;
-              }
-            }
-            return true;
-          })
-          .WithMessage("This user is already invited to event.");
+            !await eventUserRepository.DoesExistAsync(x.Users.Select(e => e.UserId).ToList(), x.EventId))
+          .WithMessage("Some users have already been invited to the event or are participants in it.");
 
-        When(request => request.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0, () =>
+        When(request => request.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0,
+          () =>
         {
           RuleFor(request => request)
             .MustAsync(async (req, _) =>
