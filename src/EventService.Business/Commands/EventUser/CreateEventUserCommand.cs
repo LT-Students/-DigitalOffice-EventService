@@ -73,27 +73,27 @@ namespace LT.DigitalOffice.EventService.Business.Commands.EventUser;
 
       if (request.Users.Exists(x => x.UserId == senderId))
       {
-        OperationResultResponse<bool> response = new();
-
-        if (request.Users.Distinct().Count() != request.Users.Count())
-        {
-          response.Errors = new List<string>() { "Some users were doubled" };
-          request.Users.Distinct();
-        }
-
         await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant));
-        response.Body = true;
+
         _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
-        return response;
+        return new OperationResultResponse<bool>
+        {
+          Body = true
+        };
+      }
+
+      string error = null;
+ 
+      if (request.Users.Distinct().Count() != request.Users.Count())
+      {
+        error = "Some users were doubled";
+        request.Users = request.Users.Distinct().ToList();
       }
 
       await _repository.CreateAsync(_mapper.Map(request));
       _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-      return new OperationResultResponse <bool>
-      {
-        Body = true
-      };
+      return new OperationResultResponse<bool> { Body = true, Errors = new List<string>() { error } };
     }
 	}
 

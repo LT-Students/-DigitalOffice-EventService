@@ -20,7 +20,7 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
           .WithMessage("Empty user list.")
           .WithMessage("Some users doubled.")
           .MustAsync(async (users, _) =>
-            (await userService.CheckUsersExistenceAsync(users.Select(users => users.UserId).ToList())).Count() == users.Count)
+            (await userService.CheckUsersExistenceAsync(users.Select(userRequest => userRequest.UserId).ToList())).Count() == users.Distinct().Count())
           .WithMessage("Some users doesn't exist.");
 
         RuleFor(request => request.EventId)
