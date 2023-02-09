@@ -4,11 +4,10 @@ using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.Kernel.Attributes;
 using LT.DigitalOffice.Kernel.Responses;
 
-namespace LT.DigitalOffice.EventService.Business.Commands.Event.Interfaces
+namespace LT.DigitalOffice.EventService.Business.Commands.Event.Interfaces;
+
+[AutoInject]
+public interface ICreateEventCommand
 {
-  [AutoInject]
-  public interface ICreateEventCommand
-  {
-    Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventRequest request);
-  }
+  Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventRequest request);
 }

@@ -5,19 +5,17 @@ using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.Kernel.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LT.DigitalOffice.EventService.Controllers
-{
-  [Route("[controller]")]
-  [ApiController]
-  public class EventController : ControllerBase
-  {
-    [HttpPost("create")]
-    public async Task<OperationResultResponse<Guid?>> CreateAsync(
-      [FromServices] ICreateEventCommand command,
-      [FromBody] CreateEventRequest request)
-    {
-      return await command.ExecuteAsync(request);
-    }
+namespace LT.DigitalOffice.EventService.Controllers;
 
+[Route("[controller]")]
+[ApiController]
+public class EventController : ControllerBase
+{
+  [HttpPost("create")]
+  public async Task<OperationResultResponse<Guid?>> CreateAsync(
+    [FromServices] ICreateEventCommand command,
+    [FromBody] CreateEventRequest request)
+  {
+    return await command.ExecuteAsync(request);
   }
 }

@@ -17,6 +17,7 @@ public class EventRepository : IEventRepository
   public Task CreateAsync(DbEvent dbEvent)
   {
     _provider.Events.Add(dbEvent);
+
     return _provider.SaveAsync();
   }
 }

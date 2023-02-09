@@ -7,5 +7,5 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces;
 [AutoInject]
 public interface IEventRepository
 {
-  Task CreateAsync(DbEvent dbEvent);
+  public Task CreateAsync(DbEvent dbEvent);
 }

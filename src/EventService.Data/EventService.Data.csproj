@@ -3,6 +3,7 @@
   <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
   
   <ItemGroup>
+    <ProjectReference Include="..\EventService.Data.Provider\EventService.Data.Provider.csproj" />
     <ProjectReference Include="..\EventService.Models.Db\EventService.Models.Db.csproj" />
     <ProjectReference Include="..\EventService.Models.Dto\EventService.Models.Dto.csproj" />
   </ItemGroup>

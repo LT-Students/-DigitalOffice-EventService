@@ -1,15 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
-
-  <ItemGroup>
-    <Compile Remove="Option\**" />
-    <Compile Remove="Question\**" />
-    <EmbeddedResource Remove="Option\**" />
-    <EmbeddedResource Remove="Question\**" />
-    <None Remove="Option\**" />
-    <None Remove="Question\**" />
-  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\EventService.Data\EventService.Data.csproj" />

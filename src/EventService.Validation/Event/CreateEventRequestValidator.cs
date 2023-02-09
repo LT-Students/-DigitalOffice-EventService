@@ -6,18 +6,17 @@ using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
 
 namespace LT.DigitalOffice.EventService.Validation.Event;
 
-internal class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>, ICreateEventRequestValidator
+public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>, ICreateEventRequestValidator
 {
   public CreateEventRequestValidator(
     IEventRepository repository)
   {
     RuleFor(ev => ev.Name)
-      .MinimumLength(1)
-      .WithMessage("Name minimum length should not be less than 1 symbol")
       .MaximumLength(150)
       .WithMessage("Name should not exceed maximum length of 150 symbols");
 
-    When(ev => !string.IsNullOrEmpty(ev.Description), () =>
+    When(ev => !string.IsNullOrEmpty(ev.Description), 
+      () =>
     {
       RuleFor(ev => ev.Description)
       .MaximumLength(500)
@@ -25,8 +24,6 @@ internal class CreateEventRequestValidator : AbstractValidator<CreateEventReques
     });
 
     RuleFor(ev => ev.Address)
-      .MinimumLength(1)
-      .WithMessage("Address minimum length should not be less than 1 symbol")
       .MaximumLength(150)
       .WithMessage("Address should not exceed maximum length of 400 symbols");
 
