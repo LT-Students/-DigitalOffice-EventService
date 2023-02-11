@@ -8,6 +8,7 @@ using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
+using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
@@ -57,17 +58,29 @@ public class CreateEventUserCommand : ICreateEventUserCommand
   public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request)
   {
     Guid senderId = _contextAccessor.HttpContext.GetUserId();
-    AccessType eventType = (await _eventRepository.GetAsync(request.EventId)).Access;
+    DbEvent dbEvent = await _eventRepository.GetAsync(request.EventId);
+    string error = null;
+    bool isHaveRights = await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers);
 
-    if (!await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers) ||
-        (eventType == AccessType.Closed && request.Users.Exists(x => x.UserId == senderId)))
+    if (dbEvent is null)
+    {
+      return _responseCreator.CreateFailureResponse<bool>(
+        HttpStatusCode.NotFound,
+        new List<string> { "This event doesn't exist." });
+    }
+
+    if ((dbEvent.Access == AccessType.Closed && !await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers))
+        || !(dbEvent.Access == AccessType.Opened && 
+             (await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers) || 
+              (!await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers) && request.Users.Count == 1 && request.Users.Exists(x => x.UserId == senderId)))))
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }
 
-    if (request.Users.Exists(x => x.UserId == senderId) && request.Users.Count > 1)
+    if (request.Users.Distinct().Count() != request.Users.Count())
     {
-      return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
+      error = "Some duplicate users have been removed from the list.";
+      request.Users = request.Users.Distinct().ToList();
     }
 
     ValidationResult validationResult = await _validator.ValidateAsync(request);
@@ -81,7 +94,7 @@ public class CreateEventUserCommand : ICreateEventUserCommand
 
     if (request.Users.Exists(x => x.UserId == senderId))
     {
-      await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant));
+      await _repository.CreateAsync(_mapper.Map(request, dbEvent.Access, senderId));
 
       _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
       return new OperationResultResponse<bool>
@@ -90,15 +103,7 @@ public class CreateEventUserCommand : ICreateEventUserCommand
       };
     }
 
-    string error = null;
-
-    if (request.Users.Distinct().Count() != request.Users.Count())
-    {
-      error = "Some users were doubled";
-      request.Users = request.Users.Distinct().ToList();
-    }
-
-    await _repository.CreateAsync(_mapper.Map(request));
+    await _repository.CreateAsync(_mapper.Map(request, dbEvent.Access, senderId));
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
     await SendInviteEmailsAsync(request.Users.Select(x => x.UserId).ToList());

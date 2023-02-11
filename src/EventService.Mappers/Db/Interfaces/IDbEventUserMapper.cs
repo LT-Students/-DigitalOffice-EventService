@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
@@ -8,7 +9,7 @@ namespace LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 
   [AutoInject]
 	public interface IDbEventUserMapper
-  {
-    List<DbEventUser> Map(CreateEventUserRequest request, EventUserStatus status = EventUserStatus.Invited);
-  }
+    {
+      public List<DbEventUser> Map(CreateEventUserRequest request, AccessType access, Guid senderId);
+    }
 

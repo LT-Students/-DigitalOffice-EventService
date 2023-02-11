@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
+using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.Helpers;
 using LT.DigitalOffice.Models.Broker.Requests.Email;
 using MassTransit;
 
 namespace LT.DigitalOffice.EventService.Broker.Requests;
 
-  public class EmailService
+  public class EmailService : IEmailService
   {
     private readonly IRequestClient<ISendEmailRequest> _requestClient;
 

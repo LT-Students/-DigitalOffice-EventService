@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
@@ -18,25 +19,23 @@ namespace LT.DigitalOffice.EventService.Mappers.Db;
       _contextAccessor = accessor;
     }
 
-    public List<DbEventUser> Map(CreateEventUserRequest request, EventUserStatus status = EventUserStatus.Invited)
-    {
-      List<DbEventUser> result = new List<DbEventUser>();
-
-      foreach (var user in request.Users)
+  public List<DbEventUser> Map(
+    CreateEventUserRequest request, AccessType access, Guid senderId)
+  {
+    return request is null
+      ? null
+      : request.Users.Select(u => new DbEventUser
       {
-        result.Add(new DbEventUser
-        {
-          Id = Guid.NewGuid(),
-          EventId = request.EventId,
-          UserId = user.UserId,
-          Status = status,
-          NotifyAtUtc = user.NotifyAtUtc,
-          CreatedBy = _contextAccessor.HttpContext.GetUserId(),
-          CreatedAtUtc = DateTime.UtcNow
-        });
-      }
-
-      return result;
-    }
+        Id = Guid.NewGuid(),
+        EventId = request.EventId,
+        UserId = u.UserId,
+        Status = (access == AccessType.Opened && u.UserId == senderId)
+          ? EventUserStatus.Participant
+          : EventUserStatus.Invited,
+        NotifyAtUtc = u.NotifyAtUtc,
+        CreatedBy = senderId,
+        CreatedAtUtc = DateTime.UtcNow
+      }).ToList();
   }
+}
 

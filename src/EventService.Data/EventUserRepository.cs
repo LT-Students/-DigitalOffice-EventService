@@ -23,17 +23,17 @@ namespace LT.DigitalOffice.EventService.Data;
       return await _provider.EventsUsers.AnyAsync(eu => userId.Contains(eu.UserId) && eu.EventId == eventId);
     }
 
-    public async Task<List<Guid>> CreateAsync(List<DbEventUser> dbEventUsers)
+    public async Task<bool> CreateAsync(List<DbEventUser> dbEventUsers)
     {
       if (dbEventUsers is null)
       {
-        return null;
+        return false;
       }
 
       _provider.EventsUsers.AddRange(dbEventUsers);
       await _provider.SaveAsync();
 
-      return dbEventUsers.Select(user => user.Id).ToList();
+      return true;
     }
   }
 
