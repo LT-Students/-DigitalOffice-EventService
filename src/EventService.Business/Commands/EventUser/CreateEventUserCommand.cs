@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
+using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
@@ -15,85 +16,106 @@ using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
+using LT.DigitalOffice.Models.Broker.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.EventUser;
 
-	public class CreateEventUserCommand : ICreateEventUserCommand
+public class CreateEventUserCommand : ICreateEventUserCommand
+{
+  private readonly IAccessValidator _accessValidator;
+  private readonly IEventUserRepository _repository;
+  private readonly IDbEventUserMapper _mapper;
+  private readonly ICreateEventUserRequestValidator _validator;
+  private readonly IResponseCreator _responseCreator;
+  private readonly IHttpContextAccessor _contextAccessor;
+  private readonly IEventRepository _eventRepository;
+  private readonly IEmailService _emailService;
+  private readonly IUserService _userService;
+
+  public CreateEventUserCommand(
+    IAccessValidator accessValidator,
+    IEventUserRepository repository,
+    IDbEventUserMapper mapper,
+    ICreateEventUserRequestValidator validator,
+    IResponseCreator responseCreator,
+    IHttpContextAccessor contextAccessor,
+    IEventRepository eventRepository,
+    IEmailService emailService,
+    IUserService userService)
   {
-    private readonly IAccessValidator _accessValidator;
-    private readonly IEventUserRepository _repository;
-    private readonly IDbEventUserMapper _mapper;
-    private readonly ICreateEventUserRequestValidator _validator;
-    private readonly IResponseCreator _responseCreator;
-    private readonly IHttpContextAccessor _contextAccessor;
-    private readonly IEventRepository _eventRepository;
+    _accessValidator = accessValidator;
+    _repository = repository;
+    _mapper = mapper;
+    _validator = validator;
+    _responseCreator = responseCreator;
+    _contextAccessor = contextAccessor;
+    _eventRepository = eventRepository;
+    _emailService = emailService;
+    _userService = userService;
+  }
+  public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request)
+  {
+    Guid senderId = _contextAccessor.HttpContext.GetUserId();
+    AccessType eventType = (await _eventRepository.GetAsync(request.EventId)).Access;
 
-    public CreateEventUserCommand(
-      IAccessValidator accessValidator,
-      IEventUserRepository repository,
-      IDbEventUserMapper mapper,
-      ICreateEventUserRequestValidator validator,
-      IResponseCreator responseCreator,
-      IHttpContextAccessor contextAccessor,
-      IEventRepository eventRepository)
+    if (!await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers) ||
+        (eventType == AccessType.Closed && request.Users.Exists(x => x.UserId == senderId)))
     {
-      _accessValidator = accessValidator;
-      _repository = repository;
-      _mapper = mapper;
-      _validator = validator;
-      _responseCreator = responseCreator;
-      _contextAccessor = contextAccessor;
-      _eventRepository = eventRepository;
+      return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }
-    public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request)
+
+    if (request.Users.Exists(x => x.UserId == senderId) && request.Users.Count > 1)
     {
-      Guid senderId = _contextAccessor.HttpContext.GetUserId();
-      AccessType eventType = (await _eventRepository.GetAsync(request.EventId)).Access;
+      return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
+    }
 
-      if (!await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers) ||
-          (eventType == AccessType.Closed && request.Users.Exists(x => x.UserId == senderId)))
-      {
-        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
-      }
+    ValidationResult validationResult = await _validator.ValidateAsync(request);
 
-      if (request.Users.Exists(x => x.UserId == senderId) && request.Users.Count > 1)
-      {
-        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
-      }
+    if (!validationResult.IsValid)
+    {
+      return _responseCreator.CreateFailureResponse<bool>(
+        HttpStatusCode.BadRequest,
+        validationResult.Errors.Select(er => er.ErrorMessage).ToList());
+    }
 
-      ValidationResult validationResult = await _validator.ValidateAsync(request);
+    if (request.Users.Exists(x => x.UserId == senderId))
+    {
+      await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant));
 
-      if (!validationResult.IsValid)
-      {
-        return _responseCreator.CreateFailureResponse<bool>(
-          HttpStatusCode.BadRequest,
-          validationResult.Errors.Select(er => er.ErrorMessage).ToList());
-      }
-
-      if (request.Users.Exists(x => x.UserId == senderId))
-      {
-        await _repository.CreateAsync(_mapper.Map(request, EventUserStatus.Participant));
-
-        _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
-        return new OperationResultResponse<bool>
-        {
-          Body = true
-        };
-      }
-
-      string error = null;
- 
-      if (request.Users.Distinct().Count() != request.Users.Count())
-      {
-        error = "Some users were doubled";
-        request.Users = request.Users.Distinct().ToList();
-      }
-
-      await _repository.CreateAsync(_mapper.Map(request));
       _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
-
-      return new OperationResultResponse<bool> { Body = true, Errors = new List<string>() { error } };
+      return new OperationResultResponse<bool>
+      {
+        Body = true
+      };
     }
-	}
+
+    string error = null;
+
+    if (request.Users.Distinct().Count() != request.Users.Count())
+    {
+      error = "Some users were doubled";
+      request.Users = request.Users.Distinct().ToList();
+    }
+
+    await _repository.CreateAsync(_mapper.Map(request));
+    _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+
+    await SendInviteEmailsAsync(request.Users.Select(x => x.UserId).ToList());
+
+    return new OperationResultResponse<bool> { Body = true, Errors = new List<string>() { error } };
+  }
+
+  private async Task SendInviteEmailsAsync(List<Guid> users)
+  {
+    List<UserData> usersData= await _userService.GetUsersDataAsync(users);
+    foreach (var user in users)
+    {
+      await _emailService.SendAsync(
+        usersData.Find(x => x.Id == user).Email, 
+        "Invite to event",
+        "You have been invited to event");
+    }
+  }
+}
 
