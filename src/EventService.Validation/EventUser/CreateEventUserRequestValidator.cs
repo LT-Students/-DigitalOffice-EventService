@@ -32,7 +32,7 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
           .MustAsync(async  (x, _) => !(x.Users.Select(u => u.UserId).Contains((await eventRepository.GetAsync(x.EventId)).CreatedBy)))
           .WithMessage("User list must contains only your Id if you want to add yourself");
 
-    When(request => request.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0,
+        When(request => request.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0,
           () =>
         {
           RuleFor(request => request)
