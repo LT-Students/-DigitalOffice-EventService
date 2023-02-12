@@ -111,11 +111,11 @@ public class CreateEventUserCommand : ICreateEventUserCommand
         validationResult.Errors.Select(er => er.ErrorMessage).ToList());
     }
 
-    List<DbEventUser> users = _mapper.Map(request, dbEvent.Access, senderId);
-    await _repository.CreateAsync(users);
+    List<DbEventUser> dbEventUsers = _mapper.Map(request, dbEvent.Access, senderId);
+    await _repository.CreateAsync(dbEventUsers);
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-    await SendInviteEmailsAsync(users.Where(x => x.Status == EventUserStatus.Invited).Select(x => x.UserId).ToList(), dbEvent.Name);
+    await SendInviteEmailsAsync(dbEventUsers.Where(x => x.Status == EventUserStatus.Invited).Select(x => x.UserId).ToList(), dbEvent.Name);
 
     return response;
   }
