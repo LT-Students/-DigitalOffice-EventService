@@ -30,7 +30,7 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
             !await eventUserRepository.DoesExistAsync(x.Users.Select(e => e.UserId).ToList(), x.EventId))
           .WithMessage("Some users have already been invited to the event or are participants in it.")
           .MustAsync(async  (x, _) => !(x.Users.Select(u => u.UserId).Contains((await eventRepository.GetAsync(x.EventId)).CreatedBy)))
-          .WithMessage("User list must contains only your Id if you want to add yourself");
+          .WithMessage("Event organizer must not be in list of participants or invited.");
 
         When(request => request.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0,
           () =>
