@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
@@ -18,9 +17,9 @@ namespace LT.DigitalOffice.EventService.Data;
       _provider = provider;
     }
 
-    public async Task<bool> DoesExistAsync(List<Guid> userId, Guid eventId)
+    public Task<bool> DoesExistAsync(List<Guid> userId, Guid eventId)
     {
-      return await _provider.EventsUsers.AnyAsync(eu => userId.Contains(eu.UserId) && eu.EventId == eventId);
+      return _provider.EventsUsers.AsNoTracking().AnyAsync(eu => userId.Contains(eu.UserId) && eu.EventId == eventId);
     }
 
     public async Task<bool> CreateAsync(List<DbEventUser> dbEventUsers)

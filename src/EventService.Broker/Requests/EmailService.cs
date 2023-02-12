@@ -8,18 +8,20 @@ namespace LT.DigitalOffice.EventService.Broker.Requests;
 
   public class EmailService : IEmailService
   {
-    private readonly IRequestClient<ISendEmailRequest> _requestClient;
+    private readonly IRequestClient<ISendEmailRequest> _rcSendEmail;
 
-    public EmailService(IRequestClient<ISendEmailRequest> requestClient)
+    public EmailService(IRequestClient<ISendEmailRequest> rcSendEmail)
     {
-      _requestClient = requestClient;
+      _rcSendEmail = rcSendEmail;
     }
 
     public async Task SendAsync(string email, string subject, string text)
     {
-      object request = ISendEmailRequest.CreateObj(email, subject, text);
-
-      await _requestClient.ProcessRequest<ISendEmailRequest, bool>(request);
+      await _rcSendEmail.ProcessRequest<ISendEmailRequest, bool>(
+        ISendEmailRequest.CreateObj(
+          email, 
+          subject, 
+          text));
     }
   }
 

@@ -5,8 +5,6 @@ using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
-using LT.DigitalOffice.Kernel.Extensions;
-using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Validation.EventUser;
 

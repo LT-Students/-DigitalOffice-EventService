@@ -5,7 +5,6 @@ using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
-using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Mappers.Db;
