@@ -31,6 +31,7 @@ public class UserService : IUserService
     {
       return null;
     }
+
     return (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
         _rcCheckUserExistence,
         ICheckUsersExistence.CreateObj(usersIds),
@@ -44,9 +45,10 @@ public class UserService : IUserService
     {
       return null;
     }
-    object request = IGetUsersDataRequest.CreateObj(usersIds);
 
-    return (await _rcGetUsersData.ProcessRequest<IGetUsersDataRequest, IGetUsersDataResponse>(request))?.UsersData;
+    return (await _rcGetUsersData.ProcessRequest<IGetUsersDataRequest, IGetUsersDataResponse>(
+      IGetUsersDataRequest.CreateObj(usersIds)))
+      ?.UsersData;
   }  
 }
 
