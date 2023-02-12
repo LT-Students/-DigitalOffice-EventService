@@ -15,8 +15,7 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
       public CreateEventUserRequestValidator(
         IEventUserRepository eventUserRepository, 
         IUserService userService, 
-        IEventRepository eventRepository,
-        IHttpContextAccessor contextAccessor)
+        IEventRepository eventRepository)
       {
         RuleFor(request => request.Users)
           .NotEmpty()
@@ -26,19 +25,14 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
               users.Select(userRequest => userRequest.UserId).ToList())).Count() == users.Count())
           .WithMessage("Some users doesn't exist.");
 
-        RuleFor(request => request.EventId)
-          .MustAsync(async (eventId, _) => await eventRepository.DoesExistAsync(eventId))
-          .WithMessage("This event doesn't exist.");
-
         RuleFor(request => request)
           .MustAsync(async (x, _) =>
             !await eventUserRepository.DoesExistAsync(x.Users.Select(e => e.UserId).ToList(), x.EventId))
           .WithMessage("Some users have already been invited to the event or are participants in it.")
-          .Must(x => !(x.Users.Count > 1 &&
-                       x.Users.Exists(user => user.UserId == contextAccessor.HttpContext.GetUserId())))
+          .MustAsync(async  (x, _) => !(x.Users.Select(u => u.UserId).Contains((await eventRepository.GetAsync(x.EventId)).CreatedBy)))
           .WithMessage("User list must contains only your Id if you want to add yourself");
 
-        When(request => request.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0,
+    When(request => request.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0,
           () =>
         {
           RuleFor(request => request)
@@ -48,7 +42,7 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
               return !req.Users.Any(user =>
                 user.NotifyAtUtc != null && (user.NotifyAtUtc < DateTime.UtcNow || user.NotifyAtUtc > evenTime));
             })
-            .WithMessage("Notification time mustn't be earlier than now and not later than event date.");
+            .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now or later than date of the event");
         });
       }
 }

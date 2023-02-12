@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.Helpers;
@@ -13,32 +14,39 @@ namespace LT.DigitalOffice.EventService.Broker.Requests;
 
 public class UserService : IUserService
 {
-  private readonly IRequestClient<ICheckUsersExistence> _checkUsersExistence;
-  private readonly IRequestClient<IGetUsersDataRequest> _getUsersDataRequest;
+  private readonly IRequestClient<ICheckUsersExistence> _rcCheckUserExistence;
+  private readonly IRequestClient<IGetUsersDataRequest> _rcGetUsersData;
 
   public UserService(
-    IRequestClient<ICheckUsersExistence> checkUsersExistence, 
-    IRequestClient<IGetUsersDataRequest> getUsersDataRequest)
+    IRequestClient<ICheckUsersExistence> rcCheckUserExistence, 
+    IRequestClient<IGetUsersDataRequest> rcGetUsersData)
   {
-    _checkUsersExistence = checkUsersExistence;
-    _getUsersDataRequest = getUsersDataRequest;
+    _rcCheckUserExistence = rcCheckUserExistence;
+    _rcGetUsersData = rcGetUsersData;
   }
 
   public async Task<List<Guid>> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null)
   {
+    if (usersIds is null || !usersIds.Any())
+    {
+      return null;
+    }
     return (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
-        _checkUsersExistence,
+        _rcCheckUserExistence,
         ICheckUsersExistence.CreateObj(usersIds),
         errors))
       ?.UserIds;
-
   }
 
-  public async Task<List<UserData>> GetUsersDataAsync(List<Guid> users)
+  public async Task<List<UserData>> GetUsersDataAsync(List<Guid> usersIds)
   {
-    object request = IGetUsersDataRequest.CreateObj(users);
+    if (usersIds is null || !usersIds.Any())
+    {
+      return null;
+    }
+    object request = IGetUsersDataRequest.CreateObj(usersIds);
 
-    return (await _getUsersDataRequest.ProcessRequest<IGetUsersDataRequest, IGetUsersDataResponse>(request))?.UsersData;
+    return (await _rcGetUsersData.ProcessRequest<IGetUsersDataRequest, IGetUsersDataResponse>(request))?.UsersData;
   }  
 }
 
