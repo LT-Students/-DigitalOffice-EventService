@@ -11,13 +11,6 @@ namespace LT.DigitalOffice.EventService.Mappers.Db;
 
 public class DbEventUserMapper : IDbEventUserMapper
 {
-  private readonly IHttpContextAccessor _contextAccessor;
-
-  public DbEventUserMapper(IHttpContextAccessor accessor)
-  {
-    _contextAccessor = accessor;
-  }
-
   public List<DbEventUser> Map(
     CreateEventUserRequest request, AccessType access, Guid senderId)
   {

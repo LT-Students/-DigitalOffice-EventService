@@ -24,4 +24,3 @@ namespace LT.DigitalOffice.EventService.Broker.Requests;
           text));
     }
   }
-

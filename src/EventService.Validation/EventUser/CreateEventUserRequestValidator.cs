@@ -42,6 +42,5 @@ namespace LT.DigitalOffice.EventService.Validation.EventUser;
             })
             .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now or later than date of the event");
         });
-      }
-}
-
+        }
+  }

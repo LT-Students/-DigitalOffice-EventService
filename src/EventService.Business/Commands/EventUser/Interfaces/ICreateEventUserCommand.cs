@@ -10,4 +10,3 @@ namespace LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
   {
     public Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request);
   }
-

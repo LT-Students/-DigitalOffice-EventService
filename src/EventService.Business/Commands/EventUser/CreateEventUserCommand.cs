@@ -120,4 +120,3 @@ public class CreateEventUserCommand : ICreateEventUserCommand
     return response;
   }
 }
-
