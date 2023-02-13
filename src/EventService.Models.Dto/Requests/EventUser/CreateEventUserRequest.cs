@@ -11,4 +11,3 @@ namespace LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
     [Required]
     public List<UserRequest> Users { get; set; }
   }
-

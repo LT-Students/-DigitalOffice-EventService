@@ -6,10 +6,8 @@ using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.Kernel.Attributes;
 
 namespace LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
-
-  [AutoInject]
+[AutoInject]
 	public interface IDbEventUserMapper
-    {
-      public List<DbEventUser> Map(CreateEventUserRequest request, AccessType access, Guid senderId);
-    }
-
+  {
+    public List<DbEventUser> Map(CreateEventUserRequest request, AccessType access, Guid senderId);
+  }
