@@ -5,8 +5,8 @@ using LT.DigitalOffice.Kernel.Responses;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
 
-  [AutoInject]
-  public interface ICreateEventUserCommand
-  {
-    public Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request);
-  }
+[AutoInject]
+public interface ICreateEventUserCommand
+{
+  public Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request);
+}

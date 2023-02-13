@@ -18,25 +18,26 @@ public class UserService : IUserService
   private readonly IRequestClient<IGetUsersDataRequest> _rcGetUsersData;
 
   public UserService(
-    IRequestClient<ICheckUsersExistence> rcCheckUserExistence, 
+    IRequestClient<ICheckUsersExistence> rcCheckUserExistence,
     IRequestClient<IGetUsersDataRequest> rcGetUsersData)
   {
     _rcCheckUserExistence = rcCheckUserExistence;
     _rcGetUsersData = rcGetUsersData;
   }
 
-  public async Task<List<Guid>> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null)
+  public async Task<bool> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null)
   {
     if (usersIds is null || !usersIds.Any())
     {
-      return null;
+      return false;
     }
 
-    return (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
+    var existingUserIds = (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
         _rcCheckUserExistence,
         ICheckUsersExistence.CreateObj(usersIds),
         errors))
       ?.UserIds;
+    return new HashSet<Guid>(usersIds.Distinct()).SetEquals(existingUserIds);
   }
 
   public async Task<List<UserData>> GetUsersDataAsync(List<Guid> usersIds)
@@ -49,6 +50,5 @@ public class UserService : IUserService
     return (await _rcGetUsersData.ProcessRequest<IGetUsersDataRequest, IGetUsersDataResponse>(
       IGetUsersDataRequest.CreateObj(usersIds)))
       ?.UsersData;
-  }  
+  }
 }
-

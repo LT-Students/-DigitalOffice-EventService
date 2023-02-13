@@ -11,7 +11,7 @@ public class EventRepository : IEventRepository
 {
   private readonly IDataProvider _provider;
 
-  public EventRepository (IDataProvider provider)
+  public EventRepository(IDataProvider provider)
   {
     _provider = provider;
   }
@@ -26,4 +26,3 @@ public class EventRepository : IEventRepository
     return await _provider.Events.FirstOrDefaultAsync(e => e.Id == eventId);
   }
 }
-

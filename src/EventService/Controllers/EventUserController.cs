@@ -6,16 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LT.DigitalOffice.EventService.Controllers;
 
-  [Route("[controller]")]
-  [ApiController]
-  public class EventUserController : ControllerBase
+[Route("[controller]")]
+[ApiController]
+public class EventUserController : ControllerBase
+{
+  [HttpPost("create")]
+  public async Task<OperationResultResponse<bool>> CreateAsync(
+    [FromServices] ICreateEventUserCommand command,
+    [FromBody] CreateEventUserRequest request)
   {
-    [HttpPost("create")]
-    public async Task<OperationResultResponse<bool>> CreateAsync(
-      [FromServices] ICreateEventUserCommand command,
-      [FromBody] CreateEventUserRequest request)
-    {
-      return await command.ExecuteAsync(request);
-    }
+    return await command.ExecuteAsync(request);
   }
-
+}

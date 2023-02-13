@@ -33,24 +33,6 @@ public class CreateEventUserCommand : ICreateEventUserCommand
   private readonly IEventRepository _eventRepository;
   private readonly IEmailService _emailService;
   private readonly IUserService _userService;
-
-  private async Task SendInviteEmailsAsync(List<Guid> userIds, string eventName)
-  {
-    List<UserData> usersData = await _userService.GetUsersDataAsync(userIds);
-
-    if (usersData is null || !usersData.Any())
-    {
-      return;
-    }
-
-    foreach (Guid userId in userIds)
-    {
-      await _emailService.SendAsync(
-        usersData.Find(x => x.Id == userId).Email,
-        "Invite to event",
-        $"You have been invited to event {eventName}");
-    }
-  }
   public CreateEventUserCommand(
     IAccessValidator accessValidator,
     IEventUserRepository repository,
@@ -72,6 +54,25 @@ public class CreateEventUserCommand : ICreateEventUserCommand
     _emailService = emailService;
     _userService = userService;
   }
+
+  private async Task SendInviteEmailsAsync(List<Guid> userIds, string eventName)
+  {
+    List<UserData> usersData = await _userService.GetUsersDataAsync(userIds);
+
+    if (usersData is null || !usersData.Any())
+    {
+      return;
+    }
+
+    foreach (UserData user in usersData)
+    {
+      await _emailService.SendAsync(
+        user.Email,
+        "Invite to event",
+        $"You have been invited to event {eventName}");
+    }
+  }
+
   public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request)
   {
     Guid senderId = _contextAccessor.HttpContext.GetUserId();
@@ -85,10 +86,10 @@ public class CreateEventUserCommand : ICreateEventUserCommand
     }
 
     if ((dbEvent.Access == AccessType.Closed && !await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers))
-        || !(dbEvent.Access == AccessType.Opened 
-          && (await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers) 
-            || (!await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers) 
-              && request.Users.Count == 1 
+        || !(dbEvent.Access == AccessType.Opened
+          && (await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers)
+            || (!await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers)
+              && request.Users.Count == 1
               && request.Users.Exists(x => x.UserId == senderId)))))
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);

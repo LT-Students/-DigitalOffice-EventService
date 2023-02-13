@@ -7,7 +7,7 @@ using LT.DigitalOffice.Kernel.Attributes;
 
 namespace LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 [AutoInject]
-	public interface IDbEventUserMapper
-  {
-    public List<DbEventUser> Map(CreateEventUserRequest request, AccessType access, Guid senderId);
-  }
+public interface IDbEventUserMapper
+{
+  public List<DbEventUser> Map(CreateEventUserRequest request, AccessType access, Guid senderId);
+}
