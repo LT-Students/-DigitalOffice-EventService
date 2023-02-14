@@ -8,5 +8,9 @@
     <ProjectReference Include="..\EventService.Models.Db\EventService.Models.Db.csproj" />
     <ProjectReference Include="..\EventService.Models.Dto\EventService.Models.Dto.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="obj\CategoryRepository.cs" />
+  </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 using LT.DigitalOffice.Kernel.Attributes;
