@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 
