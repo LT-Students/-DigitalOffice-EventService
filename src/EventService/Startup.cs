@@ -1,4 +1,7 @@
-﻿using EventService.Data.Provider.MsSql.Ef;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using EventService.Data.Provider.MsSql.Ef;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.EventService.Models.Dto.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
