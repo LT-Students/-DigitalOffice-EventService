@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
@@ -28,9 +29,9 @@ public class EventCategoryRepository : IEventCategoryRepository
     return dbEventCategory.Id;
   }
 
-  public async Task<bool> DoesExistAsync(Guid eventId, Guid categoryId)
+  public Task<bool> DoesExistAsync(List<Guid> userId, Guid eventId)
   {
-    return await _provider.EventsCategories.AnyAsync(ec => ec.EventId == eventId && ec.CategoryId == categoryId);
+    return _provider.EventsUsers.AsNoTracking().AnyAsync(eu => userId.Contains(eu.UserId) && eu.EventId == eventId);
   }
 
   public async Task<int> CountAsync(Guid eventId)

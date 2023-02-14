@@ -16,8 +16,8 @@ public class CategoryRepository : ICategoryRepository
     _provider = provider;
   }
 
-  public async Task<bool> DoesExistAsync(Guid categoryId)
+  public  Task<bool> DoesExistAsync(Guid categoryId)
   {
-    return await _provider.Categories.AnyAsync(c => c.Id == categoryId && c.IsActive);
+    return  _provider.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId && c.IsActive);
   }
 }
