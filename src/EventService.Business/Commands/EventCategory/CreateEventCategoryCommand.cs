@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using LT.DigitalOffice.EventService.Business.Commands.EventCategory.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
-using LT.DigitalOffice.EventService.Models.Dto.Requests;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
 using LT.DigitalOffice.EventService.Validation.EventCategory.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
@@ -17,7 +18,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.EventCategory;
 
-public class CreateEventCategoryCommand: ICreateEventCategoryCommand
+public class CreateEventCategoryCommand : ICreateEventCategoryCommand
 {
   private readonly IAccessValidator _accessValidator;
   private readonly IEventCategoryRepository _repository;
@@ -41,26 +42,28 @@ public class CreateEventCategoryCommand: ICreateEventCategoryCommand
     _responseCreator = responseCreator;
     _contextAccessor = contextAccessor;
   }
-  public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventCategoryRequest request)
+  public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventCategoryRequest request)
   {
-    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanyData))
+    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
     {
-      return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden);
+      return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }
+
+    request.CategoryIds = request.CategoryIds.Distinct().ToList();
 
     ValidationResult validationResult = await _validator.ValidateAsync(request);
 
     if (!validationResult.IsValid)
     {
-      return _responseCreator.CreateFailureResponse<Guid?>(
+      return _responseCreator.CreateFailureResponse<bool>(
         HttpStatusCode.BadRequest,
         validationResult.Errors.Select(vf => vf.ErrorMessage).ToList());
     }
 
-    DbEventCategory dbEventCategory = _mapper.Map(request);
+    List<DbEventCategory> dbEventCategory  = _mapper.Map(request);
     await _repository.CreateAsync(dbEventCategory);
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-    return new OperationResultResponse<Guid?>(body: dbEventCategory.Id);
+    return new OperationResultResponse<bool>(body: true);
   }
 }

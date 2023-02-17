@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
-using LT.DigitalOffice.EventService.Models.Dto.Requests;
 using LT.DigitalOffice.EventService.Business.Commands.EventCategory.Interfaces;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
 
 namespace LT.DigitalOffice.EventService.Controllers;
 
@@ -12,7 +12,7 @@ namespace LT.DigitalOffice.EventService.Controllers;
 public class EventCategoryController : ControllerBase
 {
   [HttpPost("create")]
-  public async Task<OperationResultResponse<Guid?>> CreateAsync(
+  public async Task<OperationResultResponse<bool>> CreateAsync(
     [FromServices] ICreateEventCategoryCommand command,
     [FromBody] CreateEventCategoryRequest request)
   {

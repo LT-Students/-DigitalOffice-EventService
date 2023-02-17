@@ -8,5 +8,5 @@ namespace LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
 [AutoInject]
 public interface ICreateEventUserCommand
 {
-  public Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request);
+  Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventUserRequest request);
 }

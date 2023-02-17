@@ -1,5 +1,6 @@
-﻿using LT.DigitalOffice.EventService.Models.Db;
-using LT.DigitalOffice.EventService.Models.Dto.Requests;
+﻿using System.Collections.Generic;
+using LT.DigitalOffice.EventService.Models.Db;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
 using LT.DigitalOffice.Kernel.Attributes;
 
 namespace LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
@@ -7,5 +8,5 @@ namespace LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 [AutoInject]
 public interface IDbEventCategoryMapper
 {
-  public DbEventCategory Map(CreateEventCategoryRequest request);
+  List<DbEventCategory> Map(CreateEventCategoryRequest request);
 }

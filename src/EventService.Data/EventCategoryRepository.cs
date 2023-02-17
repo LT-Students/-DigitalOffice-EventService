@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
@@ -16,25 +17,25 @@ public class EventCategoryRepository : IEventCategoryRepository
     _provider = provider;
   }
 
-  public async Task<Guid?> CreateAsync(DbEventCategory dbEventCategory)
+  public async Task<bool> CreateAsync(List<DbEventCategory> dbEventCategory)
   {
     if (dbEventCategory is null)
     {
-      return null;
+      return false;
     }
 
-    _provider.EventsCategories.Add(dbEventCategory);
+    _provider.EventsCategories.AddRange(dbEventCategory);
     await _provider.SaveAsync();
-    return dbEventCategory.Id;
+    return true;
   }
 
-  public Task<bool> DoesExistAsync(Guid eventId, Guid categoryId)
+  public Task<bool> DoesExistAsync(Guid eventId, List<Guid> categoryId)
   {
-    return _provider.EventsCategories.AsNoTracking().AnyAsync(ec => ec.EventId == eventId && ec.CategoryId == categoryId);
+    return _provider.EventsCategories.AsNoTracking().AnyAsync(ec => categoryId.Contains(ec.CategoryId) && ec.EventId == eventId);
   }
 
-  public async Task<int> CountAsync(Guid eventId)
+  public Task<int> CountAsync(Guid eventId)
   {
-    return await _provider.EventsCategories.CountAsync(ec => ec.EventId == eventId);
+    return _provider.EventsCategories.AsNoTracking().CountAsync(ec => ec.EventId == eventId);
   }
 }

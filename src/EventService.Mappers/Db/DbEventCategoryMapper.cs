@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
-using LT.DigitalOffice.EventService.Models.Dto.Requests;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
 using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
 
@@ -16,17 +18,17 @@ public class DbEventCategoryMapper : IDbEventCategoryMapper
     _contextAccessor = accessor;
   }
 
-  public DbEventCategory Map(CreateEventCategoryRequest request)
+  public List<DbEventCategory> Map(CreateEventCategoryRequest request)
   {
     return request is null
       ? null
-      : new DbEventCategory
+      : request.CategoryIds.Select(categoryId => new DbEventCategory
       {
         Id = Guid.NewGuid(),
         EventId = request.EventId,
-        CategoryId = request.CategoryId,
+        CategoryId = categoryId,
         CreatedBy = _contextAccessor.HttpContext.GetUserId(),
         CreatedAtUtc = DateTime.UtcNow
-      };
+      }).ToList();
   }
 }
