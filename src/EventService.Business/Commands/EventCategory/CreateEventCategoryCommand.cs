@@ -42,6 +42,7 @@ public class CreateEventCategoryCommand : ICreateEventCategoryCommand
     _responseCreator = responseCreator;
     _contextAccessor = contextAccessor;
   }
+
   public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventCategoryRequest request)
   {
     if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
