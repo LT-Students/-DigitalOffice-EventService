@@ -61,9 +61,16 @@ public class CreateEventCategoryCommand : ICreateEventCategoryCommand
         validationResult.Errors.Select(vf => vf.ErrorMessage).ToList());
     }
 
-    await _repository.CreateAsync(_mapper.Map(request));
+    OperationResultResponse<bool> response = new();
+    response.Body = await _repository.CreateAsync(_mapper.Map(request));
+    
+    if (!response.Body)
+    {
+      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+    }
+
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-    return new OperationResultResponse<bool>(body: true);
+    return response;
   }
 }

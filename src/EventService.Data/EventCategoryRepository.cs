@@ -26,6 +26,7 @@ public class EventCategoryRepository : IEventCategoryRepository
 
     _provider.EventsCategories.AddRange(dbEventCategories);
     await _provider.SaveAsync();
+
     return true;
   }
 
