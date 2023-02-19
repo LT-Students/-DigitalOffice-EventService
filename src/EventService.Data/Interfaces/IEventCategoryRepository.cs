@@ -11,5 +11,5 @@ public interface IEventCategoryRepository
 {
   Task<bool> CreateAsync(List<DbEventCategory> dbEventCategory);
   Task<bool> DoesExistAsync(Guid eventId, List<Guid> categoryId);
-  Task<int> CountAsync(Guid eventId);
+  Task<int> CountCategoriesAsync(Guid eventId);
 }

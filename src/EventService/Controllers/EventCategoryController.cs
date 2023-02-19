@@ -1,7 +1,6 @@
 ﻿using LT.DigitalOffice.Kernel.Responses;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using System;
 using LT.DigitalOffice.EventService.Business.Commands.EventCategory.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
 

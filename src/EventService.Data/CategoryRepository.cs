@@ -11,8 +11,7 @@ public class CategoryRepository : ICategoryRepository
 {
   private readonly IDataProvider _provider;
 
-  public CategoryRepository(
-    IDataProvider provider)
+  public CategoryRepository(IDataProvider provider)
   {
     _provider = provider;
   }

@@ -17,14 +17,14 @@ public class EventCategoryRepository : IEventCategoryRepository
     _provider = provider;
   }
 
-  public async Task<bool> CreateAsync(List<DbEventCategory> dbEventCategory)
+  public async Task<bool> CreateAsync(List<DbEventCategory> dbEventCategories)
   {
-    if (dbEventCategory is null)
+    if (dbEventCategories is null)
     {
       return false;
     }
 
-    _provider.EventsCategories.AddRange(dbEventCategory);
+    _provider.EventsCategories.AddRange(dbEventCategories);
     await _provider.SaveAsync();
     return true;
   }
@@ -34,7 +34,7 @@ public class EventCategoryRepository : IEventCategoryRepository
     return _provider.EventsCategories.AsNoTracking().AnyAsync(ec => categoryId.Contains(ec.CategoryId) && ec.EventId == eventId);
   }
 
-  public Task<int> CountAsync(Guid eventId)
+  public Task<int> CountCategoriesAsync(Guid eventId)
   {
     return _provider.EventsCategories.AsNoTracking().CountAsync(ec => ec.EventId == eventId);
   }
