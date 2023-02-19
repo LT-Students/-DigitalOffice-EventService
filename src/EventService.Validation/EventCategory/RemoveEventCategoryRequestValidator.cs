@@ -1,0 +1,25 @@
+﻿using FluentValidation;
+using LT.DigitalOffice.EventService.Data.Interfaces;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
+using LT.DigitalOffice.EventService.Validation.EventCategory.Interfaces;
+
+namespace LT.DigitalOffice.EventService.Validation.EventCategory;
+
+public class RemoveEventCategoryRequestValidator : AbstractValidator<RemoveEventCategoryRequest>, IRemoveEventCategoryRequestValidator
+{
+  public RemoveEventCategoryRequestValidator(
+    IEventRepository eventRepository,
+    ICategoryRepository categoryRepository,
+    IEventCategoryRepository eventCategoryRepository)
+  {
+    RuleFor(request => request.EventId)
+      .MustAsync(async (x, _) => await eventRepository.DoesExistAsync(x))
+      .WithMessage("This event doesn't exist");
+    RuleFor(request => request.EventCategoryIds)
+      .MustAsync(async (x, _) => await categoryRepository.DoesExistAsync(x))
+      .WithMessage("Some categories doesn't exist.");
+    RuleFor(request => request)
+      .MustAsync(async (x, _) => await eventCategoryRepository.DoesExistAsync(x.EventId, x.EventCategoryIds))
+      .WithMessage("No such categories in this event.");
+  }
+}
