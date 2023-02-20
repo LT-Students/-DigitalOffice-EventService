@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
-
-    <ItemGroup>
-        <ProjectReference Include="..\EventService.Data.Provider.MsSql.Ef\EventService.Data.Provider.MsSql.Ef.csproj" />
-        <ProjectReference Include="..\EventService.Data.Provider\EventService.Data.Provider.csproj" />
-        <ProjectReference Include="..\EventService.Models.Db\EventService.Models.Db.csproj" />
-        <ProjectReference Include="..\EventService.Models.Dto\EventService.Models.Dto.csproj" />
-    </ItemGroup>
+  <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
+  
+  <ItemGroup>
+    <ProjectReference Include="..\EventService.Data.Provider.MsSql.Ef\EventService.Data.Provider.MsSql.Ef.csproj" />
+    <ProjectReference Include="..\EventService.Data.Provider\EventService.Data.Provider.csproj" />
+    <ProjectReference Include="..\EventService.Models.Db\EventService.Models.Db.csproj" />
+    <ProjectReference Include="..\EventService.Models.Dto\EventService.Models.Dto.csproj" />
+  </ItemGroup>
 
 </Project>

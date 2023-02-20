@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="$(ProjectDir)..\..\Common.Configurations.targets"/>
+  <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
+  
+  <ItemGroup>
+    <ProjectReference Include="..\EventService.Broker\EventService.Broker.csproj" />
+    <ProjectReference Include="..\EventService.Data\EventService.Data.csproj" />
+    <ProjectReference Include="..\EventService.Models.Dto\EventService.Models.Dto.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\EventService.Broker\EventService.Broker.csproj"/>
-        <ProjectReference Include="..\EventService.Data\EventService.Data.csproj"/>
-        <ProjectReference Include="..\EventService.Models.Dto\EventService.Models.Dto.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Option\Interfaces\"/>
-        <Folder Include="Question\Interfaces\"/>
-    </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Option\Interfaces\" />
+    <Folder Include="Question\Interfaces\" />
+  </ItemGroup>
 
 </Project>
