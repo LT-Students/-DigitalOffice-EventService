@@ -53,6 +53,7 @@ public class RemoveEventCategoryCommand : IRemoveEventCategoryCommand
     }
 
     await _repository.RemoveAsync(request.EventId, request.EventCategoryIds);
+    _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
 
     return new OperationResultResponse<bool> { Body = true };
   }

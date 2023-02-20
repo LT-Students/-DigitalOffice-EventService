@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
-using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.EventService.Data;
@@ -18,20 +17,19 @@ public class EventCategoryRepository : IEventCategoryRepository
     _provider = provider;
   }
 
-  public async Task<bool> DoesExistAsync(Guid eventId, List<Guid> categoryIds)
+  public bool DoesExistAsync(Guid eventId, List<Guid> categoryIds)
   {
-    return await _provider.EventsCategories.AsNoTracking().AnyAsync(ec => categoryIds.Contains(ec.CategoryId) && ec.EventId == eventId);
+    return categoryIds.All(categoryId => _provider.EventsCategories.AnyAsync(ec => ec.CategoryId == categoryId && ec.EventId == eventId).Result);
   }
 
   public async Task<bool> RemoveAsync(Guid eventId, List<Guid> categoryIds)
   {
-    if (categoryIds is null)
+    if (categoryIds is null || !categoryIds.Any())
     {
       return false;
     }
 
-    IQueryable<DbEventCategory> eventCategories = _provider.EventsCategories.Where(ec => categoryIds.Contains(ec.CategoryId) && ec.EventId == eventId);
-    _provider.EventsCategories.RemoveRange(eventCategories);
+    _provider.EventsCategories.RemoveRange(_provider.EventsCategories.Where(ec => categoryIds.Contains(ec.CategoryId) && ec.EventId == eventId));
     await _provider.SaveAsync();
 
     return true;

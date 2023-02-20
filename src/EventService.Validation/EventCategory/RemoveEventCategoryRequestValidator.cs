@@ -14,12 +14,16 @@ public class RemoveEventCategoryRequestValidator : AbstractValidator<RemoveEvent
   {
     RuleFor(request => request.EventId)
       .MustAsync(async (x, _) => await eventRepository.DoesExistAsync(x))
-      .WithMessage("This event doesn't exist");
+      .WithMessage("This event doesn't exist.");
+
     RuleFor(request => request.EventCategoryIds)
-      .MustAsync(async (x, _) => await categoryRepository.DoesExistAsync(x))
+      .NotEmpty()
+      .WithMessage("There are no categories to delete.")
+      .Must(categoryRepository.DoesExistAllAsync)
       .WithMessage("Some categories doesn't exist.");
+
     RuleFor(request => request)
-      .MustAsync(async (x, _) => await eventCategoryRepository.DoesExistAsync(x.EventId, x.EventCategoryIds))
-      .WithMessage("No such categories in this event.");
+      .Must(x => eventCategoryRepository.DoesExistAsync(x.EventId, x.EventCategoryIds))
+      .WithMessage("This event doesn't belong to all categories in the list.");
   }
 }
