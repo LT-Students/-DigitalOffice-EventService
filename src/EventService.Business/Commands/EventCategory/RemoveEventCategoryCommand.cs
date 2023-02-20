@@ -61,6 +61,6 @@ public class RemoveEventCategoryCommand : IRemoveEventCategoryCommand
     }
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
 
-    return new OperationResultResponse<bool> { Body = true };
+    return response;
   }
 }
