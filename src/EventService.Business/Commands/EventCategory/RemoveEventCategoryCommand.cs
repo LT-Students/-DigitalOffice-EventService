@@ -52,7 +52,10 @@ public class RemoveEventCategoryCommand : IRemoveEventCategoryCommand
         validationResult.Errors.Select(er => er.ErrorMessage).ToList());
     }
 
-    await _repository.RemoveAsync(request.EventId, request.EventCategoryIds);
+    if (!await _repository.RemoveAsync(request.EventId, request.EventCategoryIds))
+    {
+      return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.NotFound);
+    }
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
 
     return new OperationResultResponse<bool> { Body = true };
