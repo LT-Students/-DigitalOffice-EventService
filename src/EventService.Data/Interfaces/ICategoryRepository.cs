@@ -8,5 +8,5 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces;
 [AutoInject]
 public interface ICategoryRepository
 {
-  Task<bool> DoesExistAsync(List<Guid> categoryId);
+  public bool DoesExistAllAsync(List<Guid> categoryIds);
 }

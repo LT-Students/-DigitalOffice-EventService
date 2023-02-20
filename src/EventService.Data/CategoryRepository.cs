@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
@@ -16,8 +17,8 @@ public class CategoryRepository : ICategoryRepository
     _provider = provider;
   }
 
-  public Task<bool> DoesExistAsync(List<Guid> categoryId)
+  public bool DoesExistAllAsync(List<Guid> categoryIds)
   {
-    return _provider.Categories.AsNoTracking().AnyAsync(c => categoryId.Contains(c.Id) && c.IsActive);
+    return categoryIds.All(categoryId => _provider.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
   }
 }
