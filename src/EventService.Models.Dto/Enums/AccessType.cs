@@ -1,7 +1,8 @@
-﻿namespace LT.DigitalOffice.EventService.Models.Dto.Enums;
-
-public enum AccessType
+﻿namespace LT.DigitalOffice.EventService.Models.Dto.Enums
 {
-  Opened,
-  Closed
+  public enum AccessType
+  {
+    Opened,
+    Closed
+  }
 }

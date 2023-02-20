@@ -5,8 +5,8 @@ using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
 using LT.DigitalOffice.Kernel.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LT.DigitalOffice.EventService.Controllers;
-
+namespace LT.DigitalOffice.EventService.Controllers
+{
   [Route("[controller]")]
   [ApiController]
   public class EventUserController : ControllerBase
@@ -19,4 +19,4 @@ namespace LT.DigitalOffice.EventService.Controllers;
       return await command.ExecuteAsync(request);
     }
   }
-
+}

@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
+    <Import Project="$(ProjectDir)..\..\Common.Configurations.targets"/>
 
-  <ItemGroup>
-    <Folder Include="Responses" />
-    <Folder Include="Responses\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Responses"/>
+        <Folder Include="Responses\"/>
+    </ItemGroup>
 
 </Project>

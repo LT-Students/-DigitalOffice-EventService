@@ -5,25 +5,25 @@ using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 
-namespace LT.DigitalOffice.EventService.Data;
-
-public class EventRepository : IEventRepository
+namespace LT.DigitalOffice.EventService.Data
 {
-  private readonly IDataProvider _provider;
-
-  public EventRepository (IDataProvider provider)
+  public class EventRepository : IEventRepository
   {
-    _provider = provider;
-  }
+    private readonly IDataProvider _provider;
 
-  public async Task<bool> IsEventExist(Guid eventId)
-  {
-    return await _provider.Events.AnyAsync(e => e.Id == eventId);
-  }
+    public EventRepository(IDataProvider provider)
+    {
+      _provider = provider;
+    }
 
-  public async Task<DbEvent> GetAsync(Guid eventId)
-  {
-    return await _provider.Events.FirstOrDefaultAsync(e => e.Id == eventId);
+    public async Task<bool> IsEventExist(Guid eventId)
+    {
+      return await _provider.Events.AnyAsync(e => e.Id == eventId);
+    }
+
+    public async Task<DbEvent> GetAsync(Guid eventId)
+    {
+      return await _provider.Events.FirstOrDefaultAsync(e => e.Id == eventId);
+    }
   }
 }
-

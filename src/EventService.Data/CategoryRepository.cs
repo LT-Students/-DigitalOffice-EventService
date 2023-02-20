@@ -5,10 +5,10 @@ using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 
-namespace LT.DigitalOffice.EventService.Data;
-
-public class CategoryRepository : ICategoryRepository
+namespace LT.DigitalOffice.EventService.Data
 {
+  public class CategoryRepository : ICategoryRepository
+  {
     private readonly IDataProvider _provider;
 
     public CategoryRepository(IDataProvider provider)
@@ -16,11 +16,11 @@ public class CategoryRepository : ICategoryRepository
       _provider = provider;
     }
 
-    public async Task<bool> IsCategoryAddedAsync(Guid userId)
-    {
-      return await _provider.Categories.AnyAsync(c => c.Id == userId);
+    public async Task<bool> IsCategoryExist(Guid eventId)
+    { 
+      return await _provider.Categories.AnyAsync(e => e.Id == eventId);
     }
-    
+
     public async Task<Guid?> CreateAsync(DbCategory dbCategory)
     {
       if (dbCategory is null)
@@ -33,4 +33,5 @@ public class CategoryRepository : ICategoryRepository
 
       return dbCategory.Id;
     }
+  }
 }

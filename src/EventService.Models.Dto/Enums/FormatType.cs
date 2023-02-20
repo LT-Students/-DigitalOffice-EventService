@@ -1,7 +1,8 @@
-﻿namespace LT.DigitalOffice.EventService.Models.Dto.Enums;
-
-public enum FormatType
+﻿namespace LT.DigitalOffice.EventService.Models.Dto.Enums
 {
-  Online,
-  Offline
+  public enum FormatType
+  {
+    Online,
+    Offline
+  }
 }

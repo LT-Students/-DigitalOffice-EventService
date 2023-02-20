@@ -1,4 +1,7 @@
-﻿using EventService.Data.Provider.MsSql.Ef;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using EventService.Data.Provider.MsSql.Ef;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.EventService.Models.Dto.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
@@ -18,41 +21,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace EventService
 {
   public class Startup : BaseApiInfo
   {
-    private readonly BaseServiceInfoConfig _serviceInfoConfig;
-    private readonly RabbitMqConfig _rabbitMqConfig;
-
     public const string CorsPolicyName = "LtDoCorsPolicy";
-    public IConfiguration Configuration { get; }
-
-    private void ConfigureMassTransit(IServiceCollection services)
-    {
-      (string username, string password) = RabbitMqCredentialsHelper
-        .Get(_rabbitMqConfig, _serviceInfoConfig);
-
-      services.AddMassTransit(busConfigurator =>
-      {
-        busConfigurator.UsingRabbitMq((context, cfg) =>
-        {
-          cfg.Host(_rabbitMqConfig.Host, "/", host =>
-          {
-            host.Username(username);
-            host.Password(password);
-          });
-        });
-
-        busConfigurator.AddRequestClients(_rabbitMqConfig);
-      });
-
-      services.AddMassTransitHostedService();
-    }
+    private readonly RabbitMqConfig _rabbitMqConfig;
+    private readonly BaseServiceInfoConfig _serviceInfoConfig;
 
     public Startup(IConfiguration configuration)
     {
@@ -72,6 +48,30 @@ namespace EventService
       ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";
     }
 
+    public IConfiguration Configuration { get; }
+
+    private void ConfigureMassTransit(IServiceCollection services)
+    {
+      (var username, var password) = RabbitMqCredentialsHelper
+        .Get(_rabbitMqConfig, _serviceInfoConfig);
+
+      services.AddMassTransit(busConfigurator =>
+      {
+        busConfigurator.UsingRabbitMq((context, cfg) =>
+        {
+          cfg.Host(_rabbitMqConfig.Host, "/", host =>
+          {
+            host.Username(username);
+            host.Password(password);
+          });
+        });
+
+        busConfigurator.AddRequestClients(_rabbitMqConfig);
+      });
+
+      services.AddMassTransitHostedService();
+    }
+
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddCors(options =>
@@ -81,13 +81,13 @@ namespace EventService
           builder =>
           {
             builder
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+              .AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
           });
       });
 
-      string dbConnStr = ConnectionStringHandler.Get(Configuration);
+      var dbConnStr = ConnectionStringHandler.Get(Configuration);
 
       services.AddDbContext<EventServiceDbContext>(options =>
       {
@@ -110,9 +110,9 @@ namespace EventService
 
       services.AddControllers()
         .AddJsonOptions(options =>
-       {
-         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-       })
+        {
+          options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        })
         .AddNewtonsoftJson();
     }
 
@@ -135,17 +135,16 @@ namespace EventService
       app.UseEndpoints(endpoints =>
       {
         endpoints.MapControllers().RequireCors(CorsPolicyName);
-        endpoints.MapHealthChecks($"/{_serviceInfoConfig.Id}/hc", new HealthCheckOptions
-        {
-          ResultStatusCodes = new Dictionary<HealthStatus, int>
+        endpoints.MapHealthChecks($"/{_serviceInfoConfig.Id}/hc",
+          new HealthCheckOptions
           {
-            { HealthStatus.Unhealthy, 200 },
-            { HealthStatus.Healthy, 200 },
-            { HealthStatus.Degraded, 200 },
-          },
-          Predicate = check => check.Name != "masstransit-bus",
-          ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
+            ResultStatusCodes = new Dictionary<HealthStatus, int>
+            {
+              { HealthStatus.Unhealthy, 200 }, { HealthStatus.Healthy, 200 }, { HealthStatus.Degraded, 200 }
+            },
+            Predicate = check => check.Name != "masstransit-bus",
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+          });
       });
     }
   }

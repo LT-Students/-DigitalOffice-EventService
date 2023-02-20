@@ -6,25 +6,23 @@ using LT.DigitalOffice.Kernel.BrokerSupport.Helpers;
 using LT.DigitalOffice.Models.Broker.Common;
 using MassTransit;
 
-namespace LT.DigitalOffice.EventService.Broker.Requests;
-
-public class UserService : IUserService
+namespace LT.DigitalOffice.EventService.Broker.Requests
 {
-  private readonly IRequestClient<ICheckUsersExistence> _checkUsersExistence;
-
-  public UserService(IRequestClient<ICheckUsersExistence> checkUsersExistence)
+  public class UserService : IUserService
   {
-    _checkUsersExistence = checkUsersExistence;
-  }
+    private readonly IRequestClient<ICheckUsersExistence> _checkUsersExistence;
 
-  public async Task<List<Guid>> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null)
-  {
-    return (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
-        _checkUsersExistence,
-        ICheckUsersExistence.CreateObj(usersIds),
-        errors))
-      ?.UserIds;
+    public UserService(IRequestClient<ICheckUsersExistence> checkUsersExistence)
+    {
+      _checkUsersExistence = checkUsersExistence;
+    }
 
+    public async Task<List<Guid>> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null)
+    {
+      return (await _checkUsersExistence.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
+          ICheckUsersExistence.CreateObj(usersIds),
+          errors))
+        ?.UserIds;
+    }
   }
 }
-

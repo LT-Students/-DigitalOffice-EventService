@@ -5,8 +5,8 @@ using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 
-namespace LT.DigitalOffice.EventService.Data;
-
+namespace LT.DigitalOffice.EventService.Data
+{
   public class EventUserRepository : IEventUserRepository
   {
     private readonly IDataProvider _provider;
@@ -34,4 +34,4 @@ namespace LT.DigitalOffice.EventService.Data;
       return dbEventUser.Id;
     }
   }
-
+}

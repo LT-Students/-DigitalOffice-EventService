@@ -5,8 +5,8 @@ using LT.DigitalOffice.EventService.Models.Dto.Requests.EventsUsers;
 using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
 
-namespace LT.DigitalOffice.EventService.Mappers.Db;
-
+namespace LT.DigitalOffice.EventService.Mappers.Db
+{
   public class DbEventUserMapper : IDbEventUserMapper
   {
     private readonly IHttpContextAccessor _contextAccessor;
@@ -32,4 +32,4 @@ namespace LT.DigitalOffice.EventService.Mappers.Db;
         };
     }
   }
-
+}

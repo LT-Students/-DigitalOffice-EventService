@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
+    <Import Project="$(ProjectDir)..\..\Common.Configurations.targets"/>
 
-  <ItemGroup>
-    <ProjectReference Include="..\EventService.Broker\EventService.Broker.csproj" />
-    <ProjectReference Include="..\EventService.Data\EventService.Data.csproj" />
-    <ProjectReference Include="..\EventService.Mappers\EventService.Mappers.csproj" />
-    <ProjectReference Include="..\EventService.Validation\EventService.Validation.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\EventService.Broker\EventService.Broker.csproj"/>
+        <ProjectReference Include="..\EventService.Data\EventService.Data.csproj"/>
+        <ProjectReference Include="..\EventService.Mappers\EventService.Mappers.csproj"/>
+        <ProjectReference Include="..\EventService.Validation\EventService.Validation.csproj"/>
+    </ItemGroup>
 
 </Project>
