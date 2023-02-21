@@ -11,7 +11,7 @@ namespace LT.DigitalOffice.EventService.Controllers
   public class EventCategoryController : ControllerBase
   {
     [HttpDelete("remove")]
-    public async Task<OperationResultResponse<bool>> DeleteAsync(
+    public async Task<OperationResultResponse<bool>> RemoveAsync(
     [FromServices] IRemoveEventCategoryCommand command,
     [FromBody] RemoveEventCategoryRequest request)
     {

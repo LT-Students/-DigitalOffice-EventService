@@ -18,6 +18,7 @@ public class CategoryRepository : ICategoryRepository
 
   public bool DoesExistAllAsync(List<Guid> categoryIds)
   {
-    return categoryIds.All(categoryId => _provider.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
+    return categoryIds.All(categoryId =>
+      _provider.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
   }
 }

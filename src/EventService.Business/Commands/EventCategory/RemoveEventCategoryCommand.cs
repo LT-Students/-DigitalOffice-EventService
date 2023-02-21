@@ -59,6 +59,7 @@ public class RemoveEventCategoryCommand : IRemoveEventCategoryCommand
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
     }
+
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
 
     return response;

@@ -9,5 +9,6 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces;
 public interface IEventCategoryRepository
 {
   bool DoesExistAsync(Guid eventId, List<Guid> categoryIds);
+
   Task<bool> RemoveAsync(Guid eventId, List<Guid> categoryIds);
 }

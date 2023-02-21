@@ -19,7 +19,8 @@ public class EventCategoryRepository : IEventCategoryRepository
 
   public bool DoesExistAsync(Guid eventId, List<Guid> categoryIds)
   {
-    return categoryIds.All(categoryId => _provider.EventsCategories.AnyAsync(ec => ec.CategoryId == categoryId && ec.EventId == eventId).Result);
+    return categoryIds.All(categoryId =>
+      _provider.EventsCategories.AnyAsync(ec => ec.CategoryId == categoryId && ec.EventId == eventId).Result);
   }
 
   public async Task<bool> RemoveAsync(Guid eventId, List<Guid> categoryIds)
@@ -29,7 +30,8 @@ public class EventCategoryRepository : IEventCategoryRepository
       return false;
     }
 
-    _provider.EventsCategories.RemoveRange(_provider.EventsCategories.Where(ec => categoryIds.Contains(ec.CategoryId) && ec.EventId == eventId));
+    _provider.EventsCategories.RemoveRange(
+      _provider.EventsCategories.Where(ec => categoryIds.Contains(ec.CategoryId) && ec.EventId == eventId));
     await _provider.SaveAsync();
 
     return true;
