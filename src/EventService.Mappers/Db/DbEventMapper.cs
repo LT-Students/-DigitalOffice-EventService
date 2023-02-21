@@ -18,13 +18,11 @@ public class DbEventMapper : IDbEventMapper
 
   public DbEvent Map(CreateEventRequest request)
   {
-    Guid eventId = Guid.NewGuid();
-
     return request is null
       ? null
       : new DbEvent
       {
-        Id = eventId,
+        Id = Guid.NewGuid(),
         Name = request.Name,
         Address = request.Address,
         Description = request.Description,

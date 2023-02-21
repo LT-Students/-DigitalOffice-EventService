@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 
 namespace LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 
@@ -14,4 +16,6 @@ public record CreateEventRequest
   public DateTime Date { get; set; }
   public FormatType Format { get; set; }
   public AccessType Access { get; set; }
+  public List<UserRequest> Users { get; set; }
+  public List<Guid> CategoryIds { get; set; }
 }

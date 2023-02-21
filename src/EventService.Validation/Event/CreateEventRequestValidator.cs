@@ -24,11 +24,11 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
     });
 
     RuleFor(ev => ev.Address)
-      .MaximumLength(150)
+      .MaximumLength(400)
       .WithMessage("Address should not exceed maximum length of 400 symbols");
 
     RuleFor(ev => ev.Date)
-      .Must(d => d >= DateTime.UtcNow)
+      .Must(d => d > DateTime.UtcNow)
       .WithMessage("The event date must be later than the date the event was created");
   }
 }

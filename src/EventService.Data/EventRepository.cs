@@ -16,11 +16,17 @@ public class EventRepository : IEventRepository
     _provider = provider;
   }
 
-  public Task CreateAsync(DbEvent dbEvent)
+  public async Task<bool> CreateAsync(DbEvent dbEvent)
   {
-    _provider.Events.Add(dbEvent);
+    if (dbEvent == null)
+    {
+      return false;
+    }
 
-    return _provider.SaveAsync();
+    _provider.Events.Add(dbEvent);
+    await _provider.SaveAsync();
+
+    return true;
   }
   public Task<bool> DoesExistAsync(Guid eventId)
   {

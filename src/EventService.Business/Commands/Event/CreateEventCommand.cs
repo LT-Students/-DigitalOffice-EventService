@@ -53,7 +53,6 @@ public class CreateEventCommand : ICreateEventCommand
     }
 
     ValidationResult validationResult = await _validator.ValidateAsync(request);
-
     if (!validationResult.IsValid)
     {
       return ResponseCreatorStatic.CreateResponse<Guid?>(
@@ -65,10 +64,8 @@ public class CreateEventCommand : ICreateEventCommand
 
     await _repository.CreateAsync(dbEvent);
 
-    OperationResultResponse<Guid?> response = new(body: dbEvent.Id);
-
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-    return response;
+    return new OperationResultResponse<Guid?>(body: dbEvent.Id);
   }
 }

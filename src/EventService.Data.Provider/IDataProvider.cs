@@ -4,7 +4,7 @@ using LT.DigitalOffice.Kernel.EFSupport.Provider;
 using LT.DigitalOffice.Kernel.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventService.Data.Provider;
+namespace LT.DigitalOffice.EventService.Data.Provider;
 
 [AutoInject(InjectType.Scoped)]
 public interface IDataProvider : IBaseDataProvider
