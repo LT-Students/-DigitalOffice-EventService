@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
+using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.EventService.Data;
@@ -17,19 +18,13 @@ public class EventCategoryRepository : IEventCategoryRepository
     _provider = provider;
   }
 
-  public bool DoesExistAsync(Guid eventId, List<Guid> categoryIds)
   {
-    return categoryIds.All(categoryId =>
-      _provider.EventsCategories.AnyAsync(ec => ec.CategoryId == categoryId && ec.EventId == eventId).Result);
-  }
-
-  public async Task<bool> RemoveAsync(Guid eventId, List<Guid> categoryIds)
-  {
-    if (categoryIds is null || !categoryIds.Any())
+    if (dbEventCategories is null)
     {
       return false;
     }
 
+    _provider.EventsCategories.AddRange(dbEventCategories);
     _provider.EventsCategories.RemoveRange(
       _provider.EventsCategories.Where(ec => categoryIds.Contains(ec.CategoryId) && ec.EventId == eventId));
     await _provider.SaveAsync();
