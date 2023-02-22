@@ -10,7 +10,9 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces;
 public interface IEventCategoryRepository
 {
   Task<bool> CreateAsync(List<DbEventCategory> dbEventCategory);
+
   bool DoesExistAsync(Guid eventId, List<Guid> categoryIds);
+
   Task<int> CountCategoriesAsync(Guid eventId);
 
   Task<bool> RemoveAsync(Guid eventId, List<Guid> categoryIds);
