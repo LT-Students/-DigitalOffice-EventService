@@ -9,6 +9,6 @@ namespace LT.DigitalOffice.EventService.Business.Commands.Category.Interfaces
   [AutoInject]
   public interface ICreateCategoryCommand
   {
-    public Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateCategoryRequest request);
+    Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateCategoryRequest request);
   }
 }

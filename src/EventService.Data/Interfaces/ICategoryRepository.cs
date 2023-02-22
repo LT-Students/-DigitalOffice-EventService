@@ -8,7 +8,7 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces
   [AutoInject] 
   public interface ICategoryRepository
   {
-    public Task<bool> IsCategoryExist(Guid eventId);
+    Task<bool> IsCategoryExist(Guid eventId);
     Task<Guid?> CreateAsync(DbCategory dbCategory);
   }
 }

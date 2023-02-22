@@ -16,9 +16,9 @@ namespace LT.DigitalOffice.EventService.Data
       _provider = provider;
     }
 
-    public async Task<bool> IsCategoryExist(Guid eventId)
+    public Task<bool> IsCategoryExist(Guid eventId)
     { 
-      return await _provider.Categories.AnyAsync(e => e.Id == eventId);
+      return _provider.Categories.AnyAsync(e => e.Id == eventId);
     }
 
     public async Task<Guid?> CreateAsync(DbCategory dbCategory)
