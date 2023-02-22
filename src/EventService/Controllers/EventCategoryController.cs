@@ -11,10 +11,15 @@ namespace LT.DigitalOffice.EventService.Controllers;
 public class EventCategoryController : ControllerBase
 {
   [HttpPost("create")]
+  [HttpPost("create")]
   public async Task<OperationResultResponse<bool>> CreateAsync(
     [FromServices] ICreateEventCategoryCommand command,
     [FromBody] CreateEventCategoryRequest request)
-    [HttpDelete("remove")]
+  {
+    return await command.ExecuteAsync(request);
+  }
+
+  [HttpDelete("remove")]
     public async Task<OperationResultResponse<bool>> RemoveAsync(
     [FromServices] IRemoveEventCategoryCommand command,
     [FromBody] RemoveEventCategoryRequest request)
