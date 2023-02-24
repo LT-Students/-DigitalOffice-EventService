@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using LT.DigitalOffice.EventService.Models.Db;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
-using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -19,6 +20,26 @@ public class CategoryRepository : ICategoryRepository
 
   public bool DoesExistAllAsync(List<Guid> categoryIds)
   {
-    return categoryIds.All(categoryId => _provider.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
+    return categoryIds.All(categoryId =>
+      _provider.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
+  }
+
+  public Task<bool> IsCategoryExist(Guid eventId)
+  { 
+    return _provider.Categories.AnyAsync(e => e.Id == eventId);
+  }
+
+  public async Task<Guid?> CreateAsync(DbCategory dbCategory)
+  {
+    if (dbCategory is null)
+    {
+      return null;
+    }
+
+    _provider.Categories.Add(dbCategory);
+    await _provider.SaveAsync();
+
+    return dbCategory.Id;
   }
 }
+
