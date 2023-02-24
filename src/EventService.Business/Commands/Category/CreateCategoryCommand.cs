@@ -24,7 +24,6 @@ public class CreateCategoryCommand : ICreateCategoryCommand
   private readonly IDbCategoryMapper _mapper;
   private readonly ICategoryRepository _repository;
   private readonly IResponseCreator _responseCreator;
-  private IRequestClient<CreateCategoryRequest> _request;
   private readonly ICreateCategoryValidator _validator;
 
   public CreateCategoryCommand(
