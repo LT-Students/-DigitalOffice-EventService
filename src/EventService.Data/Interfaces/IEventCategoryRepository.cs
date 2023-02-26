@@ -7,8 +7,9 @@ using LT.DigitalOffice.Kernel.Attributes;
 namespace LT.DigitalOffice.EventService.Data.Interfaces;
 
 [AutoInject]
-public interface IEventUserRepository
+public interface IEventCategoryRepository
 {
-  Task<bool> DoesExistAsync(List<Guid> userId, Guid eventId);
-  Task<bool> CreateAsync(List<DbEventUser> dbEventUsers);
+  Task<bool> CreateAsync(List<DbEventCategory> dbEventCategory);
+  bool DoesExistAsync(Guid eventId, List<Guid> categoryIds);
+  Task<int> CountCategoriesAsync(Guid eventId);
 }

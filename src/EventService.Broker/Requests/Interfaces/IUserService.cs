@@ -9,6 +9,6 @@ namespace LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 [AutoInject]
 public interface IUserService
 {
-  public Task<bool> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null);
-  public Task<List<UserData>> GetUsersDataAsync(List<Guid> users);
+  Task<bool> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null);
+  Task<List<UserData>> GetUsersDataAsync(List<Guid> users);
 }
