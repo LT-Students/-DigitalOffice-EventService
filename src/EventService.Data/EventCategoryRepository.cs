@@ -36,21 +36,21 @@ public class EventCategoryRepository : IEventCategoryRepository
     return _provider.EventsCategories.AsNoTracking().CountAsync(ec => ec.EventId == eventId);
   }
 
-  public bool DoesExistAsync(Guid eventId, List<Guid> categoryIds)
+  public bool DoesExistAsync(Guid eventId, List<Guid> categoriesIds)
   {
-    return categoryIds.All(categoryId =>
+    return categoriesIds.All(categoryId =>
       _provider.EventsCategories.AnyAsync(ec => ec.CategoryId == categoryId && ec.EventId == eventId).Result);
   }
 
-  public async Task<bool> RemoveAsync(Guid eventId, List<Guid> categoryIds)
+  public async Task<bool> RemoveAsync(Guid eventId, List<Guid> categoriesIds)
   {
-    if (categoryIds is null || !categoryIds.Any())
+    if (categoriesIds is null || !categoriesIds.Any())
     {
       return false;
     }
 
     _provider.EventsCategories.RemoveRange(
-      _provider.EventsCategories.Where(ec => categoryIds.Contains(ec.CategoryId) && ec.EventId == eventId));
+      _provider.EventsCategories.Where(ec => categoriesIds.Contains(ec.CategoryId) && ec.EventId == eventId));
     await _provider.SaveAsync();
 
     return true;
