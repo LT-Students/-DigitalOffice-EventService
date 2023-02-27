@@ -17,5 +17,13 @@ public class EventCategoryController : ControllerBase
   {
     return await command.ExecuteAsync(request);
   }
+
+  [HttpDelete("remove")]
+    public async Task<OperationResultResponse<bool>> RemoveAsync(
+    [FromServices] IRemoveEventCategoryCommand command,
+    [FromBody] RemoveEventCategoryRequest request)
+  {
+    return await command.ExecuteAsync(request);
+  }
 }
 
