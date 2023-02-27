@@ -23,6 +23,7 @@ namespace LT.DigitalOffice.EventService.Mappers.Db
         : new DbCategory
         {
           Id = Guid.NewGuid(),
+          IsActive = true,
           Name = request.Name,
           Color = request.Color,
           CreatedBy = _contextAccessor.HttpContext.GetUserId(),
