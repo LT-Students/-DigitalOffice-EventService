@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.EventService.Data;
@@ -33,5 +36,21 @@ public class EventUserRepository : IEventUserRepository
     await _provider.SaveAsync();
 
     return true;
+  }
+
+  public Task<List<DbEventUser>> FindAsync(
+    Guid eventId,
+    FindEventUsersFilter filter,
+    CancellationToken cancellationToken)
+  {
+    IQueryable<DbEventUser> eventUsersQuery = _provider.EventsUsers.Where(eu =>
+      eu.EventId == eventId).AsQueryable();
+
+    if (filter.Status != null) 
+    {
+      eventUsersQuery = eventUsersQuery.Where(s=> s.Status== filter.Status);
+    }
+
+    return eventUsersQuery.ToListAsync(cancellationToken: cancellationToken);
   }
 }

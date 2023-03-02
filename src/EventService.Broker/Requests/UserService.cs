@@ -16,13 +16,16 @@ public class UserService : IUserService
 {
   private readonly IRequestClient<ICheckUsersExistence> _rcCheckUserExistence;
   private readonly IRequestClient<IGetUsersDataRequest> _rcGetUsersData;
+  private readonly IRequestClient<IFilteredUsersDataRequest> _rcFilteredUsersData;
 
   public UserService(
     IRequestClient<ICheckUsersExistence> rcCheckUserExistence,
-    IRequestClient<IGetUsersDataRequest> rcGetUsersData)
+    IRequestClient<IGetUsersDataRequest> rcGetUsersData,
+    IRequestClient<IFilteredUsersDataRequest> rcFilteredUsersData)
   {
     _rcCheckUserExistence = rcCheckUserExistence;
     _rcGetUsersData = rcGetUsersData;
+    _rcFilteredUsersData = rcFilteredUsersData;
   }
 
   public async Task<bool> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null)
@@ -50,5 +53,21 @@ public class UserService : IUserService
     return (await _rcGetUsersData.ProcessRequest<IGetUsersDataRequest, IGetUsersDataResponse>(
       IGetUsersDataRequest.CreateObj(usersIds)))
       ?.UsersData;
+  }
+
+  public async Task<IFilteredUsersDataResponse> FilteredUsersDataAsync(
+    List<Guid> usersIds, 
+    int skipCount = 0, 
+    int takeCount = 1, 
+    bool? ascendingSort = null, 
+    string fullNameIncludeSubstring = null)
+  {
+    return await _rcFilteredUsersData.ProcessRequest<IFilteredUsersDataRequest, IFilteredUsersDataResponse>(
+      IFilteredUsersDataRequest.CreateObj(
+        usersIds: usersIds, 
+        skipCount: skipCount, 
+        takeCount: takeCount, 
+        ascendingSort: ascendingSort, 
+        fullNameIncludeSubstring: fullNameIncludeSubstring));
   }
 }
