@@ -30,7 +30,7 @@ public class EventRepository : IEventRepository
   }
   public Task<bool> DoesExistAsync(Guid eventId)
   {
-    return _provider.Events.AsNoTracking().AnyAsync(e => e.Id == eventId);
+    return _provider.Events.AsNoTracking().AnyAsync(e => e.Id == eventId && e.IsActive);
   }
 
   public async Task<DbEvent> GetAsync(Guid eventId)
