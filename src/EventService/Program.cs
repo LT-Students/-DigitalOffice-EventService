@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
 
-namespace EventService;
+namespace LT.DigitalOffice.EventService;
 
 public class Program
 {
