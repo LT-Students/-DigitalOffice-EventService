@@ -9,5 +9,5 @@ namespace LT.DigitalOffice.EventService.Business.Commands.Event.Interfaces;
 [AutoInject]
 public interface ICreateEventCommand
 {
-  Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventRequest request);
+  Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventRequest request);
 }
