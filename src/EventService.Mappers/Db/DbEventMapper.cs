@@ -2,7 +2,6 @@
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
-using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Mappers.Db;
@@ -16,7 +15,9 @@ public class DbEventMapper : IDbEventMapper
     _httpContextAccessor = httpContextAccessor;
   }
 
-  public DbEvent Map(CreateEventRequest request)
+  public DbEvent Map(
+    CreateEventRequest request,
+    Guid senderId)
   {
     return request is null
       ? null
@@ -30,7 +31,7 @@ public class DbEventMapper : IDbEventMapper
         Format = request.Format,
         Access = request.Access,
         IsActive = true,
-        CreatedBy = _httpContextAccessor.HttpContext.GetUserId(),
+        CreatedBy = senderId,
         CreatedAtUtc = DateTime.UtcNow
       };
   }

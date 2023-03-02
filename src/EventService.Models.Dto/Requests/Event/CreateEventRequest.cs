@@ -16,6 +16,8 @@ public record CreateEventRequest
   public DateTime Date { get; set; }
   public FormatType Format { get; set; }
   public AccessType Access { get; set; }
+  [Required]
   public List<UserRequest> Users { get; set; }
+  [Required]
   public List<Guid> CategoryIds { get; set; }
 }
