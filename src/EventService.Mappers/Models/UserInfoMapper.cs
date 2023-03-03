@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
+using LT.DigitalOffice.EventService.Mappers.Models.Interface;
 using LT.DigitalOffice.EventService.Models.Dto.Models;
 using LT.DigitalOffice.Models.Broker.Models;
 
