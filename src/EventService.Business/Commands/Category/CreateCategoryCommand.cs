@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Business.Commands.Category.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
@@ -47,10 +48,10 @@ public class CreateCategoryCommand : ICreateCategoryCommand
     if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
     { 
       return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden,
-        new List<string> { "You haven't rights to add categories to event" });
+        new List<string>());
     }
 
-    var validationResult = await _validator.ValidateAsync(request);
+    ValidationResult validationResult = await _validator.ValidateAsync(request);
 
     if (!validationResult.IsValid)
     {
@@ -61,8 +62,10 @@ public class CreateCategoryCommand : ICreateCategoryCommand
 
     OperationResultResponse<Guid?> response = new();
     response.Body = await _repository.CreateAsync(_mapper.Map(request));
-
-    _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+    
+    _contextAccessor.HttpContext.Response.StatusCode =
+      response.Body == null ? (int)HttpStatusCode.BadRequest : (int)HttpStatusCode.Created;
+    
     return response;
   }
 }

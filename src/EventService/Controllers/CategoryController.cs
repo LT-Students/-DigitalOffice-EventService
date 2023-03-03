@@ -17,8 +17,7 @@ public class CategoryController : ControllerBase
     [FromServices] ICreateCategoryCommand command,
     [FromBody] CreateCategoryRequest request)
   {
-    var response = await command.ExecuteAsync(request);
-    return response;
+    return await command.ExecuteAsync(request);
   }
 }
 

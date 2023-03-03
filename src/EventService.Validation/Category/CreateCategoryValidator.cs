@@ -10,14 +10,14 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>,
   {
     RuleFor(request => request.Name)
       .Cascade(CascadeMode.Stop)
-      .NotEmpty()
-      .WithMessage("Name is empty")
       .MinimumLength(1)
       .WithMessage("Name is too short")
       .MaximumLength(20)
       .WithMessage("Name is too long");
+    
     RuleFor(request => request.Color)
-      .IsInEnum();
+      .IsInEnum()
+      .WithMessage("Category doesn't contain such color");
   }
 }
 
