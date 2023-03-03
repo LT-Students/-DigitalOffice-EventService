@@ -43,10 +43,10 @@ public class EventUserRepository : IEventUserRepository
     FindEventUsersFilter filter,
     CancellationToken cancellationToken)
   {
-    IQueryable<DbEventUser> eventUsersQuery = _provider.EventsUsers.Where(eu =>
-      eu.EventId == eventId).AsQueryable();
+    IQueryable<DbEventUser> eventUsersQuery = _provider.EventsUsers.AsNoTracking().Where(eu =>
+      eu.EventId == eventId);
 
-    if (filter.Status != null) 
+    if (filter.Status is not null)
     {
       eventUsersQuery = eventUsersQuery.Where(s=> s.Status== filter.Status);
     }

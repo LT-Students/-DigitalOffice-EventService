@@ -55,19 +55,24 @@ public class UserService : IUserService
       ?.UsersData;
   }
 
-  public async Task<IFilteredUsersDataResponse> FilteredUsersDataAsync(
-    List<Guid> usersIds, 
-    int skipCount = 0, 
-    int takeCount = 1, 
-    bool? ascendingSort = null, 
+  public async Task<(List<UserData> usersData, int totalCount)> FilteredUsersDataAsync(
+    List<Guid> usersIds,
+    int skipCount = 0,
+    int takeCount = 1,
+    bool? ascendingSort = null,
     string fullNameIncludeSubstring = null)
   {
-    return await _rcFilteredUsersData.ProcessRequest<IFilteredUsersDataRequest, IFilteredUsersDataResponse>(
-      IFilteredUsersDataRequest.CreateObj(
-        usersIds: usersIds, 
-        skipCount: skipCount, 
-        takeCount: takeCount, 
-        ascendingSort: ascendingSort, 
+    IFilteredUsersDataResponse response =
+      await _rcFilteredUsersData.ProcessRequest<IFilteredUsersDataRequest, IFilteredUsersDataResponse>(
+        IFilteredUsersDataRequest.CreateObj(
+        usersIds: usersIds,
+        skipCount: skipCount,
+        takeCount: takeCount,
+        ascendingSort: ascendingSort,
         fullNameIncludeSubstring: fullNameIncludeSubstring));
+
+    return response is null
+      ? default
+      : (response.UsersData, response.TotalCount);
   }
 }

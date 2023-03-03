@@ -13,5 +13,5 @@ public record FindEventUsersFilter : BaseFindFilter
   public EventUserStatus? Status { get; set; }
 
   [FromQuery(Name = "isAscendingSort")]
-  public bool? IsAscendingSort { get; set; } = null;
+  public bool? IsAscendingSort { get; set; }
 }
