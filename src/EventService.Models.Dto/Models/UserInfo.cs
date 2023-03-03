@@ -2,7 +2,7 @@
 
 namespace LT.DigitalOffice.EventService.Models.Dto.Models;
 
-public class UserInfo
+public record UserInfo
 {
   public Guid UserId { get; set; }
   public string FirstName { get; set; }

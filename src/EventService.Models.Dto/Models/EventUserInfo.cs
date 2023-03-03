@@ -4,7 +4,7 @@ using LT.DigitalOffice.EventService.Models.Dto.Enums;
 
 namespace LT.DigitalOffice.EventService.Models.Dto.Models
 {
-  public class EventUserInfo
+  public record EventUserInfo
   {
     public Guid Id { get; set; }
     public EventUserStatus Status { get; set; }

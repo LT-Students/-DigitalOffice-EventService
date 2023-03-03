@@ -22,7 +22,7 @@ public class EventUserController : ControllerBase
     return await command.ExecuteAsync(request);
   }
 
-  [HttpPost("find")]
+  [HttpGet("find")]
   public async Task<FindResultResponse<EventUserInfo>> FindAsync(
     [FromServices] IFindEventUserCommand command,
     [FromQuery] Guid eventId,
