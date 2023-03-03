@@ -3,11 +3,10 @@ using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Models;
 using LT.DigitalOffice.Kernel.Attributes;
 
-namespace LT.DigitalOffice.EventService.Mappers.Models.Interface
+namespace LT.DigitalOffice.EventService.Mappers.Models.Interface;
+
+[AutoInject]
+public interface IEventUserInfoMapper
 {
-  [AutoInject]
-  public interface IEventUserInfoMapper
-  {
-    List<EventUserInfo> Map(List<UserInfo> userInfos, List<DbEventUser> eventUsers);
-  }
+  List<EventUserInfo> Map(List<UserInfo> userInfos, List<DbEventUser> eventUsers);
 }
