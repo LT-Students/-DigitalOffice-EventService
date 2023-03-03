@@ -4,7 +4,7 @@ using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Models;
 using LT.DigitalOffice.Models.Broker.Models;
 
-namespace LT.DigitalOffice.EventService.Mappers.Db
+namespace LT.DigitalOffice.EventService.Mappers.Models
 {
   public class UserInfoMapper : IUserInfoMapper
   {

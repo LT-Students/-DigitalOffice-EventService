@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
-using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
+using LT.DigitalOffice.EventService.Mappers.Models.Interface;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Models;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
