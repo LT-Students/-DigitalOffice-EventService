@@ -1,8 +1,8 @@
-using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using System;
 
 namespace EventService
 {
@@ -14,13 +14,13 @@ namespace EventService
         .AddJsonFile("appsettings.json")
         .Build();
 
-      var seqServerUrl = Environment.GetEnvironmentVariable("seqServerUrl");
+      string seqServerUrl = Environment.GetEnvironmentVariable("seqServerUrl");
       if (string.IsNullOrEmpty(seqServerUrl))
       {
         seqServerUrl = configuration["Serilog:WriteTo:1:Args:serverUrl"];
       }
 
-      var seqApiKey = Environment.GetEnvironmentVariable("seqApiKey");
+      string seqApiKey = Environment.GetEnvironmentVariable("seqApiKey");
       if (string.IsNullOrEmpty(seqApiKey))
       {
         seqApiKey = configuration["Serilog:WriteTo:1:Args:apiKey"];
@@ -30,7 +30,7 @@ namespace EventService
         .Configuration(configuration)
         .Enrich.WithProperty("Service", "EventService")
         .WriteTo.Seq(
-          seqServerUrl,
+          serverUrl: seqServerUrl,
           apiKey: seqApiKey)
         .CreateLogger();
 
@@ -48,14 +48,12 @@ namespace EventService
       }
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args)
-    {
-      return Host.CreateDefaultBuilder(args)
-        .UseSerilog()
-        .ConfigureWebHostDefaults(webBuilder =>
-        {
-          webBuilder.UseStartup<Startup>();
-        });
-    }
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+          .UseSerilog()
+          .ConfigureWebHostDefaults(webBuilder =>
+          {
+            webBuilder.UseStartup<Startup>();
+          });
   }
 }
