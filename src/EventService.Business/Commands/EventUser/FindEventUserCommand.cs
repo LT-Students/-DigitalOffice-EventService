@@ -60,7 +60,7 @@ public class FindEventUserCommand : IFindEventUserCommand
       return new();
     }
 
-    (List<UserData> usersData, int TotalCount) = await _userService.FilteredUsersDataAsync(
+    (List<UserData> usersData, int totalCount) = await _userService.FilteredUsersDataAsync(
       usersIds:eventUsers.Select(e => e.UserId).ToList(),
       skipCount: filter.SkipCount,
       takeCount: filter.TakeCount,
@@ -68,7 +68,7 @@ public class FindEventUserCommand : IFindEventUserCommand
       fullNameIncludeSubstring: filter.UserFullNameIncludeSubstring);
 
     return new FindResultResponse<EventUserInfo>(
-      totalCount: TotalCount,
+      totalCount: totalCount,
       body: _eventUserInfoMapper.Map(
         userInfos: _userInfoMapper.Map(usersData),
         eventUsers: eventUsers));

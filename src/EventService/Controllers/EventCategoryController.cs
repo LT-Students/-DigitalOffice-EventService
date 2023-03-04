@@ -26,4 +26,3 @@ public class EventCategoryController : ControllerBase
     return await command.ExecuteAsync(request);
   }
 }
-
