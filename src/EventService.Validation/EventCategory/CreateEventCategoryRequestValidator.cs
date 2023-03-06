@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using FluentValidation;
+﻿using FluentValidation;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
 using LT.DigitalOffice.EventService.Validation.EventCategory.Interfaces;
