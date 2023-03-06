@@ -10,7 +10,7 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Models.Interface;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Models;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Models.Broker.Models;

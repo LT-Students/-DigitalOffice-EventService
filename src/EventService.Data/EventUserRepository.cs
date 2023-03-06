@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.EventService.Data;

@@ -2,7 +2,7 @@
 using LT.DigitalOffice.Kernel.Requests;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
+namespace LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
 
 public record FindEventUsersFilter : BaseFindFilter
 {
