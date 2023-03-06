@@ -14,6 +14,16 @@ public class DbEventMapper : IDbEventMapper
     Guid senderId)
   {
     Guid eventId = Guid.NewGuid();
+    request.Users.Add(new DbEventUser
+    {
+      Id = Guid.NewGuid(),
+      EventId = eventId,
+      UserId = senderId,
+      Status = EventUserStatus.Participant,
+      NotifyAtUtc = u.NotifyAtUtc,//dont know what to put 
+      CreatedBy = senderId,
+      CreatedAtUtc = DateTime.UtcNow
+    });
 
     return request is null
       ? null
@@ -29,9 +39,7 @@ public class DbEventMapper : IDbEventMapper
         IsActive = true,
         CreatedBy = senderId,
         CreatedAtUtc = DateTime.UtcNow,
-        EventUsers = request.Users is null
-      ? null
-      : request.Users.Select(u => new DbEventUser
+        EventUsers = request.Users.Select(u => new DbEventUser
       {
         Id = Guid.NewGuid(),
         EventId = eventId,
