@@ -23,29 +23,12 @@ public class DbEventCategoryMapper : IDbEventCategoryMapper
   {
     return request is null
       ? null
-      : request.CategoryIds.Select(categoryId => new DbEventCategory
+      : request.CategoriesIds.Select(categoryId => new DbEventCategory
       {
         Id = Guid.NewGuid(),
         EventId = request.EventId,
         CategoryId = categoryId,
         CreatedBy = _contextAccessor.HttpContext.GetUserId(),
-        CreatedAtUtc = DateTime.UtcNow
-      }).ToList();
-  }
-
-  public List<DbEventCategory> Map(
-    CreateEventRequest request, 
-    Guid senderId,
-    Guid eventId)
-  {
-    return request is null
-      ? null
-      : request.CategoryIds.Select(categoryId => new DbEventCategory
-      {
-        Id = Guid.NewGuid(),
-        EventId = eventId,
-        CategoryId = categoryId,
-        CreatedBy = senderId,
         CreatedAtUtc = DateTime.UtcNow
       }).ToList();
   }

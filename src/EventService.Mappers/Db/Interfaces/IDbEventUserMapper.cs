@@ -11,5 +11,4 @@ namespace LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 public interface IDbEventUserMapper
 {
   List<DbEventUser> Map(CreateEventUserRequest request, AccessType access, Guid senderId);
-  List<DbEventUser> Map(CreateEventRequest request, Guid senderId, Guid eventId);
 }

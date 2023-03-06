@@ -31,25 +31,4 @@ public class DbEventUserMapper : IDbEventUserMapper
         CreatedAtUtc = DateTime.UtcNow
       }).ToList();
   }
-
-  public List<DbEventUser> Map(
-    CreateEventRequest request,
-    Guid senderId,
-    Guid eventId)
-  {
-    return request is null
-      ? null
-      : request.Users.Select(u => new DbEventUser
-      {
-        Id = Guid.NewGuid(),
-        EventId = eventId,
-        UserId = u.UserId,
-        Status = (request.Access == AccessType.Opened && u.UserId == senderId)
-          ? EventUserStatus.Participant
-          : EventUserStatus.Invited,
-        NotifyAtUtc = u.NotifyAtUtc,
-        CreatedBy = senderId,
-        CreatedAtUtc = DateTime.UtcNow
-      }).ToList();
-  }
 }

@@ -18,12 +18,14 @@ public class EventRepository : IEventRepository
 
   public async Task<bool> CreateAsync(DbEvent dbEvent)
   {
-    if (dbEvent == null)
+    if (dbEvent is null)
     {
       return false;
     }
 
     _provider.Events.Add(dbEvent);
+    _provider.EventsUsers.AddRange(dbEvent.EventUsers);
+    _provider.EventsCategories.AddRange(dbEvent.EventCategories);
     await _provider.SaveAsync();
 
     return true;

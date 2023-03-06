@@ -37,6 +37,24 @@ public class CreateEventCommand : ICreateEventCommand
   private readonly IEmailService _emailService;
   private readonly IUserService _userService;
 
+  private async Task SendInviteEmailsAsync(List<Guid> userIds, string eventName)
+  {
+    List<UserData> usersData = await _userService.GetUsersDataAsync(userIds);
+
+    if (usersData is null || !usersData.Any())
+    {
+      return;
+    }
+
+    foreach (UserData user in usersData)
+    {
+      await _emailService.SendAsync(
+        user.Email,
+        "Invite to event",
+        $"You have been invited to event {eventName}");
+    }
+  }
+
   public CreateEventCommand(
     IEventRepository repository,
     IEventUserRepository eventUserRepository,
@@ -65,34 +83,18 @@ public class CreateEventCommand : ICreateEventCommand
     _emailService = emailService;
   }
 
-  private async Task SendInviteEmailsAsync(List<Guid> userIds, string eventName)
-  {
-    List<UserData> usersData = await _userService.GetUsersDataAsync(userIds);
-
-    if (usersData is null || !usersData.Any())
-    {
-      return;
-    }
-
-    foreach (UserData user in usersData)
-    {
-      await _emailService.SendAsync(
-        user.Email,
-        "Invite to event",
-        $"You have been invited to event {eventName}");
-    }
-  }
-
   public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventRequest request)
   {
     Guid senderId = _contextAccessor.HttpContext.GetUserId();
-    bool hasAddEditRemoveUsersRights = await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers);
-    OperationResultResponse<bool> response = new();
+    bool hasSenderRights = await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers);
 
-    if (!hasAddEditRemoveUsersRights)
+    if (!hasSenderRights)
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }
+
+
+    OperationResultResponse<bool> response = new();
 
     if (request.Users.Distinct().Count() != request.Users.Count())
     {
@@ -100,7 +102,11 @@ public class CreateEventCommand : ICreateEventCommand
       request.Users = request.Users.Distinct().ToList();
     }
 
-    request.CategoryIds = request.CategoryIds.Distinct().ToList();
+    if (request.CategoriesIds.Distinct().Count() != request.CategoriesIds.Count())
+    { 
+      response.Errors = new List<string>() { "Some duplicate categories have been removed from the list." };
+      request.CategoriesIds = request.CategoriesIds.Distinct().ToList();
+    }
 
     ValidationResult validationResult = await _validator.ValidateAsync(request);
     if (!validationResult.IsValid)
@@ -112,26 +118,9 @@ public class CreateEventCommand : ICreateEventCommand
 
     DbEvent dbEvent = _eventMapper.Map(request, senderId);
 
-    if ((dbEvent.Access == AccessType.Closed && !hasAddEditRemoveUsersRights)
-        || !(dbEvent.Access == AccessType.Opened
-          && (hasAddEditRemoveUsersRights
-            || (!hasAddEditRemoveUsersRights
-              && request.Users.Count == 1
-              && request.Users.Exists(x => x.UserId == senderId)))))
-    {
-      return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
-    }
-
     response.Body = await _eventRepository.CreateAsync(dbEvent);
 
-    List<DbEventUser> dbEventUsers = _eventUserMapper.Map(request, senderId, dbEvent.Id);
-    response.Body = await _eventUserRepository.CreateAsync(dbEventUsers) 
-      && response.Body;
-
-    await SendInviteEmailsAsync(dbEventUsers.Where(x => x.Status == EventUserStatus.Invited).Select(x => x.UserId).ToList(), dbEvent.Name);
-
-    response.Body = await _eventCategoryRepository.CreateAsync(_eventCategoryMapper.Map(request, senderId, dbEvent.Id))
-      && response.Body;
+    await SendInviteEmailsAsync(dbEvent.EventUsers.Select(x => x.UserId).ToList(), dbEvent.Name);
 
     if (!response.Body)
     {

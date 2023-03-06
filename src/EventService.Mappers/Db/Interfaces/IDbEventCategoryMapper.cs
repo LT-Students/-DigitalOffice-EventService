@@ -11,5 +11,4 @@ namespace LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 public interface IDbEventCategoryMapper
 {
   List<DbEventCategory> Map(CreateEventCategoryRequest request);
-  List<DbEventCategory> Map(CreateEventRequest request, Guid senderId, Guid eventId);
 }
