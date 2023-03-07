@@ -10,6 +10,15 @@ public class DbEvent
 {
   public const string TableName = "Events";
 
+  public DbEvent()
+  {
+    EventsCategories = new HashSet<DbEventCategory>();
+    Files = new HashSet<DbEventFile>();
+    Images = new HashSet<DbEventImage>();
+    Users = new HashSet<DbEventUser>();
+    Comments = new HashSet<DbEventComment>();
+  }
+
   public Guid Id { get; set; }
   public string Name { get; set; }
   public string Address { get; set; }
@@ -29,21 +38,12 @@ public class DbEvent
   public ICollection<DbEventUser> Users { get; set; }
   public ICollection<DbEventComment> Comments { get; set; }
 
-  public DbEvent()
-  {
-    EventsCategories = new HashSet<DbEventCategory>();
-    Files = new HashSet<DbEventFile>();
-    Images = new HashSet<DbEventImage>();
-    Users = new HashSet<DbEventUser>();
-    Comments = new HashSet<DbEventComment>();
-  }
-
   public class DbEventConfiguration : IEntityTypeConfiguration<DbEvent>
   {
     public void Configure(EntityTypeBuilder<DbEvent> builder)
     {
       builder
-        .ToTable(DbEvent.TableName);
+        .ToTable(TableName);
 
       builder
         .HasKey(t => t.Id);
