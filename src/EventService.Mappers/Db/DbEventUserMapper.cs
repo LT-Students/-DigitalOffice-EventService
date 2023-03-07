@@ -4,7 +4,6 @@ using System.Linq;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 
 namespace LT.DigitalOffice.EventService.Mappers.Db;
@@ -12,9 +11,7 @@ namespace LT.DigitalOffice.EventService.Mappers.Db;
 public class DbEventUserMapper : IDbEventUserMapper
 {
   public List<DbEventUser> Map(
-    CreateEventUserRequest request, 
-    AccessType access, 
-    Guid senderId)
+    CreateEventUserRequest request, AccessType access, Guid senderId)
   {
     return request is null
       ? null
@@ -24,27 +21,6 @@ public class DbEventUserMapper : IDbEventUserMapper
         EventId = request.EventId,
         UserId = u.UserId,
         Status = (access == AccessType.Opened && u.UserId == senderId)
-          ? EventUserStatus.Participant
-          : EventUserStatus.Invited,
-        NotifyAtUtc = u.NotifyAtUtc,
-        CreatedBy = senderId,
-        CreatedAtUtc = DateTime.UtcNow
-      }).ToList();
-  }
-
-  public List<DbEventUser> Map(
-    CreateEventRequest request,
-    Guid senderId,
-    Guid eventId)
-  {
-    return request is null
-      ? null
-      : request.Users.Select(u => new DbEventUser
-      {
-        Id = Guid.NewGuid(),
-        EventId = eventId,
-        UserId = u.UserId,
-        Status = (request.Access == AccessType.Opened && u.UserId == senderId)
           ? EventUserStatus.Participant
           : EventUserStatus.Invited,
         NotifyAtUtc = u.NotifyAtUtc,

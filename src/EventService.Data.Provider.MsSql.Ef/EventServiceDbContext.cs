@@ -34,6 +34,7 @@ public class EventServiceDbContext : DbContext, IDataProvider
     Entry(obj).State = EntityState.Detached;
 
     return Entry(obj).State;
+
   }
 
   public void EnsureDeleted()

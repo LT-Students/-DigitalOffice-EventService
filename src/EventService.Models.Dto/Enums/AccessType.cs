@@ -5,4 +5,3 @@ public enum AccessType
   Opened,
   Closed
 }
-

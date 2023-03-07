@@ -32,4 +32,3 @@ public class DbEventImageConfiguration : IEntityTypeConfiguration<DbEventImage>
       .WithMany(e => e.Images);
   }
 }
-

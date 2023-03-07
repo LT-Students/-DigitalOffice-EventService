@@ -18,9 +18,9 @@ public class CategoryRepository : ICategoryRepository
     _provider = provider;
   }
 
-  public bool DoesExistAllAsync(List<Guid> categoryIds)
+  public bool DoesExistAllAsync(List<Guid> categoriesIds)
   {
-    return categoryIds.All(categoryId =>
+    return categoriesIds.All(categoryId =>
       _provider.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
   }
 
