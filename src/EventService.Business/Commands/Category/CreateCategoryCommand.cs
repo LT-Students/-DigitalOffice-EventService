@@ -47,8 +47,7 @@ public class CreateCategoryCommand : ICreateCategoryCommand
   {
     if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
     { 
-      return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden,
-        new List<string>());
+      return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden);
     }
 
     ValidationResult validationResult = await _validator.ValidateAsync(request);
@@ -60,11 +59,11 @@ public class CreateCategoryCommand : ICreateCategoryCommand
         validationResult.Errors.Select(er => er.ErrorMessage).ToList());
     }
 
-    OperationResultResponse<Guid?> response = new();
-    response.Body = await _repository.CreateAsync(_mapper.Map(request));
+    OperationResultResponse<Guid?> response = new(body: await _repository.CreateAsync(_mapper.Map(request)));
     
-    _contextAccessor.HttpContext.Response.StatusCode =
-      response.Body == null ? (int)HttpStatusCode.BadRequest : (int)HttpStatusCode.Created;
+    _contextAccessor.HttpContext.Response.StatusCode = response.Body is null
+      ? (int)HttpStatusCode.BadRequest
+      : (int)HttpStatusCode.Created;
     
     return response;
   }
