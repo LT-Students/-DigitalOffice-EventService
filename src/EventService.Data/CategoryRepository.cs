@@ -24,11 +24,6 @@ public class CategoryRepository : ICategoryRepository
       _provider.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
   }
 
-  public Task<bool> IsCategoryExist(Guid eventId)
-  { 
-    return _provider.Categories.AnyAsync(e => e.Id == eventId);
-  }
-
   public async Task<Guid?> CreateAsync(DbCategory dbCategory)
   {
     if (dbCategory is null)

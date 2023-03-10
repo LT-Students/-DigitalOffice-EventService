@@ -5,7 +5,7 @@ using LT.DigitalOffice.Kernel.Attributes;
 namespace LT.DigitalOffice.EventService.Validation.Category.Interfaces;
 
 [AutoInject]
-public interface ICreateCategoryValidator : IValidator<CreateCategoryRequest>
+public interface ICreateCategoryRequestValidator : IValidator<CreateCategoryRequest>
 {
 }
 

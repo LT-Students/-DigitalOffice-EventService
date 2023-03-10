@@ -4,9 +4,9 @@ using LT.DigitalOffice.EventService.Validation.Category.Interfaces;
 
 namespace LT.DigitalOffice.EventService.Validation.Category;
 
-public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>, ICreateCategoryValidator
+public class CreateCategoryRequestValidator : AbstractValidator<CreateCategoryRequest>, ICreateCategoryRequestValidator
 {
-  public CreateCategoryValidator()
+  public CreateCategoryRequestValidator()
   {
     RuleFor(request => request.Name)
       .Cascade(CascadeMode.Stop)

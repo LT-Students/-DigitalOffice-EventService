@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
-using MassTransit;
 using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.Category;
@@ -25,7 +23,7 @@ public class CreateCategoryCommand : ICreateCategoryCommand
   private readonly IDbCategoryMapper _mapper;
   private readonly ICategoryRepository _repository;
   private readonly IResponseCreator _responseCreator;
-  private readonly ICreateCategoryValidator _validator;
+  private readonly ICreateCategoryRequestValidator _validator;
 
   public CreateCategoryCommand(
     IAccessValidator accessValidator,
@@ -33,7 +31,7 @@ public class CreateCategoryCommand : ICreateCategoryCommand
     IDbCategoryMapper mapper,
     ICategoryRepository repository,
     IResponseCreator responseCreator,
-    ICreateCategoryValidator validator)
+    ICreateCategoryRequestValidator validator)
   { 
     _accessValidator = accessValidator;
     _contextAccessor = contextAccessor;

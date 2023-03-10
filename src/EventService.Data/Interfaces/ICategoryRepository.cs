@@ -10,6 +10,5 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces;
 public interface ICategoryRepository
 {
   bool DoesExistAllAsync(List<Guid> categoryIds);
-  Task<bool> IsCategoryExist(Guid eventId);
   Task<Guid?> CreateAsync(DbCategory dbCategory);
 }
