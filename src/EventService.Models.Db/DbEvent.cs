@@ -21,7 +21,6 @@ public class DbEvent
   public DateTime CreatedAtUtc { get; set; }
   public Guid? ModifiedBy { get; set; }
   public DateTime? ModifiedAtUtc { get; set; }
-
   public ICollection<DbEventCategory> EventsCategories { get; set; }
   public ICollection<DbEventFile> Files { get; set; }
   public ICollection<DbEventImage> Images { get; set; }

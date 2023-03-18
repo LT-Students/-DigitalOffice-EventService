@@ -54,7 +54,7 @@ public class CreateCategoryCommand : ICreateCategoryCommand
     {
       return _responseCreator.CreateFailureResponse<Guid?>(
         HttpStatusCode.BadRequest,
-        validationResult.Errors.Select(er => er.ErrorMessage).ToList());
+        validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
     OperationResultResponse<Guid?> response = new(body: await _repository.CreateAsync(_mapper.Map(request)));
