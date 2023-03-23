@@ -35,8 +35,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="$(AssemblyName.Contains('.UnitTests'))">
-    <PackageReference Include="LT.DigitalOffice.UnitTestKernel" Version="1.0.4" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Include="LT.DigitalOffice.UnitTestKernel" Version="1.0.4"/>
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1"/>
   </ItemGroup>
-
 </Project>
