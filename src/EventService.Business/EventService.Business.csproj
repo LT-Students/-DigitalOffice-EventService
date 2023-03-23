@@ -9,4 +9,11 @@
     <ProjectReference Include="..\EventService.Validation\EventService.Validation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="DigitalOffice.Kernel" Version="1.0.10" />
+    <PackageReference Update="DigitalOffice.Kernel.BrokerSupport" Version="1.0.6" />
+    <PackageReference Update="DigitalOffice.Kernel.EndpointSupport" Version="1.0.3" />
+    <PackageReference Update="DigitalOffice.Models" Version="1.0.22" />
+  </ItemGroup>
+
 </Project>

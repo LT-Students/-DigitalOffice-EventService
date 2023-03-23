@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
@@ -6,6 +7,7 @@ using LT.DigitalOffice.EventService.Models.Dto.Models;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
 using LT.DigitalOffice.Kernel.Responses;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LT.DigitalOffice.EventService.Controllers;
@@ -30,5 +32,14 @@ public class EventUserController : ControllerBase
     CancellationToken cancellationToken)
   {
     return await command.ExecuteAsync(eventId: eventId, filter: filter, cancellationToken: cancellationToken);
+  }
+
+  [HttpPatch("edit")]
+    public async Task<OperationResultResponse<bool>> EditAsync(
+      [FromServices] IEditEventUserCommand command,
+      [FromQuery] Guid eventUserId,
+      [FromBody] JsonPatchDocument<EditEventUserRequest> request)
+  {
+    return await command.ExecuteAsync(eventUserId,request);
   }
 }

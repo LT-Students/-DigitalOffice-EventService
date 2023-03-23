@@ -7,7 +7,9 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -23,6 +25,11 @@ public class EventUserRepository : IEventUserRepository
   public Task<bool> DoesExistAsync(List<Guid> userId, Guid eventId)
   {
     return _provider.EventsUsers.AsNoTracking().AnyAsync(eu => userId.Contains(eu.UserId) && eu.EventId == eventId);
+  }
+
+  public Task<bool> DoesExistAsync(Guid eventUserId)
+  {
+    return _provider.EventsUsers.AsNoTracking().AnyAsync(eu => eu.Id == eventUserId);
   }
 
   public async Task<bool> CreateAsync(List<DbEventUser> dbEventUsers)
@@ -52,5 +59,28 @@ public class EventUserRepository : IEventUserRepository
     }
 
     return eventUsersQuery.ToListAsync(cancellationToken: cancellationToken);
+  }
+
+  public Task<DbEventUser> GetAsync(Guid eventUserId)
+  {
+    return _provider.EventsUsers.AsNoTracking().FirstOrDefaultAsync(eu =>eu.Id == eventUserId);
+  }
+
+  public async Task<bool> EditAsync(Guid eventUserId, JsonPatchDocument<DbEventUser> request, Guid senderId)
+  {
+    DbEventUser dbEventUser = await _provider.EventsUsers.FirstOrDefaultAsync(x => x.Id == eventUserId);
+
+    if (dbEventUser is null || request is null)
+    {
+      return false;
+    }
+    
+    request.ApplyTo(dbEventUser);
+    dbEventUser.ModifiedBy = senderId;
+    dbEventUser.ModifiedAtUtc = DateTime.UtcNow;
+
+    await _provider.SaveAsync();
+
+    return true;
   }
 }
