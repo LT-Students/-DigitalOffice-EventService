@@ -8,7 +8,6 @@ using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.JsonPatch;
-using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
@@ -24,7 +23,7 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
   private readonly IAccessValidator _accessValidator;
   private readonly IHttpContextAccessor _httpContextAccessor;
 
-  private async Task HandleInternalPropertyValidationAsync(
+  private void HandleInternalPropertyValidationAsync(
     Operation<EditEventUserRequest> requestedOperation,
     DbEvent dbEvent,
     DbEventUser dbEventUser,
@@ -116,7 +115,7 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
 
         foreach (var op in paths.Item2.Operations)
         {
-          await HandleInternalPropertyValidationAsync(
+          HandleInternalPropertyValidationAsync(
             requestedOperation: op,
             dbEvent: dbEvent,
             dbEventUser: dbEventUser,
