@@ -29,7 +29,7 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
     DbEventUser dbEventUser,
     bool isAddEditRemoveUsers,
     bool isUser,
-    ValidationContext<(Guid,JsonPatchDocument<EditEventUserRequest>)> context)
+    ValidationContext<(Guid, JsonPatchDocument<EditEventUserRequest>)> context)
   {
     Context = context;
     RequestedOperation = requestedOperation;
@@ -56,16 +56,16 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
       new Dictionary<Func<Operation<EditEventUserRequest>, bool>, string>
       {
         {
-        x => Enum.TryParse(typeof(EventUserStatus), x.value?.ToString(), out _) ?
-        ((x.value.ToString().Trim()) == "Participant" &&
-        (((dbEventUser.Status == EventUserStatus.Refused || dbEventUser.Status == EventUserStatus.Invited) && isUser)||
-        (dbEventUser.Status == EventUserStatus.Discarded && isAddEditRemoveUsers)))||
-        ((x.value.ToString().Trim()) == "Refused" &&
-        ((dbEventUser.Status == EventUserStatus.Participant || dbEventUser.Status == EventUserStatus.Invited) && isUser))||
-        ((x.value.ToString().Trim()) == "Discarded"  &&
-        (dbEventUser.Status == EventUserStatus.Participant && isAddEditRemoveUsers))
-        : false,
-         "Uncorrect user status"
+          x => Enum.TryParse(typeof(EventUserStatus), x.value?.ToString(), out _) ?
+            (x.value.ToString().Trim() == "Participant" &&
+                (((dbEventUser.Status == EventUserStatus.Refused || dbEventUser.Status == EventUserStatus.Invited) && isUser)||
+                  (dbEventUser.Status == EventUserStatus.Discarded && isAddEditRemoveUsers)))||
+              (x.value.ToString().Trim() == "Refused" &&
+                  (dbEventUser.Status == EventUserStatus.Participant || dbEventUser.Status == EventUserStatus.Invited) && isUser)||
+                (x.value.ToString().Trim() == "Discarded" &&
+                  dbEventUser.Status == EventUserStatus.Participant && isAddEditRemoveUsers)
+            : false,
+            "Uncorrect user status"
         }
       });
 
@@ -80,10 +80,10 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
       {
         {
           x => string.IsNullOrEmpty(x.value?.ToString())? true :
-          (DateTime.TryParse(x.value.ToString().Trim(), out DateTime date) &&
-          DateTime.Parse(x.value.ToString().Trim()) < dbEvent.Date &&
-          DateTime.Parse(x.value.ToString().Trim()) > DateTime.UtcNow),
-          "Uncorrect notify"
+            (DateTime.TryParse(x.value.ToString().Trim(), out DateTime date) &&
+            DateTime.Parse(x.value.ToString().Trim()) < dbEvent.Date &&
+            DateTime.Parse(x.value.ToString().Trim()) > DateTime.UtcNow),
+            "Uncorrect notify"
         },
       });
 

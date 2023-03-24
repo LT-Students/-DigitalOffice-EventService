@@ -9,7 +9,6 @@ using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -55,7 +54,7 @@ public class EventUserRepository : IEventUserRepository
 
     if (filter.Status is not null)
     {
-      eventUsersQuery = eventUsersQuery.Where(s=> s.Status== filter.Status);
+      eventUsersQuery = eventUsersQuery.Where(s=> s.Status == filter.Status);
     }
 
     return eventUsersQuery.ToListAsync(cancellationToken: cancellationToken);
@@ -63,7 +62,7 @@ public class EventUserRepository : IEventUserRepository
 
   public Task<DbEventUser> GetAsync(Guid eventUserId)
   {
-    return _provider.EventsUsers.AsNoTracking().FirstOrDefaultAsync(eu =>eu.Id == eventUserId);
+    return _provider.EventsUsers.AsNoTracking().FirstOrDefaultAsync(eu => eu.Id == eventUserId);
   }
 
   public async Task<bool> EditAsync(Guid eventUserId, JsonPatchDocument<DbEventUser> request, Guid senderId)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
@@ -50,7 +49,7 @@ public class EditEventUserCommand : IEditEventUserCommand
     Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
 
     if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers) &&
-      (await _eventUserRepository.GetAsync(eventUserId)).UserId != senderId)
+        (await _eventUserRepository.GetAsync(eventUserId)).UserId != senderId)
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }
@@ -59,12 +58,13 @@ public class EditEventUserCommand : IEditEventUserCommand
     if (!validationResult.IsValid)
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest,
-        validationResult.Errors.Select(vf => vf.ErrorMessage).ToList());
+        validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
-    OperationResultResponse<bool> response = new();
-
-    response.Body = await _eventUserRepository.EditAsync(eventUserId, _mapper.Map(patch), senderId);
+    OperationResultResponse<bool> response = new() 
+    { 
+      Body = await _eventUserRepository.EditAsync(eventUserId, _mapper.Map(patch), senderId) 
+    };
 
     if (!response.Body)
     {

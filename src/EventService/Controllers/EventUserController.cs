@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
@@ -35,11 +34,11 @@ public class EventUserController : ControllerBase
   }
 
   [HttpPatch("edit")]
-    public async Task<OperationResultResponse<bool>> EditAsync(
-      [FromServices] IEditEventUserCommand command,
-      [FromQuery] Guid eventUserId,
-      [FromBody] JsonPatchDocument<EditEventUserRequest> request)
+  public async Task<OperationResultResponse<bool>> EditAsync(
+    [FromServices] IEditEventUserCommand command,
+    [FromQuery] Guid eventUserId,
+    [FromBody] JsonPatchDocument<EditEventUserRequest> request)
   {
-    return await command.ExecuteAsync(eventUserId,request);
+    return await command.ExecuteAsync(eventUserId, request);
   }
 }
