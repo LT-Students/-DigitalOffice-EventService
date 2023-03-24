@@ -55,6 +55,7 @@ public class EditEventUserCommand : IEditEventUserCommand
     }
 
     ValidationResult validationResult = await _validator.ValidateAsync((eventUserId, patch));
+
     if (!validationResult.IsValid)
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest,

@@ -88,7 +88,7 @@ public class CreateEventUserCommand : ICreateEventUserCommand
     }
 
     if ((dbEvent.Access == AccessType.Closed && !userWithRight) ||
-        (dbEvent.Access == AccessType.Opened && 
+        (dbEvent.Access == AccessType.Opened &&
           !(!userWithRight && request.Users.Count == 1 && request.Users.Exists(x => x.UserId == senderId) || userWithRight)))
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
