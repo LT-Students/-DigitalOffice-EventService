@@ -67,7 +67,7 @@ public class EventUserRepository : IEventUserRepository
 
   public async Task<bool> EditAsync(Guid eventUserId, JsonPatchDocument<DbEventUser> request, Guid senderId)
   {
-    DbEventUser dbEventUser = await _provider.EventsUsers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == eventUserId);
+    DbEventUser dbEventUser = await _provider.EventsUsers.FirstOrDefaultAsync(x => x.Id == eventUserId);
 
     if (dbEventUser is null || request is null)
     {
