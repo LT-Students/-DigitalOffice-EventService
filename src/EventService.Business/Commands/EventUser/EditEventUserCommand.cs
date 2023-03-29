@@ -45,7 +45,9 @@ public class EditEventUserCommand : IEditEventUserCommand
     _contextAccessor = contextAccessor;
   }
 
-  public async Task<OperationResultResponse<bool>> ExecuteAsync(Guid eventUserId, JsonPatchDocument<EditEventUserRequest> patch)
+  public async Task<OperationResultResponse<bool>> ExecuteAsync(
+    Guid eventUserId,
+    JsonPatchDocument<EditEventUserRequest> patch)
   {
     Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
 
