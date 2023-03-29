@@ -13,6 +13,7 @@ using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using Microsoft.AspNetCore.Http;
 using LT.DigitalOffice.Kernel.Extensions;
+using LT.DigitalOffice.EventService.Validation.EventUser.Resources;
 
 namespace LT.DigitalOffice.EventService.Validation.EventUser;
 
@@ -26,7 +27,7 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
   private void HandleInternalPropertyValidationAsync(
     Operation<EditEventUserRequest> requestedOperation,
     DbEvent dbEvent,
-    DbEventUser dbEventUser,
+    EventUserStatus status,
     bool isAddEditRemoveUsers,
     bool isUser,
     ValidationContext<(Guid, JsonPatchDocument<EditEventUserRequest>)> context)
@@ -56,18 +57,22 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
       new Dictionary<Func<Operation<EditEventUserRequest>, bool>, string>
       {
         {
-          x => Enum.TryParse(typeof(EventUserStatus), x.value?.ToString(), out _) ?
-            (x.value.ToString().Trim() == "Participant" &&
-                (((dbEventUser.Status == EventUserStatus.Refused || dbEventUser.Status == EventUserStatus.Invited) && isUser)||
-                  (dbEventUser.Status == EventUserStatus.Discarded && isAddEditRemoveUsers)))||
-              (x.value.ToString().Trim() == "Refused" &&
-                  (dbEventUser.Status == EventUserStatus.Participant || dbEventUser.Status == EventUserStatus.Invited) && isUser)||
-                (x.value.ToString().Trim() == "Discarded" &&
-                  dbEventUser.Status == EventUserStatus.Participant && isAddEditRemoveUsers)
-            : false,
-            "Uncorrect user status"
+          x => Enum.TryParse(typeof(EventUserStatus), x.value?.ToString(), out _),
+              EventUserRequestValidatorResource.IncorrectFormatStatus
+        },
+        {
+          x => Enum.TryParse(x.value?.ToString(), out EventUserStatus newStatus) &&
+              ((newStatus == EventUserStatus.Participant &&
+                (((status == EventUserStatus.Refused || status == EventUserStatus.Invited) && isUser)||
+                  (status == EventUserStatus.Discarded && isAddEditRemoveUsers)))||
+               (newStatus == EventUserStatus.Refused &&
+                  (status == EventUserStatus.Participant || status == EventUserStatus.Invited) && isUser)||
+                (newStatus == EventUserStatus.Discarded &&
+                  status == EventUserStatus.Participant && isAddEditRemoveUsers)),
+              EventUserRequestValidatorResource.NotHaveRightsToSetTheStaus
         }
-      });
+      },
+      CascadeMode.Stop);
 
     #endregion
 
@@ -79,12 +84,11 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
       new Dictionary<Func<Operation<EditEventUserRequest>, bool>, string>
       {
         {
-          x => string.IsNullOrEmpty(x.value?.ToString())? true :
-            (DateTime.TryParse(x.value.ToString().Trim(), out DateTime date) &&
-            DateTime.Parse(x.value.ToString().Trim()) < dbEvent.Date &&
-            DateTime.Parse(x.value.ToString().Trim()) > DateTime.UtcNow),
-            "Uncorrect notify"
-        },
+          x => string.IsNullOrEmpty(x.value?.ToString()) ||
+              (DateTime.TryParse(x.value.ToString(), out DateTime notifyAtUtc) &&
+                notifyAtUtc < dbEvent.Date && notifyAtUtc > DateTime.UtcNow),
+              EventUserRequestValidatorResource.IncorrectFormatNotifyAtUtc
+        }
       });
 
     #endregion
@@ -103,7 +107,7 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
 
     RuleFor(eventUserId => eventUserId.Item1)
       .MustAsync(async (eventUserId, _) => await _eventUserRepository.DoesExistAsync(eventUserId))
-      .WithMessage("This Id doesn't exist.");
+      .WithMessage(EventUserRequestValidatorResource.EventUserIdDoesNotExist);
 
     RuleFor(paths => paths)
       .CustomAsync(async (paths, context, _) =>
@@ -118,7 +122,7 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
           HandleInternalPropertyValidationAsync(
             requestedOperation: op,
             dbEvent: dbEvent,
-            dbEventUser: dbEventUser,
+            status: dbEventUser.Status,
             isAddEditRemoveUsers: isAddEditRemoveUsers,
             isUser: isUser,
             context: context);

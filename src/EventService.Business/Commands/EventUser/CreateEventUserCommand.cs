@@ -78,7 +78,7 @@ public class CreateEventUserCommand : ICreateEventUserCommand
   {
     Guid senderId = _contextAccessor.HttpContext.GetUserId();
     DbEvent dbEvent = await _eventRepository.GetAsync(request.EventId);
-    bool userWithRight = await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers);
+    bool userHasRight = await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers);
 
     if (dbEvent is null)
     {
@@ -87,9 +87,9 @@ public class CreateEventUserCommand : ICreateEventUserCommand
         new List<string> { "This event doesn't exist." });
     }
 
-    if ((dbEvent.Access == AccessType.Closed && !userWithRight) ||
+    if ((dbEvent.Access == AccessType.Closed && !userHasRight) ||
         (dbEvent.Access == AccessType.Opened &&
-          !(!userWithRight && request.Users.Count == 1 && request.Users.Exists(x => x.UserId == senderId) || userWithRight)))
+          !(!userHasRight && request.Users.Count == 1 && request.Users.Exists(x => x.UserId == senderId) || userHasRight)))
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }
