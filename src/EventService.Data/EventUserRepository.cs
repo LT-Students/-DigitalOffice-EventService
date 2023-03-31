@@ -7,6 +7,8 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
+using LT.DigitalOffice.Kernel.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,10 +17,14 @@ namespace LT.DigitalOffice.EventService.Data;
 public class EventUserRepository : IEventUserRepository
 {
   private readonly IDataProvider _provider;
+  private readonly IHttpContextAccessor _httpContextAccessor;
 
-  public EventUserRepository(IDataProvider provider)
+  public EventUserRepository(
+    IDataProvider provider,
+    IHttpContextAccessor httpContextAccessor)
   {
     _provider = provider;
+    _httpContextAccessor = httpContextAccessor;
   }
 
   public Task<bool> DoesExistAsync(List<Guid> userId, Guid eventId)
@@ -65,7 +71,7 @@ public class EventUserRepository : IEventUserRepository
     return _provider.EventsUsers.AsNoTracking().FirstOrDefaultAsync(eu => eu.Id == eventUserId);
   }
 
-  public async Task<bool> EditAsync(Guid eventUserId, JsonPatchDocument<DbEventUser> request, Guid senderId)
+  public async Task<bool> EditAsync(Guid eventUserId, JsonPatchDocument<DbEventUser> request)
   {
     DbEventUser dbEventUser = await _provider.EventsUsers.FirstOrDefaultAsync(x => x.Id == eventUserId);
 
@@ -75,7 +81,7 @@ public class EventUserRepository : IEventUserRepository
     }
     
     request.ApplyTo(dbEventUser);
-    dbEventUser.ModifiedBy = senderId;
+    dbEventUser.ModifiedBy = _httpContextAccessor.HttpContext.GetUserId();
     dbEventUser.ModifiedAtUtc = DateTime.UtcNow;
 
     await _provider.SaveAsync();

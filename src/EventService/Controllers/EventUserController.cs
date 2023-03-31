@@ -34,11 +34,11 @@ public class EventUserController : ControllerBase
   }
 
   [HttpPatch("edit")]
-  public async Task<OperationResultResponse<bool>> EditAsync(
+  public Task<OperationResultResponse<bool>> EditAsync(
     [FromServices] IEditEventUserCommand command,
     [FromQuery] Guid eventUserId,
     [FromBody] JsonPatchDocument<EditEventUserRequest> request)
   {
-    return await command.ExecuteAsync(eventUserId, request);
+    return command.ExecuteAsync(eventUserId, request);
   }
 }

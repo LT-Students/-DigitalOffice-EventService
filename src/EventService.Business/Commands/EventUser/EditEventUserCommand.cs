@@ -52,7 +52,7 @@ public class EditEventUserCommand : IEditEventUserCommand
     Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
 
     if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers) &&
-        (await _eventUserRepository.GetAsync(eventUserId)).UserId != senderId)
+        (await _eventUserRepository.GetAsync(eventUserId))?.UserId != senderId)
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }
@@ -65,10 +65,7 @@ public class EditEventUserCommand : IEditEventUserCommand
         validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
-    OperationResultResponse<bool> response = new() 
-    { 
-      Body = await _eventUserRepository.EditAsync(eventUserId, _mapper.Map(patch), senderId) 
-    };
+    OperationResultResponse<bool> response = new(body : await _eventUserRepository.EditAsync(eventUserId, _mapper.Map(patch)));
 
     if (!response.Body)
     {

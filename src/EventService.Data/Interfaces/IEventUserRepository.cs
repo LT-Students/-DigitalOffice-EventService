@@ -20,5 +20,5 @@ public interface IEventUserRepository
     FindEventUsersFilter filter, 
     CancellationToken cancellationToken);
   Task<DbEventUser> GetAsync(Guid eventUserId);
-  Task<bool> EditAsync(Guid eventUserId, JsonPatchDocument<DbEventUser> request, Guid senderId);
+  Task<bool> EditAsync(Guid eventUserId, JsonPatchDocument<DbEventUser> request);
 }

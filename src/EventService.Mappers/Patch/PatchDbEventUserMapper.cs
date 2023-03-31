@@ -14,6 +14,7 @@ public class PatchDbEventUserMapper : IPatchDbEventUserMapper
     {
       return null;
     }
+
     JsonPatchDocument<DbEventUser> dbEventUserPatch = new();
 
     foreach (Operation<EditEventUserRequest> item in request.Operations)
