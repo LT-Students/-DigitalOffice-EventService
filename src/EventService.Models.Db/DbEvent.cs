@@ -9,7 +9,6 @@ namespace LT.DigitalOffice.EventService.Models.Db;
 public class DbEvent
 {
   public const string TableName = "Events";
-
   public Guid Id { get; set; }
   public string Name { get; set; }
   public string Address { get; set; }
@@ -22,19 +21,18 @@ public class DbEvent
   public DateTime CreatedAtUtc { get; set; }
   public Guid? ModifiedBy { get; set; }
   public DateTime? ModifiedAtUtc { get; set; }
-
-  public ICollection<DbEventCategory> EventCategories { get; set; }
+  public ICollection<DbEventCategory> EventsCategories { get; set; }
   public ICollection<DbEventFile> Files { get; set; }
   public ICollection<DbEventImage> Images { get; set; }
-  public ICollection<DbEventUser> EventUsers { get; set; }
+  public ICollection<DbEventUser> Users { get; set; }
   public ICollection<DbEventComment> Comments { get; set; }
-
+  
   public DbEvent()
   {
-    EventCategories = new HashSet<DbEventCategory>();
+    EventsCategories = new HashSet<DbEventCategory>();
     Files = new HashSet<DbEventFile>();
     Images = new HashSet<DbEventImage>();
-    EventUsers = new HashSet<DbEventUser>();
+    Users = new HashSet<DbEventUser>();
     Comments = new HashSet<DbEventComment>();
   }
 
@@ -43,13 +41,13 @@ public class DbEvent
     public void Configure(EntityTypeBuilder<DbEvent> builder)
     {
       builder
-        .ToTable(DbEvent.TableName);
+        .ToTable(TableName);
 
       builder
         .HasKey(t => t.Id);
 
       builder
-        .HasMany(e => e.EventCategories)
+        .HasMany(e => e.EventsCategories)
         .WithOne(ec => ec.Event);
 
       builder
@@ -61,7 +59,7 @@ public class DbEvent
         .WithOne(ei => ei.Event);
 
       builder
-        .HasMany(e => e.EventUsers)
+        .HasMany(e => e.Users)
         .WithOne(eu => eu.Event);
     }
   }

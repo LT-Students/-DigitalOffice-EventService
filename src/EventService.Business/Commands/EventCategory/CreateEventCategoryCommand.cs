@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Business.Commands.EventCategory.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
-using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
 using LT.DigitalOffice.EventService.Validation.EventCategory.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;

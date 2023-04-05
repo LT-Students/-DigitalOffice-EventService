@@ -33,6 +33,7 @@ public class CreateEventUserCommand : ICreateEventUserCommand
   private readonly IEventRepository _eventRepository;
   private readonly IEmailService _emailService;
   private readonly IUserService _userService;
+  
   public CreateEventUserCommand(
     IAccessValidator accessValidator,
     IEventUserRepository repository,
@@ -113,7 +114,7 @@ public class CreateEventUserCommand : ICreateEventUserCommand
     }
 
     List<DbEventUser> dbEventUsers = _mapper.Map(request, dbEvent.Access, senderId);
-    await _repository.CreateAsync(dbEventUsers);
+    response.Body = await _repository.CreateAsync(dbEventUsers);
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
     await SendInviteEmailsAsync(dbEventUsers.Where(x => x.Status == EventUserStatus.Invited).Select(x => x.UserId).ToList(), dbEvent.Name);
