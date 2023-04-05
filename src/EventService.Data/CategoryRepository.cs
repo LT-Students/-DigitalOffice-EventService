@@ -3,9 +3,11 @@ using System.Linq;
 using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -35,6 +37,14 @@ public class CategoryRepository : ICategoryRepository
     await _provider.SaveAsync();
 
     return dbCategory.Id;
+  }
+
+  public Task<List<DbEventUser>> FindAsync(
+    Guid eventId, 
+    FindCategoriesFilter filter, 
+    CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
   }
 }
 
