@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Models.Dto.Models;
@@ -12,7 +11,7 @@ namespace LT.DigitalOffice.EventService.Business.Commands.Category.Interfaces;
 [AutoInject]
 public interface IFindCategoryCommand
 {
-  Task<FindResultResponse<List<CategoryInfo>>> ExecuteAsync(
+  Task<FindResultResponse<CategoryInfo>> ExecuteAsync(
     Guid eventId,
     FindCategoriesFilter filter,
     CancellationToken cancellationToken = default);

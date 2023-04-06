@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Business.Commands.Category.Interfaces;
@@ -24,13 +22,13 @@ public class CategoryController : ControllerBase
   }
   
   [HttpPost("find")]
-  public async Task<FindResultResponse<List<CategoryInfo>>> FindCategoryFilter(
+  public async Task<FindResultResponse<CategoryInfo>> FindCategoryFilter(
     [FromServices] IFindCategoryCommand command,
-    [FromQuery] Guid eventId,
+    [FromQuery] Guid categoryId,
     [FromQuery] FindCategoriesFilter filter,
     CancellationToken cancellationToken)
   {
-    return await command.ExecuteAsync(eventId: eventId, filter: filter, cancellationToken: cancellationToken);
+    return await command.ExecuteAsync(eventId: categoryId, filter: filter, cancellationToken: cancellationToken);
   }
 }
 

@@ -13,7 +13,7 @@ public interface ICategoryRepository
 {
   bool DoesExistAllAsync(List<Guid> categoriesIds);
   Task<Guid?> CreateAsync(DbCategory dbCategory);
-  Task<List<DbEventUser>> FindAsync(
+  Task<(List<DbCategory> dbCategories, int totalCount)> FindAsync(
     Guid eventId, 
     FindCategoriesFilter filter, 
     CancellationToken cancellationToken);

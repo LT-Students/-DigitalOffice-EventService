@@ -10,6 +10,9 @@ public record FindCategoriesFilter : BaseFindFilter
   public string UserFullNameIncludeSubstring { get; set; }
 
   [FromQuery(Name = "color")]
-  public CategoryColor Color { get; set; }
+  public CategoryColor? Color { get; set; }
+  
+  [FromQuery(Name = "isActive")]
+  public bool? IsActive { get; set; }
 }
 

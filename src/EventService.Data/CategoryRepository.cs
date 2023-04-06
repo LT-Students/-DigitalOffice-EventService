@@ -15,6 +15,30 @@ public class CategoryRepository : ICategoryRepository
 {
   private readonly IDataProvider _provider;
 
+  private async Task<IQueryable<DbCategory>> CreateFindPredicates(
+  FindCategoriesFilter filter,
+  Guid categoryId)
+  {
+    IQueryable<DbCategory> dbCategories = _provider.Categories.AsNoTracking().Where(c => c.Id == categoryId);
+
+    if (!string.IsNullOrWhiteSpace(filter.UserFullNameIncludeSubstring))
+    {
+      dbCategories = dbCategories.Where(c => c.Name.Contains(filter.UserFullNameIncludeSubstring));
+    }
+
+    if (filter.Color.HasValue)
+    {
+      dbCategories = dbCategories.Where(c => c.Color == filter.Color);
+    }
+    
+    if (filter.IsActive.HasValue)
+    {
+      dbCategories = dbCategories.Where(c => c.IsActive == filter.IsActive);
+    }
+
+    return dbCategories;
+  }
+  
   public CategoryRepository(IDataProvider provider)
   {
     _provider = provider;
@@ -39,12 +63,24 @@ public class CategoryRepository : ICategoryRepository
     return dbCategory.Id;
   }
 
-  public Task<List<DbEventUser>> FindAsync(
-    Guid eventId, 
+  public async Task<(List<DbCategory> dbCategories, int totalCount)> FindAsync(
+    Guid categoryId, 
     FindCategoriesFilter filter, 
-    CancellationToken cancellationToken)
+    CancellationToken cancellationToken = default)
   {
-    throw new NotImplementedException();
+    if (filter is null)
+    {
+      return default;
+    }
+
+    IQueryable<DbCategory> dbCategories = await CreateFindPredicates(filter, categoryId);
+
+    return (
+      await dbCategories
+        .Skip(filter.SkipCount)
+        .Take(filter.TakeCount)
+        .ToListAsync(cancellationToken),
+      await dbCategories.CountAsync(cancellationToken));
   }
 }
 
