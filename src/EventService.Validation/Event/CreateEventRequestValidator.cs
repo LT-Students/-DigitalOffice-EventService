@@ -47,8 +47,8 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
 
     RuleFor(ev => ev)
     .Must((x, _) =>
-        !x.Users.Select(u => u.UserId).Contains(contextAccessor.HttpContext.GetUserId()))
-    .WithMessage("Event organizer must not be in list of participants or invited.");
+        x.Users.Select(u => u.UserId).Contains(contextAccessor.HttpContext.GetUserId()))
+    .WithMessage("Event organizer must be in list of participants.");
 
     When(ev => ev.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0,
       () =>

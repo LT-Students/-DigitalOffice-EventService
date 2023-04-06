@@ -12,10 +12,10 @@ namespace LT.DigitalOffice.EventService.Controllers;
 public class EventController : ControllerBase
 {
   [HttpPost("create")]
-  public async Task<OperationResultResponse<bool>> CreateAsync(
+  public async Task<OperationResultResponse<Guid?>> CreateAsync(
     [FromServices] ICreateEventCommand command,
     [FromBody] CreateEventRequest request)
-  { 
+  {
     return await command.ExecuteAsync(request);
-  } 
+  }
 }

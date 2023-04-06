@@ -16,19 +16,19 @@ public class EventRepository : IEventRepository
     _provider = provider;
   }
 
-  public async Task<bool> CreateAsync(DbEvent dbEvent)
+  public async Task<Guid?> CreateAsync(DbEvent dbEvent)
   {
     if (dbEvent is null)
     {
-      return false;
+      return null;
     }
 
     _provider.Events.Add(dbEvent);
-    _provider.EventsUsers.AddRange(dbEvent.EventUsers);
-    _provider.EventsCategories.AddRange(dbEvent.EventCategories);
+    _provider.EventsUsers.AddRange(dbEvent.Users);
+    _provider.EventsCategories.AddRange(dbEvent.EventsCategories);
     await _provider.SaveAsync();
 
-    return true;
+    return dbEvent.Id;
   }
   public Task<bool> DoesExistAsync(Guid eventId)
   {

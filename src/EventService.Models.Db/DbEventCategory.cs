@@ -30,7 +30,7 @@ public class DbEventCategoryConfiguration : IEntityTypeConfiguration<DbEventCate
 
     builder
       .HasOne(ec => ec.Event)
-      .WithMany(e => e.EventCategories);
+      .WithMany(e => e.EventsCategories);
 
     builder
       .HasOne(ec => ec.Category)

@@ -1,24 +1,23 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
+using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.Event.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
+using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
+using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Models.Broker.Models;
 using Microsoft.AspNetCore.Http;
-using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
-using LT.DigitalOffice.EventService.Models.Db;
-using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.EventService.Models.Dto.Enums;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.Event;
 
@@ -83,18 +82,18 @@ public class CreateEventCommand : ICreateEventCommand
     _emailService = emailService;
   }
 
-  public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateEventRequest request)
+  public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventRequest request)
   {
     Guid senderId = _contextAccessor.HttpContext.GetUserId();
     bool hasSenderRights = await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers);
 
     if (!hasSenderRights)
     {
-      return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
+      return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden);
     }
 
 
-    OperationResultResponse<bool> response = new();
+    OperationResultResponse<Guid?> response = new();
 
     if (request.Users.Distinct().Count() != request.Users.Count())
     {
@@ -103,7 +102,7 @@ public class CreateEventCommand : ICreateEventCommand
     }
 
     if (request.CategoriesIds.Distinct().Count() != request.CategoriesIds.Count())
-    { 
+    {
       response.Errors = new List<string>() { "Some duplicate categories have been removed from the list." };
       request.CategoriesIds = request.CategoriesIds.Distinct().ToList();
     }
@@ -111,7 +110,7 @@ public class CreateEventCommand : ICreateEventCommand
     ValidationResult validationResult = await _validator.ValidateAsync(request);
     if (!validationResult.IsValid)
     {
-      return _responseCreator.CreateFailureResponse<bool>(
+      return _responseCreator.CreateFailureResponse<Guid?>(
         HttpStatusCode.BadRequest,
         validationResult.Errors.Select(er => er.ErrorMessage).ToList());
     };
@@ -120,9 +119,9 @@ public class CreateEventCommand : ICreateEventCommand
 
     response.Body = await _eventRepository.CreateAsync(dbEvent);
 
-    await SendInviteEmailsAsync(dbEvent.EventUsers.Select(x => x.UserId).ToList(), dbEvent.Name);
+    await SendInviteEmailsAsync(dbEvent.Users.Select(x => x.UserId).ToList(), dbEvent.Name);
 
-    if (!response.Body)
+    if (response.Body is null)
     {
       _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
     }
