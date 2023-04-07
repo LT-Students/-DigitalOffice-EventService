@@ -2,12 +2,12 @@
 using System.Linq;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
-using LT.DigitalOffice.EventService.Data;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
 using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LT.DigitalOffice.EventService.Validation.Event;
 
@@ -22,7 +22,7 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       .MaximumLength(150)
       .WithMessage("Name should not exceed maximum length of 150 symbols");
 
-    When(ev => !string.IsNullOrWhiteSpace(ev.Description), 
+    When(ev => !string.IsNullOrWhiteSpace(ev.Description),
       () =>
     {
       RuleFor(ev => ev.Description)
@@ -56,16 +56,21 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
         RuleFor(ev => ev)
         .Must((ev, _) =>
         {
-            return !ev.Users.Any(user =>
-              user.NotifyAtUtc != null && (user.NotifyAtUtc < DateTime.UtcNow || user.NotifyAtUtc > ev.Date));
-          })
+          return !ev.Users.Any(user =>
+            user.NotifyAtUtc != null && (user.NotifyAtUtc < DateTime.UtcNow || user.NotifyAtUtc > ev.Date));
+        })
           .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now or later than date of the event");
       });
 
-    RuleFor(ev => ev.CategoriesIds)
-      .Must(categoryRepository.DoesExistAllAsync)
-      .WithMessage("Some of categories in the list doesn't exist.")
-      .Must(cat => cat.Count < 6)
-      .WithMessage("Count of categories to event must be no more than 5");
+    When(ev => !ev.CategoriesIds.IsNullOrEmpty(),
+      () =>
+      {
+        RuleFor(ev => ev.CategoriesIds)
+        .Must(categoryRepository.DoesExistAllAsync)
+        .WithMessage("Some of categories in the list doesn't exist.")
+        .Must(cat => cat.Count < 6)
+        .WithMessage("Count of categories to event must be no more than 5");
+      });
+
   }
 }

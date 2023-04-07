@@ -18,6 +18,5 @@ public record CreateEventRequest
   public AccessType Access { get; set; }
   [Required]
   public List<UserRequest> Users { get; set; }
-  [Required]
   public List<Guid> CategoriesIds { get; set; }
 }
