@@ -7,7 +7,7 @@ namespace LT.DigitalOffice.EventService.Models.Dto.Models;
 public record EventUserInfo
 {
   public Guid Id { get; set; }
-  public EventUserStatus Status { get; set; }
+  public string Status { get; set; }
   public DateTime? NotifyAtUtc { get; set; }
   public List<UserInfo> UserInfo { get; set; }
 }

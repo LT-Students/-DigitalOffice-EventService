@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LT.DigitalOffice.EventService.Mappers.Models.Interface;
 using LT.DigitalOffice.EventService.Models.Db;
@@ -13,9 +14,9 @@ public class EventUserInfoMapper : IEventUserInfoMapper
     return eventUsers?.Select(eu => new EventUserInfo
     {
       Id = eu.Id,
-      Status = eu.Status,
+      Status = eu.Status.ToString(),
       NotifyAtUtc = eu.NotifyAtUtc,
-      UserInfo = userInfos
+      UserInfo = userInfos.Where(u => u.UserId == eu.UserId).ToList(),
     }).ToList();
   }
 }
