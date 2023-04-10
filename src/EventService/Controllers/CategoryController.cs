@@ -23,12 +23,11 @@ public class CategoryController : ControllerBase
   
   [HttpPost("find")]
   public async Task<FindResultResponse<CategoryInfo>> FindCategoryFilter(
-    [FromServices] IFindCategoryCommand command,
-    [FromQuery] Guid categoryId,
+    [FromServices] IFindCategoriesCommand command,
     [FromQuery] FindCategoriesFilter filter,
-    CancellationToken cancellationToken)
+    CancellationToken ct)
   {
-    return await command.ExecuteAsync(eventId: categoryId, filter: filter, cancellationToken: cancellationToken);
+    return await command.ExecuteAsync(filter: filter, cancellationToken: ct);
   }
 }
 

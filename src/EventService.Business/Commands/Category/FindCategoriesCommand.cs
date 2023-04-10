@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +16,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.Category;
 
-public class FindCategoryCommand : IFindCategoryCommand
+public class FindCategoriesCommand : IFindCategoriesCommand
 {
   private readonly ICategoryRepository _categoryRepository;
   private readonly IBaseFindFilterValidator _filterValidator;
@@ -25,7 +24,7 @@ public class FindCategoryCommand : IFindCategoryCommand
   private readonly ICategoryInfoMapper _mapper;
   private readonly IResponseCreator _responseCreator;
 
-  public FindCategoryCommand(
+  public FindCategoriesCommand(
   ICategoryRepository categoryRepository,
   IBaseFindFilterValidator filterValidator,
   IHttpContextAccessor contextAccessor,
@@ -41,7 +40,6 @@ public class FindCategoryCommand : IFindCategoryCommand
   
   
   public async Task<FindResultResponse<CategoryInfo>> ExecuteAsync(
-    Guid categoryId, 
     FindCategoriesFilter filter, 
     CancellationToken cancellationToken = default)
   {
@@ -51,7 +49,7 @@ public class FindCategoryCommand : IFindCategoryCommand
         HttpStatusCode.BadRequest, errors);
     }
     
-    (List<DbCategory> dbCategories, int totalCount) = await _categoryRepository.FindAsync(categoryId, filter, cancellationToken);
+    (List<DbCategory> dbCategories, int totalCount) = await _categoryRepository.FindAsync(filter, cancellationToken);
 
     _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
 

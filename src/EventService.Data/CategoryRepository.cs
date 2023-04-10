@@ -15,25 +15,24 @@ public class CategoryRepository : ICategoryRepository
 {
   private readonly IDataProvider _provider;
 
-  private async Task<IQueryable<DbCategory>> CreateFindPredicates(
-  FindCategoriesFilter filter,
-  Guid categoryId)
+  private IQueryable<DbCategory> CreateFindPredicates(
+  FindCategoriesFilter filter)
   {
-    IQueryable<DbCategory> dbCategories = _provider.Categories.AsNoTracking().Where(c => c.Id == categoryId);
+    IQueryable<DbCategory> dbCategories = _provider.Categories.AsNoTracking();
 
-    if (!string.IsNullOrWhiteSpace(filter.UserFullNameIncludeSubstring))
+    if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
     {
-      dbCategories = dbCategories.Where(c => c.Name.Contains(filter.UserFullNameIncludeSubstring));
+      dbCategories = dbCategories.Where(c => c.Name.Contains(filter.NameIncludeSubstring));
     }
 
     if (filter.Color.HasValue)
     {
       dbCategories = dbCategories.Where(c => c.Color == filter.Color);
     }
-    
-    if (filter.IsActive.HasValue)
+
+    if (!filter.IncludeDeactivated)
     {
-      dbCategories = dbCategories.Where(c => c.IsActive == filter.IsActive);
+      dbCategories = dbCategories.Where(c => c.IsActive);
     }
 
     return dbCategories;
@@ -64,7 +63,6 @@ public class CategoryRepository : ICategoryRepository
   }
 
   public async Task<(List<DbCategory> dbCategories, int totalCount)> FindAsync(
-    Guid categoryId, 
     FindCategoriesFilter filter, 
     CancellationToken cancellationToken = default)
   {
@@ -73,7 +71,7 @@ public class CategoryRepository : ICategoryRepository
       return default;
     }
 
-    IQueryable<DbCategory> dbCategories = await CreateFindPredicates(filter, categoryId);
+    IQueryable<DbCategory> dbCategories = CreateFindPredicates(filter);
 
     return (
       await dbCategories

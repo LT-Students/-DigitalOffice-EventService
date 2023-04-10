@@ -6,13 +6,13 @@ namespace LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 
 public record FindCategoriesFilter : BaseFindFilter
 {
-  [FromQuery(Name = "userFullNameIncludeSubstring")]
-  public string UserFullNameIncludeSubstring { get; set; }
+  [FromQuery(Name = "nameIncludeSubstring")]
+  public string NameIncludeSubstring { get; set; }
 
   [FromQuery(Name = "color")]
   public CategoryColor? Color { get; set; }
   
-  [FromQuery(Name = "isActive")]
-  public bool? IsActive { get; set; }
+  [FromQuery(Name = "includeDeactivated")]
+  public bool IncludeDeactivated { get; set; }
 }
 
