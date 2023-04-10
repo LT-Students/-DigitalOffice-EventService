@@ -84,8 +84,8 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
       new Dictionary<Func<Operation<EditEventUserRequest>, bool>, string>
       {
         {
-          x => string.IsNullOrEmpty(x.value?.ToString()) ||
-              (DateTime.TryParse(x.value.ToString(), out DateTime notifyAtUtc) &&
+          x => string.IsNullOrEmpty(x.value?.ToString().Trim()) ||
+              (DateTime.TryParse(x.value.ToString().Trim(), out DateTime notifyAtUtc) &&
                 notifyAtUtc < dbEvent.Date && notifyAtUtc > DateTime.UtcNow),
               EventUserRequestValidatorResource.IncorrectFormatNotifyAtUtc
         }

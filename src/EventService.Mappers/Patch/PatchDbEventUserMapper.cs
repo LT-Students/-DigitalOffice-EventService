@@ -3,6 +3,7 @@ using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LT.DigitalOffice.EventService.Mappers.Patch;
 
@@ -19,7 +20,13 @@ public class PatchDbEventUserMapper : IPatchDbEventUserMapper
 
     foreach (Operation<EditEventUserRequest> item in request.Operations)
     {
-      dbEventUserPatch.Operations.Add(new Operation<DbEventUser>(item.op, item.path, item.from, item.value));
+      dbEventUserPatch.Operations.Add(new Operation<DbEventUser>(
+        item.op,
+        item.path,
+        item.from,
+        string.IsNullOrEmpty(item.value?.ToString().Trim())
+          ? null
+          : item.value.ToString().Trim()));
     }
 
     return dbEventUserPatch;
