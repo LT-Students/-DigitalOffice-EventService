@@ -13,7 +13,7 @@ public class EventUserInfoMapper : IEventUserInfoMapper
     return eventUsers?.Select(eu => new EventUserInfo
     {
       Id = eu.Id,
-      Status = eu.Status.ToString(),
+      Status = eu.Status,
       NotifyAtUtc = eu.NotifyAtUtc,
       UserInfo = userInfos.Where(u => u.UserId == eu.UserId).ToList(),
     }).ToList();

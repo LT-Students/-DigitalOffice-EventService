@@ -58,7 +58,7 @@ public class EventUserRepository : IEventUserRepository
     IQueryable<DbEventUser> eventUsersQuery = _provider.EventsUsers.AsNoTracking().Where(eu =>
       eu.EventId == eventId);
 
-    if (filter.Status is not null)
+    if (filter.Status.HasValue)
     {
       eventUsersQuery = eventUsersQuery.Where(s=> s.Status == filter.Status);
     }
