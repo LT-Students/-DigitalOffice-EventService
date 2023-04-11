@@ -60,7 +60,7 @@ public class EventUserRepository : IEventUserRepository
 
     if (filter.Status.HasValue)
     {
-      eventUsersQuery = eventUsersQuery.Where(s=> s.Status == filter.Status);
+      eventUsersQuery = eventUsersQuery.Where(s => s.Status == filter.Status);
     }
 
     return eventUsersQuery.ToListAsync(cancellationToken: cancellationToken);
