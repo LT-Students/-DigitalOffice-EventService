@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Business.Commands.Category.Interfaces;
@@ -8,7 +7,6 @@ using LT.DigitalOffice.EventService.Mappers.Models.Interface;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Models;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Validators.Interfaces;
@@ -43,12 +41,6 @@ public class FindCategoriesCommand : IFindCategoriesCommand
     FindCategoriesFilter filter, 
     CancellationToken cancellationToken = default)
   {
-    if (!_filterValidator.ValidateCustom(filter, out List<string> errors))
-    {
-      return _responseCreator.CreateFailureFindResponse<CategoryInfo>(
-        HttpStatusCode.BadRequest, errors);
-    }
-    
     (List<DbCategory> dbCategories, int totalCount) = await _categoryRepository.FindAsync(filter, cancellationToken);
 
     return new FindResultResponse<CategoryInfo>(
