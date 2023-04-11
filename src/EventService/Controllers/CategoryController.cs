@@ -21,7 +21,7 @@ public class CategoryController : ControllerBase
     return await command.ExecuteAsync(request);
   }
   
-  [HttpPost("find")]
+  [HttpGet("find")]
   public async Task<FindResultResponse<CategoryInfo>> FindCategoryFilter(
     [FromServices] IFindCategoriesCommand command,
     [FromQuery] FindCategoriesFilter filter,

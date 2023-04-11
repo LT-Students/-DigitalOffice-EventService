@@ -51,8 +51,6 @@ public class FindCategoriesCommand : IFindCategoriesCommand
     
     (List<DbCategory> dbCategories, int totalCount) = await _categoryRepository.FindAsync(filter, cancellationToken);
 
-    _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
-
     return new FindResultResponse<CategoryInfo>(
       body: dbCategories.ConvertAll(_mapper.Map),
       totalCount: totalCount);

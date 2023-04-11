@@ -12,7 +12,7 @@ public record FindCategoriesFilter : BaseFindFilter
   [FromQuery(Name = "color")]
   public CategoryColor? Color { get; set; }
   
-  [FromQuery(Name = "includeDeactivated")]
-  public bool IncludeDeactivated { get; set; }
+  [FromQuery(Name = "isAscendingSort")]
+  public bool? IsAscendingSort { get; set; }
 }
 

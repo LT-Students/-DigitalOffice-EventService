@@ -18,7 +18,7 @@ public class CategoryRepository : ICategoryRepository
   private IQueryable<DbCategory> CreateFindPredicates(
   FindCategoriesFilter filter)
   {
-    IQueryable<DbCategory> dbCategories = _provider.Categories.AsNoTracking();
+    IQueryable<DbCategory> dbCategories = _provider.Categories.AsNoTracking().Where(c => c.IsActive);
 
     if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
     {
@@ -29,10 +29,12 @@ public class CategoryRepository : ICategoryRepository
     {
       dbCategories = dbCategories.Where(c => c.Color == filter.Color);
     }
-
-    if (!filter.IncludeDeactivated)
+    
+    if (filter.IsAscendingSort.HasValue)
     {
-      dbCategories = dbCategories.Where(c => c.IsActive);
+      dbCategories = filter.IsAscendingSort.Value
+        ? dbCategories.OrderBy(c => c.Id)
+        : dbCategories.OrderByDescending(c => c.Id);
     }
 
     return dbCategories;
