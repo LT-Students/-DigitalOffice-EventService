@@ -12,9 +12,9 @@ public class CategoryInfoMapper : ICategoryInfoMapper
       ? null
       : new CategoryInfo 
       {
-      Id = dbCategory.Id, 
-      Name = dbCategory.Name, 
-      Color = dbCategory.Color 
+        Id = dbCategory.Id, 
+        Name = dbCategory.Name, 
+        Color = dbCategory.Color 
       };
   }
 }

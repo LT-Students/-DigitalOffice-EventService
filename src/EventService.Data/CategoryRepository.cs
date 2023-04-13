@@ -33,8 +33,8 @@ public class CategoryRepository : ICategoryRepository
     if (filter.IsAscendingSort.HasValue)
     {
       dbCategories = filter.IsAscendingSort.Value
-        ? dbCategories.OrderBy(c => c.Id)
-        : dbCategories.OrderByDescending(c => c.Id);
+        ? dbCategories.OrderBy(c => c.Name)
+        : dbCategories.OrderByDescending(c => c.Name);
     }
 
     return dbCategories;
