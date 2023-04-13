@@ -6,14 +6,12 @@ using LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef;
 using LT.DigitalOffice.EventService.Models.Dto.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
-using LT.DigitalOffice.Kernel.BrokerSupport.Helpers;
 using LT.DigitalOffice.Kernel.BrokerSupport.Middlewares.Token;
 using LT.DigitalOffice.Kernel.Configurations;
 using LT.DigitalOffice.Kernel.EFSupport.Extensions;
 using LT.DigitalOffice.Kernel.EFSupport.Helpers;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
-using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
@@ -31,28 +29,6 @@ public class Startup : BaseApiInfo
 
   public const string CorsPolicyName = "LtDoCorsPolicy";
   public IConfiguration Configuration { get; }
-
-  private void ConfigureMassTransit(IServiceCollection services)
-  {
-    (string username, string password) = RabbitMqCredentialsHelper
-      .Get(_rabbitMqConfig, _serviceInfoConfig);
-
-    services.AddMassTransit(busConfigurator =>
-    {
-      busConfigurator.UsingRabbitMq((context, cfg) =>
-      {
-        cfg.Host(_rabbitMqConfig.Host, "/", host =>
-        {
-          host.Username(username);
-          host.Password(password);
-        });
-      });
-
-      busConfigurator.AddRequestClients(_rabbitMqConfig);
-    });
-
-    services.AddMassTransitHostedService();
-  }
 
   public Startup(IConfiguration configuration)
   {
@@ -106,7 +82,7 @@ public class Startup : BaseApiInfo
 
     services.AddBusinessObjects();
 
-    ConfigureMassTransit(services);
+    services.ConfigureMassTransit(_rabbitMqConfig);
 
     services.AddControllers()
       .AddJsonOptions(options =>
