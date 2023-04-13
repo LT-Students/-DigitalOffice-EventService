@@ -4,6 +4,7 @@ using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -25,7 +26,12 @@ public class EventRepository : IEventRepository
 
     _provider.Events.Add(dbEvent);
     _provider.EventsUsers.AddRange(dbEvent.Users);
-    _provider.EventsCategories.AddRange(dbEvent.EventsCategories);
+
+    if (!dbEvent.EventsCategories.IsNullOrEmpty())
+    {
+      _provider.EventsCategories.AddRange(dbEvent.EventsCategories);
+    }
+
     await _provider.SaveAsync();
 
     return dbEvent.Id;

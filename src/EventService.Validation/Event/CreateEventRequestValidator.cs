@@ -3,6 +3,7 @@ using System.Linq;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
+using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
 using LT.DigitalOffice.Kernel.Extensions;
@@ -39,22 +40,29 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       .WithMessage("The event date must be later than the date the event was created");
 
     RuleFor(ev => ev.Users)
-     .NotEmpty()
-     .WithMessage("User list must not be empty.")
-     .MustAsync(async (users, _) =>
-       await userService.CheckUsersExistenceAsync(users.Select(userRequest => userRequest.UserId).ToList()))
-     .WithMessage("Some users doesn't exist.");
-
-    RuleFor(ev => ev)
-    .Must((x, _) =>
+      .Cascade(CascadeMode.StopOnFirstFailure)
+      .NotEmpty()
+      .WithMessage("User list must not be empty.")
+      .Must((x, _) =>
         x.Users.Select(u => u.UserId).Contains(contextAccessor.HttpContext.GetUserId()))
-    .WithMessage("Event organizer must be in list of participants.");
+      .WithMessage("Event organizer must be in list of participants.")
+      .MustAsync(async (users, _) =>
+      await userService.CheckUsersExistenceAsync(users.Select(userRequest => userRequest.UserId).ToList()))
+      .WithMessage("Some users doesn't exist.");
+
+    When(ev => ev.Access == AccessType.Closed,
+      () =>
+      {
+        RuleFor(ev => ev.Users)
+        .Must(x => x.Count > 1)
+        .WithMessage("There should be at least one invited user in closed event");
+      });
 
     When(ev => ev.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0,
       () =>
       {
         RuleFor(ev => ev)
-        .Must((ev, _) =>
+        .Must(ev =>
         {
           return !ev.Users.Any(user =>
             user.NotifyAtUtc != null && (user.NotifyAtUtc < DateTime.UtcNow || user.NotifyAtUtc > ev.Date));
@@ -71,6 +79,5 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
         .Must(cat => cat.Count < 6)
         .WithMessage("Count of categories to event must be no more than 5");
       });
-
   }
 }

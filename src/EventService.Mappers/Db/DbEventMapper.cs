@@ -14,7 +14,7 @@ public class DbEventMapper : IDbEventMapper
     Guid senderId)
   {
     Guid eventId = Guid.NewGuid();
-    
+
     return request is null
       ? null
       : new DbEvent
@@ -30,15 +30,15 @@ public class DbEventMapper : IDbEventMapper
         CreatedBy = senderId,
         CreatedAtUtc = DateTime.UtcNow,
         Users = request.Users.Select(u => new DbEventUser
-      {
-        Id = Guid.NewGuid(),
-        EventId = eventId,
-        UserId = u.UserId,
-        Status = u.UserId == senderId? EventUserStatus.Participant: EventUserStatus.Invited,
-        NotifyAtUtc = u.NotifyAtUtc,
-        CreatedBy = senderId,
-        CreatedAtUtc = DateTime.UtcNow
-      }).ToList(),
+        {
+          Id = Guid.NewGuid(),
+          EventId = eventId,
+          UserId = u.UserId,
+          Status = u.UserId == senderId ? EventUserStatus.Participant : EventUserStatus.Invited,
+          NotifyAtUtc = u.NotifyAtUtc,
+          CreatedBy = senderId,
+          CreatedAtUtc = DateTime.UtcNow
+        }).ToList(),
         EventsCategories = request.CategoriesIds is null
         ? null
         : request.CategoriesIds.Select(categoryId => new DbEventCategory

@@ -56,7 +56,7 @@ public class CreateEventCategoryCommand : ICreateEventCategoryCommand
     {
       return _responseCreator.CreateFailureResponse<bool>(
         HttpStatusCode.BadRequest,
-        validationResult.Errors.Select(vf => vf.ErrorMessage).ToList());
+        validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
     OperationResultResponse<bool> response = new();

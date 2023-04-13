@@ -18,18 +18,15 @@ using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Models.Broker.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.Event;
 
 public class CreateEventCommand : ICreateEventCommand
 {
   private readonly IEventRepository _eventRepository;
-  private readonly IEventUserRepository _eventUserRepository;
-  private readonly IEventCategoryRepository _eventCategoryRepository;
   private readonly ICreateEventRequestValidator _validator;
   private readonly IDbEventMapper _eventMapper;
-  private readonly IDbEventUserMapper _eventUserMapper;
-  private readonly IDbEventCategoryMapper _eventCategoryMapper;
   private readonly IAccessValidator _accessValidator;
   private readonly IResponseCreator _responseCreator;
   private readonly IHttpContextAccessor _contextAccessor;
@@ -56,12 +53,8 @@ public class CreateEventCommand : ICreateEventCommand
 
   public CreateEventCommand(
     IEventRepository repository,
-    IEventUserRepository eventUserRepository,
-    IEventCategoryRepository eventCategoryRepository,
     ICreateEventRequestValidator validator,
     IDbEventMapper eventMapper,
-    IDbEventUserMapper eventUserMapper,
-    IDbEventCategoryMapper eventCategoryMapper,
     IAccessValidator accessValidator,
     IResponseCreator responseCreator,
     IHttpContextAccessor contextAccessor,
@@ -69,11 +62,7 @@ public class CreateEventCommand : ICreateEventCommand
     IEmailService emailService)
   {
     _eventRepository = repository;
-    _eventUserRepository = eventUserRepository;
-    _eventCategoryRepository = eventCategoryRepository;
     _eventMapper = eventMapper;
-    _eventUserMapper = eventUserMapper;
-    _eventCategoryMapper = eventCategoryMapper;
     _validator = validator;
     _accessValidator = accessValidator;
     _responseCreator = responseCreator;
@@ -85,25 +74,22 @@ public class CreateEventCommand : ICreateEventCommand
   public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventRequest request)
   {
     Guid senderId = _contextAccessor.HttpContext.GetUserId();
-    bool hasSenderRights = await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers);
 
-    if (!hasSenderRights)
+    if (!await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers))
     {
       return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden);
     }
-
 
     OperationResultResponse<Guid?> response = new();
 
     if (request.Users.Distinct().Count() != request.Users.Count())
     {
-      response.Errors = new List<string>() { "Some duplicate users have been removed from the list." };
       request.Users = request.Users.Distinct().ToList();
     }
 
-    if (request.CategoriesIds.Distinct().Count() != request.CategoriesIds.Count())
+    if (!request.CategoriesIds.IsNullOrEmpty()
+      && request.CategoriesIds.Distinct().Count() != request.CategoriesIds.Count())
     {
-      response.Errors = new List<string>() { "Some duplicate categories have been removed from the list." };
       request.CategoriesIds = request.CategoriesIds.Distinct().ToList();
     }
 
@@ -112,8 +98,8 @@ public class CreateEventCommand : ICreateEventCommand
     {
       return _responseCreator.CreateFailureResponse<Guid?>(
         HttpStatusCode.BadRequest,
-        validationResult.Errors.Select(er => er.ErrorMessage).ToList());
-    };
+        validationResult.Errors.ConvertAll(er => er.ErrorMessage));
+    }
 
     DbEvent dbEvent = _eventMapper.Map(request, senderId);
 
@@ -121,14 +107,9 @@ public class CreateEventCommand : ICreateEventCommand
 
     await SendInviteEmailsAsync(dbEvent.Users.Select(x => x.UserId).ToList(), dbEvent.Name);
 
-    if (response.Body is null)
-    {
-      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-    }
-    else
-    {
-      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
-    }
+    _contextAccessor.HttpContext.Response.StatusCode = response.Body is null
+      ? (int)HttpStatusCode.BadRequest
+      : (int)HttpStatusCode.Created;
 
     return response;
   }

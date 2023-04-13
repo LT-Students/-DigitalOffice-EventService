@@ -110,7 +110,7 @@ public class CreateEventUserCommand : ICreateEventUserCommand
     {
       return _responseCreator.CreateFailureResponse<bool>(
         HttpStatusCode.BadRequest,
-        validationResult.Errors.Select(er => er.ErrorMessage).ToList());
+        validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
     List<DbEventUser> dbEventUsers = _mapper.Map(request, dbEvent.Access, senderId);
