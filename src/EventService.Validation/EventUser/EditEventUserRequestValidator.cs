@@ -63,10 +63,10 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
         {
           x => Enum.TryParse(x.value?.ToString(), out EventUserStatus newStatus) &&
               ((newStatus == EventUserStatus.Participant &&
-                (((status == EventUserStatus.Refused || status == EventUserStatus.Invited) && isUser)||
-                  (status == EventUserStatus.Discarded && isAddEditRemoveUsers)))||
+                (((status == EventUserStatus.Refused || status == EventUserStatus.Invited) && isUser) ||
+                  (status == EventUserStatus.Discarded && isAddEditRemoveUsers))) ||
                (newStatus == EventUserStatus.Refused &&
-                  (status == EventUserStatus.Participant || status == EventUserStatus.Invited) && isUser)||
+                  (status == EventUserStatus.Participant || status == EventUserStatus.Invited) && isUser) ||
                 (newStatus == EventUserStatus.Discarded &&
                   status == EventUserStatus.Participant && isAddEditRemoveUsers)),
               EventUserRequestValidatorResource.NotHaveRightsToSetTheStaus
