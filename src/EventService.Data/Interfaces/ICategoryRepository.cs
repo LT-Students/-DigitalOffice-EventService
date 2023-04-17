@@ -15,5 +15,5 @@ public interface ICategoryRepository
   Task<Guid?> CreateAsync(DbCategory dbCategory);
   Task<(List<DbCategory> dbCategories, int totalCount)> FindAsync(
     FindCategoriesFilter filter, 
-    CancellationToken cancellationToken);
+    CancellationToken cancellationToken = default);
 }
