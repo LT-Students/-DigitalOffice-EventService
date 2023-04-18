@@ -86,12 +86,11 @@ public class CreateEventUserCommand : ICreateEventUserCommand
         new List<string> { "This event doesn't exist." });
     }
 
-    if ((dbEvent.Access == AccessType.Closed && !await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers))
-        || !(dbEvent.Access == AccessType.Opened
-          && (await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers)
-            || (!await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers)
-              && request.Users.Count == 1
-              && request.Users.Exists(x => x.UserId == senderId)))))
+    bool userHasRight = await _accessValidator.HasRightsAsync(senderId, Rights.AddEditRemoveUsers);
+
+    if ((dbEvent.Access == AccessType.Closed && !userHasRight) ||
+        (dbEvent.Access == AccessType.Opened &&
+          !(!userHasRight && request.Users.Count == 1 && request.Users.Exists(x => x.UserId == senderId) || userHasRight)))
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }

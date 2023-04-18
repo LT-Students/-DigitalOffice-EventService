@@ -15,7 +15,7 @@ public class EventUserInfoMapper : IEventUserInfoMapper
       Id = eu.Id,
       Status = eu.Status,
       NotifyAtUtc = eu.NotifyAtUtc,
-      UserInfo = userInfos
+      UserInfo = userInfos.Where(u => u.UserId == eu.UserId).ToList(),
     }).ToList();
   }
 }
