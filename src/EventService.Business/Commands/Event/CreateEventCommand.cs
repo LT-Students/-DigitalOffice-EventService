@@ -10,6 +10,7 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
@@ -18,7 +19,6 @@ using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Models.Broker.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.Event;
 
@@ -82,16 +82,10 @@ public class CreateEventCommand : ICreateEventCommand
 
     OperationResultResponse<Guid?> response = new();
 
-    if (request.Users.Distinct().Count() != request.Users.Count())
-    {
-      request.Users = request.Users.Distinct().ToList();
-    }
+    request.Users.Add(new UserRequest { UserId = senderId });
+    request.Users = request.Users.Distinct().ToList();
+    request.CategoriesIds = request.CategoriesIds?.Distinct().ToList();
 
-    if (!request.CategoriesIds.IsNullOrEmpty()
-      && request.CategoriesIds.Distinct().Count() != request.CategoriesIds.Count())
-    {
-      request.CategoriesIds = request.CategoriesIds.Distinct().ToList();
-    }
 
     ValidationResult validationResult = await _validator.ValidateAsync(request);
     if (!validationResult.IsValid)

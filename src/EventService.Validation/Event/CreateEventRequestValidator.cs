@@ -27,8 +27,8 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       () =>
     {
       RuleFor(ev => ev.Description)
-      .MaximumLength(500)
-      .WithMessage("Description should not exceed maximum length of 500 symbols");
+        .MaximumLength(500)
+        .WithMessage("Description should not exceed maximum length of 500 symbols");
     });
 
     RuleFor(ev => ev.Address)
@@ -40,44 +40,36 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       .WithMessage("The event date must be later than the date the event was created");
 
     RuleFor(ev => ev.Users)
-      .Cascade(CascadeMode.StopOnFirstFailure)
+      .Cascade(CascadeMode.Stop)
       .NotEmpty()
       .WithMessage("User list must not be empty.")
-      .Must((x, _) =>
-        x.Users.Select(u => u.UserId).Contains(contextAccessor.HttpContext.GetUserId()))
+      .Must((ev, users) =>
+        users.Select(user => user.UserId).Contains(contextAccessor.HttpContext.GetUserId()))
       .WithMessage("Event organizer must be in list of participants.")
       .MustAsync(async (users, _) =>
-      await userService.CheckUsersExistenceAsync(users.Select(userRequest => userRequest.UserId).ToList()))
+        await userService.CheckUsersExistenceAsync(users.Select(userRequest => userRequest.UserId).ToList()))
       .WithMessage("Some users doesn't exist.");
 
     When(ev => ev.Access == AccessType.Closed,
       () =>
       {
         RuleFor(ev => ev.Users)
-        .Must(x => x.Count > 1)
-        .WithMessage("There should be at least one invited user in closed event");
+          .Must(users => users.Count > 1)
+          .WithMessage("There should be at least one invited user in closed event");
       });
 
-    When(ev => ev.Users.Select(r => r.NotifyAtUtc).ToList().Count > 0,
-      () =>
-      {
-        RuleFor(ev => ev)
-        .Must(ev =>
-        {
-          return !ev.Users.Any(user =>
-            user.NotifyAtUtc != null && (user.NotifyAtUtc < DateTime.UtcNow || user.NotifyAtUtc > ev.Date));
-        })
-          .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now or later than date of the event");
-      });
+    RuleFor(ev => ev.Users)
+      .Must((ev, users) => users.All(user => user.NotifyAtUtc is null || (user.NotifyAtUtc > DateTime.UtcNow && user.NotifyAtUtc < ev.Date)))
+      .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now or later than date of the event");
 
     When(ev => !ev.CategoriesIds.IsNullOrEmpty(),
       () =>
       {
         RuleFor(ev => ev.CategoriesIds)
-        .Must(categoryRepository.DoesExistAllAsync)
-        .WithMessage("Some of categories in the list doesn't exist.")
-        .Must(cat => cat.Count < 6)
-        .WithMessage("Count of categories to event must be no more than 5");
+          .Must(categoryRepository.DoesExistAllAsync)
+          .WithMessage("Some of categories in the list doesn't exist.")
+          .Must(cat => cat.Count < 6)
+          .WithMessage("Count of categories to event must be no more than 5");
       });
   }
 }
