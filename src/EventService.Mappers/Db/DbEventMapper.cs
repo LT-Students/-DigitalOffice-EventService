@@ -34,15 +34,15 @@ public class DbEventMapper : IDbEventMapper
     Guid eventId)
   {
     return request.CategoriesIds is null
-          ? null
-          : request.CategoriesIds.ConvertAll(categoryId => new DbEventCategory
-          {
-            Id = Guid.NewGuid(),
-            EventId = eventId,
-            CategoryId = categoryId,
-            CreatedBy = senderId,
-            CreatedAtUtc = DateTime.UtcNow
-          });
+      ? null
+      : request.CategoriesIds.ConvertAll(categoryId => new DbEventCategory
+      {
+        Id = Guid.NewGuid(),
+        EventId = eventId,
+        CategoryId = categoryId,
+        CreatedBy = senderId,
+        CreatedAtUtc = DateTime.UtcNow
+      });
   }
 
   public DbEvent Map(
