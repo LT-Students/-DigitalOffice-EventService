@@ -38,8 +38,8 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       .Must(d => d > DateTime.UtcNow)
       .WithMessage("The event date must be later than the date the event was created");
 
+    RuleLevelCascadeMode = CascadeMode.Stop;
     RuleFor(ev => ev.Users)
-      .Cascade(CascadeMode.Stop)
       .NotEmpty()
       .WithMessage("User list must not be empty.")
       .Must((ev, users) =>
