@@ -1,15 +1,50 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 
 namespace LT.DigitalOffice.EventService.Mappers.Db;
 
 public class DbEventMapper : IDbEventMapper
 {
+  private List<DbEventUser> MapEventUsers(
+    CreateEventRequest request,
+    Guid senderId,
+    Guid eventId)
+  {
+    return request.Users.ConvertAll(u => new DbEventUser
+    {
+      Id = Guid.NewGuid(),
+      EventId = eventId,
+      UserId = u.UserId,
+      Status = u.UserId == senderId
+        ? EventUserStatus.Participant
+        : EventUserStatus.Invited,
+      NotifyAtUtc = u.NotifyAtUtc,
+      CreatedBy = senderId,
+      CreatedAtUtc = DateTime.UtcNow
+    });
+  }
+
+  private List<DbEventCategory> MapEventCategories(
+    CreateEventRequest request,
+    Guid senderId,
+    Guid eventId)
+  {
+    return request.CategoriesIds is null
+          ? null
+          : request.CategoriesIds.ConvertAll(categoryId => new DbEventCategory
+          {
+            Id = Guid.NewGuid(),
+            EventId = eventId,
+            CategoryId = categoryId,
+            CreatedBy = senderId,
+            CreatedAtUtc = DateTime.UtcNow
+          });
+  }
+
   public DbEvent Map(
     CreateEventRequest request,
     Guid senderId)
@@ -30,26 +65,8 @@ public class DbEventMapper : IDbEventMapper
         IsActive = true,
         CreatedBy = senderId,
         CreatedAtUtc = DateTime.UtcNow,
-        Users = request.Users.ConvertAll(u => new DbEventUser
-        {
-          Id = Guid.NewGuid(),
-          EventId = eventId,
-          UserId = u.UserId,
-          Status = u.UserId == senderId ? EventUserStatus.Participant : EventUserStatus.Invited,
-          NotifyAtUtc = u.NotifyAtUtc,
-          CreatedBy = senderId,
-          CreatedAtUtc = DateTime.UtcNow
-        }),
-        EventsCategories = request.CategoriesIds is null
-          ? null
-          : request.CategoriesIds.ConvertAll(categoryId => new DbEventCategory
-          {
-            Id = Guid.NewGuid(),
-            EventId = eventId,
-            CategoryId = categoryId,
-            CreatedBy = senderId,
-            CreatedAtUtc = DateTime.UtcNow
-          })
+        Users = MapEventUsers(request, senderId, eventId),
+        EventsCategories = MapEventCategories(request, senderId, eventId),
       };
   }
 }
