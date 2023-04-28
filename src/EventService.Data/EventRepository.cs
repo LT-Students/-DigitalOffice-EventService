@@ -43,6 +43,6 @@ public class EventRepository : IEventRepository
 
   public async Task<DbEvent> GetAsync(Guid eventId)
   {
-    return await _provider.Events.FirstOrDefaultAsync(e => e.Id == eventId);
+    return await _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
   }
 }
