@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DigitalOffice.Models.Broker.Models.User;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
@@ -13,7 +14,6 @@ using LT.DigitalOffice.EventService.Models.Dto.Models;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser.Filter;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
-using LT.DigitalOffice.Models.Broker.Models;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.EventUser;
 

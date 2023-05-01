@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
+using LT.DigitalOffice.EventService.Broker.Configuration;
+using LT.DigitalOffice.EventService.Business.Helpers;
+using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef;
-using LT.DigitalOffice.EventService.Models.Dto.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
 using LT.DigitalOffice.Kernel.BrokerSupport.Middlewares.Token;
@@ -26,6 +28,14 @@ public class Startup : BaseApiInfo
 {
   private readonly BaseServiceInfoConfig _serviceInfoConfig;
   private readonly RabbitMqConfig _rabbitMqConfig;
+
+  private void CreateUsersBirthdays(IApplicationBuilder app)
+  {
+    var scope = app.ApplicationServices.CreateScope();
+    var usersBirthdaysGetter = scope.ServiceProvider.GetRequiredService<UsersBirthdaysGetter>();
+
+    usersBirthdaysGetter.Start();
+  }
 
   public const string CorsPolicyName = "LtDoCorsPolicy";
   public IConfiguration Configuration { get; }
@@ -84,6 +94,8 @@ public class Startup : BaseApiInfo
 
     services.ConfigureMassTransit(_rabbitMqConfig);
 
+    services.AddTransient<UsersBirthdaysGetter>();
+
     services.AddControllers()
       .AddJsonOptions(options =>
      {
@@ -97,6 +109,8 @@ public class Startup : BaseApiInfo
     app.UpdateDatabase<EventServiceDbContext>();
 
     app.UseForwardedHeaders();
+
+    CreateUsersBirthdays(app);
 
     app.UseExceptionsHandler(loggerFactory);
 

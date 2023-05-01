@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentValidation;
-using LT.DigitalOffice.Kernel.Validators;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
-using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
-using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Data.Interfaces;
-using Microsoft.AspNetCore.JsonPatch.Operations;
-using Microsoft.AspNetCore.JsonPatch;
 using LT.DigitalOffice.EventService.Models.Db;
-using LT.DigitalOffice.Kernel.Constants;
+using LT.DigitalOffice.EventService.Models.Dto.Enums;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
+using LT.DigitalOffice.EventService.Validation.EventCategory.EventUser.Resources;
+using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
-using Microsoft.AspNetCore.Http;
+using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.EventService.Validation.EventUser.Resources;
+using LT.DigitalOffice.Kernel.Validators;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.EventService.Validation.EventUser;
 

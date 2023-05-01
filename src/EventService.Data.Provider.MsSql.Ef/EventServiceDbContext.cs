@@ -13,6 +13,7 @@ public class EventServiceDbContext : DbContext, IDataProvider
   public DbSet<DbEventImage> EventImages { get; set; }
   public DbSet<DbEventUser> EventsUsers { get; set; }
   public DbSet<DbEventComment> EventComments { get; set; }
+  public DbSet<DbUserBirthday> UsersBirthdays { get; set; }
 
   public EventServiceDbContext(DbContextOptions<EventServiceDbContext> options)
     : base(options)

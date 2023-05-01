@@ -153,6 +153,24 @@ public class InitialTables : Migration
       });
   }
 
+  private void CreateUsersBitrthdaysTable(MigrationBuilder migrationBuilder)
+  {
+    migrationBuilder.CreateTable(
+      name: DbUserBirthday.TableName,
+      columns: table => new
+      {
+        UserId = table.Column<Guid>(nullable: false),
+        DateOfBirthday = table.Column<DateTime>(nullable: false),
+        IsActive = table.Column<bool>(nullable: false),
+        CreatedAtUtc = table.Column<DateTime>(nullable: false),
+        ModifiedAtUtc = table.Column<DateTime>(nullable: true)
+      },
+      constraints: table =>
+      {
+        table.PrimaryKey($"PK_{DbUserBirthday.TableName}", ef => ef.UserId);
+      });
+  }
+
   protected override void Up(MigrationBuilder migrationBuilder)
   {
     CreateEventsTable(migrationBuilder);
@@ -162,6 +180,7 @@ public class InitialTables : Migration
     CreateEventCommentsTable(migrationBuilder);
     CreateEventImagesTable(migrationBuilder);
     CreateEventFilesTable(migrationBuilder);
+    CreateUsersBitrthdaysTable(migrationBuilder);
   }
 
   protected override void Down(MigrationBuilder migrationBuilder)

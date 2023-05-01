@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using DigitalOffice.Models.Broker.Models.User;
 using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
