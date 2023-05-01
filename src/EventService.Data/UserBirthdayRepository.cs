@@ -18,23 +18,23 @@ namespace LT.DigitalOffice.EventService.Data
 
     public async Task UpdateUserBirthdatAsync(DbUserBirthday userBirthday)
     {
-      DbUserBirthday birthday = await _provider.UsersBirthdays.FirstOrDefaultAsync(b => b.UserId == userBirthday.UserId);
+      DbUserBirthday birthdayInDb = await _provider.UsersBirthdays.FirstOrDefaultAsync(b => b.UserId == userBirthday.UserId);
 
-      if (birthday is null && userBirthday.IsActive)
+      if (birthdayInDb is null && userBirthday.IsActive)
       {
         _provider.UsersBirthdays.Add(userBirthday);
       }
-      else if (birthday is not null &&
-        birthday.DateOfBirthday != userBirthday.DateOfBirthday &&
+      else if (birthdayInDb is not null &&
+        birthdayInDb.DateOfBirthday != userBirthday.DateOfBirthday &&
         userBirthday.IsActive)
       {
-        birthday.DateOfBirthday = userBirthday.DateOfBirthday;
-        birthday.ModifiedAtUtc = DateTime.UtcNow;
+        birthdayInDb.DateOfBirthday = userBirthday.DateOfBirthday;
+        birthdayInDb.ModifiedAtUtc = DateTime.UtcNow;
       }
-      else if (birthday is not null && userBirthday.IsActive)
+      else if (birthdayInDb is not null && birthdayInDb.IsActive != userBirthday.IsActive)
       {
-        birthday.IsActive = userBirthday.IsActive;
-        birthday.ModifiedAtUtc = DateTime.UtcNow;
+        birthdayInDb.IsActive = userBirthday.IsActive;
+        birthdayInDb.ModifiedAtUtc = DateTime.UtcNow;
       }
 
       await _provider.SaveAsync();
