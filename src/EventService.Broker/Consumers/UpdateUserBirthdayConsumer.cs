@@ -22,9 +22,11 @@ namespace LT.DigitalOffice.EventService.Broker.Consumers
     }
 
     public UpdateUserBirthdayConsumer(
-      IUserBirthdayRepository userBirthdayRepository)
+      IUserBirthdayRepository userBirthdayRepository,
+      IDbUserBirthdayMapper userBirthdayMapper)
     {
       _userBirthdayRepository = userBirthdayRepository;
+      _userBirthdayMapper = userBirthdayMapper;
     }
 
     public async Task Consume(ConsumeContext<IUpdateUserBirthdayPublish> context)
