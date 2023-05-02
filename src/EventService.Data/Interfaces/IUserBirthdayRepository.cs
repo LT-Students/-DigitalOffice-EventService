@@ -7,6 +7,6 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces
   [AutoInject]
   public interface IUserBirthdayRepository
   {
-    Task UpdateUserBirthdatAsync(DbUserBirthday usersBirthdays);
+    Task UpdateUserBirthdayAsync(DbUserBirthday usersBirthdays);
   }
 }

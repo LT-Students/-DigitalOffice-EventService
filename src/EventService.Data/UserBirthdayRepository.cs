@@ -16,7 +16,7 @@ namespace LT.DigitalOffice.EventService.Data
       _provider = provider;
     }
 
-    public async Task UpdateUserBirthdatAsync(DbUserBirthday userBirthday)
+    public async Task UpdateUserBirthdayAsync(DbUserBirthday userBirthday)
     {
       DbUserBirthday birthdayInDb = await _provider.UsersBirthdays.FirstOrDefaultAsync(b => b.UserId == userBirthday.UserId);
 

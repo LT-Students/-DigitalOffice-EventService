@@ -18,7 +18,7 @@ namespace LT.DigitalOffice.EventService.Broker.Consumers
         return;
       }
 
-      await _userBirthdayRepository.UpdateUserBirthdatAsync(_userBirthdayMapper.Map(publish));
+      await _userBirthdayRepository.UpdateUserBirthdayAsync(_userBirthdayMapper.Map(publish));
     }
 
     public UpdateUserBirthdayConsumer(

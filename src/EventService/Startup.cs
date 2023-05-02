@@ -4,7 +4,6 @@ using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.EventService.Broker.Configuration;
 using LT.DigitalOffice.EventService.Business.Helpers;
-using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
