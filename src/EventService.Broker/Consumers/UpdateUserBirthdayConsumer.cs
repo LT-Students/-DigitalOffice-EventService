@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DigitalOffice.Models.Broker.Publishing.Subscriber.User;
 using LT.DigitalOffice.EventService.Data.Interfaces;
-using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using MassTransit;
 
 namespace LT.DigitalOffice.EventService.Broker.Consumers
