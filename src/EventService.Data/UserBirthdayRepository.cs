@@ -27,7 +27,7 @@ namespace LT.DigitalOffice.EventService.Data
             UserId = userId,
             DateOfBirth = dateOfBirth.Value,
             IsActive = true,
-            CreatedAtUtc = dateOfBirth.Value
+            CreatedAtUtc = DateTime.UtcNow
         });
       }
       else if (existingBirthday is not null &&
