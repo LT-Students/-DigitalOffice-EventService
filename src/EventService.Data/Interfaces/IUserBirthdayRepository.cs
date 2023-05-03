@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using LT.DigitalOffice.EventService.Models.Db;
+﻿using System;
+using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Attributes;
 
 namespace LT.DigitalOffice.EventService.Data.Interfaces
@@ -7,6 +7,6 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces
   [AutoInject]
   public interface IUserBirthdayRepository
   {
-    Task UpdateUserBirthdayAsync(DbUserBirthday usersBirthdays);
+    Task UpdateUserBirthdayAsync(Guid userId, DateTime? dateOfBirth);
   }
 }

@@ -11,7 +11,7 @@ public class DbUserBirthday
 
   [Key]
   public Guid UserId { get; set; }
-  public DateTime DateOfBirthday { get; set; }
+  public DateTime DateOfBirth { get; set; }
   public bool IsActive { get; set; }
   public DateTime CreatedAtUtc { get; set; }
   public DateTime? ModifiedAtUtc { get; set; }

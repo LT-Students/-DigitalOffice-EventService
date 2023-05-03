@@ -160,7 +160,7 @@ public class InitialTables : Migration
       columns: table => new
       {
         UserId = table.Column<Guid>(nullable: false),
-        DateOfBirthday = table.Column<DateTime>(nullable: false),
+        DateOfBirth = table.Column<DateTime>(nullable: false),
         IsActive = table.Column<bool>(nullable: false),
         CreatedAtUtc = table.Column<DateTime>(nullable: false),
         ModifiedAtUtc = table.Column<DateTime>(nullable: true)

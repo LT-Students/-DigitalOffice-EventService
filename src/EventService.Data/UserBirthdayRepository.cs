@@ -16,25 +16,31 @@ namespace LT.DigitalOffice.EventService.Data
       _provider = provider;
     }
 
-    public async Task UpdateUserBirthdayAsync(DbUserBirthday userBirthday)
+    public async Task UpdateUserBirthdayAsync(Guid userId, DateTime? dateOfBirth)
     {
-      DbUserBirthday birthdayInDb = await _provider.UsersBirthdays.FirstOrDefaultAsync(b => b.UserId == userBirthday.UserId);
+      DbUserBirthday existingBirthday = await _provider.UsersBirthdays.FirstOrDefaultAsync(b => b.UserId == userId);
 
-      if (birthdayInDb is null && userBirthday.IsActive)
+      if (existingBirthday is null && dateOfBirth.HasValue)
       {
-        _provider.UsersBirthdays.Add(userBirthday);
+        _provider.UsersBirthdays.Add(new DbUserBirthday
+          {
+            UserId = userId,
+            DateOfBirth = dateOfBirth.Value,
+            IsActive = true,
+            CreatedAtUtc = dateOfBirth.Value
+        });
       }
-      else if (birthdayInDb is not null &&
-        birthdayInDb.DateOfBirthday != userBirthday.DateOfBirthday &&
-        userBirthday.IsActive)
+      else if (existingBirthday is not null &&
+        existingBirthday.DateOfBirth != dateOfBirth &&
+        dateOfBirth.HasValue)
       {
-        birthdayInDb.DateOfBirthday = userBirthday.DateOfBirthday;
-        birthdayInDb.ModifiedAtUtc = DateTime.UtcNow;
+        existingBirthday.DateOfBirth = dateOfBirth.Value;
+        existingBirthday.ModifiedAtUtc = DateTime.UtcNow;
       }
-      else if (birthdayInDb is not null && birthdayInDb.IsActive != userBirthday.IsActive)
+      else if (existingBirthday is not null && existingBirthday.IsActive != dateOfBirth.HasValue)
       {
-        birthdayInDb.IsActive = userBirthday.IsActive;
-        birthdayInDb.ModifiedAtUtc = DateTime.UtcNow;
+        existingBirthday.IsActive = dateOfBirth.HasValue;
+        existingBirthday.ModifiedAtUtc = DateTime.UtcNow;
       }
 
       await _provider.SaveAsync();

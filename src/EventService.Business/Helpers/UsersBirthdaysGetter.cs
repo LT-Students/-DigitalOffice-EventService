@@ -21,6 +21,13 @@ namespace LT.DigitalOffice.EventService.Business.Helpers
       using var scope = _scopeFactory.CreateScope();
       using var dbContext = scope.ServiceProvider.GetRequiredService<EventServiceDbContext>();
 
+      List<Guid> users = await dbContext.UsersBirthdays.Where(ub => ub.IsActive).Select(ub => ub.UserId).ToListAsync();
+
+      if (users.Any())
+      {
+        return;
+      }
+
       List<UserBirthday> usersBirthdays = await _userService.GetUsersBirthdaysAsync();
 
       if (usersBirthdays is null || !usersBirthdays.Any())
@@ -28,13 +35,11 @@ namespace LT.DigitalOffice.EventService.Business.Helpers
         return;
       }
 
-      List<Guid> users = await dbContext.UsersBirthdays.Where(ub => ub.IsActive).Select(ub => ub.UserId).ToListAsync();
-
       dbContext.UsersBirthdays.AddRange(
         usersBirthdays.Where(ub => !users.Contains(ub.UserId)).Select(ub => new DbUserBirthday
         {
           UserId = ub.UserId,
-          DateOfBirthday = ub.DateOfBirth,
+          DateOfBirth = ub.DateOfBirth,
           IsActive = true,
           CreatedAtUtc = DateTime.UtcNow
         }));

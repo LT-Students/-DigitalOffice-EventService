@@ -107,9 +107,9 @@ public class Startup : BaseApiInfo
   {
     app.UpdateDatabase<EventServiceDbContext>();
 
-    app.UseForwardedHeaders();
-
     CreateUsersBirthdays(app);
+
+    app.UseForwardedHeaders();
 
     app.UseExceptionsHandler(loggerFactory);
 

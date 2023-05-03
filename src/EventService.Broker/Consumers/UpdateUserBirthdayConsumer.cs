@@ -9,7 +9,6 @@ namespace LT.DigitalOffice.EventService.Broker.Consumers
   public class UpdateUserBirthdayConsumer : IConsumer<IUpdateUserBirthdayPublish>
   {
     private readonly IUserBirthdayRepository _userBirthdayRepository;
-    private readonly IDbUserBirthdayMapper _userBirthdayMapper;
 
     private async Task UpdateUserBirthdayAsync(IUpdateUserBirthdayPublish publish)
     {
@@ -18,15 +17,13 @@ namespace LT.DigitalOffice.EventService.Broker.Consumers
         return;
       }
 
-      await _userBirthdayRepository.UpdateUserBirthdayAsync(_userBirthdayMapper.Map(publish));
+      await _userBirthdayRepository.UpdateUserBirthdayAsync(publish.UserId, publish.DateOfBirth);
     }
 
     public UpdateUserBirthdayConsumer(
-      IUserBirthdayRepository userBirthdayRepository,
-      IDbUserBirthdayMapper userBirthdayMapper)
+      IUserBirthdayRepository userBirthdayRepository)
     {
       _userBirthdayRepository = userBirthdayRepository;
-      _userBirthdayMapper = userBirthdayMapper;
     }
 
     public async Task Consume(ConsumeContext<IUpdateUserBirthdayPublish> context)
