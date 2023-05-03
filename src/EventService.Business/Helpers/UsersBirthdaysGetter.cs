@@ -21,7 +21,7 @@ namespace LT.DigitalOffice.EventService.Business.Helpers
       using var scope = _scopeFactory.CreateScope();
       using var dbContext = scope.ServiceProvider.GetRequiredService<EventServiceDbContext>();
 
-      List<Guid> users = await dbContext.UsersBirthdays.Where(ub => ub.IsActive).Select(ub => ub.UserId).ToListAsync();
+      List<Guid> users = await dbContext.UsersBirthdays.Select(ub => ub.UserId).ToListAsync();
 
       if (users.Any())
       {

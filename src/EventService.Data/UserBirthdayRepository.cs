@@ -35,6 +35,7 @@ namespace LT.DigitalOffice.EventService.Data
         dateOfBirth.HasValue)
       {
         existingBirthday.DateOfBirth = dateOfBirth.Value;
+        existingBirthday.IsActive = dateOfBirth.HasValue;
         existingBirthday.ModifiedAtUtc = DateTime.UtcNow;
       }
       else if (existingBirthday is not null && existingBirthday.IsActive != dateOfBirth.HasValue)
