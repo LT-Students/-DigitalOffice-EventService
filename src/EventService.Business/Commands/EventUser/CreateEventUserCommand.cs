@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using DigitalOffice.Models.Broker.Models.User;
 using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.EventUser.Interfaces;
@@ -18,6 +17,7 @@ using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
+using LT.DigitalOffice.Models.Broker.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.EventUser;
@@ -33,7 +33,7 @@ public class CreateEventUserCommand : ICreateEventUserCommand
   private readonly IEventRepository _eventRepository;
   private readonly IEmailService _emailService;
   private readonly IUserService _userService;
-
+  
   public CreateEventUserCommand(
     IAccessValidator accessValidator,
     IEventUserRepository repository,

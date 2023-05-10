@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -20,6 +21,8 @@ public class DbEventUser
   public DateTime? ModifiedAtUtc { get; set; }
 
   public DbEvent Event { get; set; }
+  // public List<Guid> Preferences { get; set; }
+  public ICollection<DbGroupEventUser> GroupsEventsUsers { get; set; }
 }
 
 public class DbEventUserConfiguration : IEntityTypeConfiguration<DbEventUser>
@@ -35,5 +38,9 @@ public class DbEventUserConfiguration : IEntityTypeConfiguration<DbEventUser>
     builder
       .HasOne(eu => eu.Event)
       .WithMany(e => e.Users);
+    
+    builder
+      .HasMany(e => e.GroupsEventsUsers)
+      .WithOne(ec => ec.EventUser);
   }
 }

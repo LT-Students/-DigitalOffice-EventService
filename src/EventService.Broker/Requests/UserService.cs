@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DigitalOffice.Models.Broker.Models.User;
-using DigitalOffice.Models.Broker.Requests.User;
-using DigitalOffice.Models.Broker.Responses.User;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.Helpers;
 using LT.DigitalOffice.Models.Broker.Common;
+using LT.DigitalOffice.Models.Broker.Models;
 using LT.DigitalOffice.Models.Broker.Requests.User;
 using LT.DigitalOffice.Models.Broker.Responses.User;
 using MassTransit;
@@ -19,18 +17,15 @@ public class UserService : IUserService
   private readonly IRequestClient<ICheckUsersExistence> _rcCheckUserExistence;
   private readonly IRequestClient<IGetUsersDataRequest> _rcGetUsersData;
   private readonly IRequestClient<IFilteredUsersDataRequest> _rcFilteredUsersData;
-  private readonly IRequestClient<IGetUsersBirthdaysRequest> _rcGetUsersBirthdaysData;
 
   public UserService(
     IRequestClient<ICheckUsersExistence> rcCheckUserExistence,
     IRequestClient<IGetUsersDataRequest> rcGetUsersData,
-    IRequestClient<IFilteredUsersDataRequest> rcFilteredUsersData,
-    IRequestClient<IGetUsersBirthdaysRequest> rcGetUsersBirthdaysData)
+    IRequestClient<IFilteredUsersDataRequest> rcFilteredUsersData)
   {
     _rcCheckUserExistence = rcCheckUserExistence;
     _rcGetUsersData = rcGetUsersData;
     _rcFilteredUsersData = rcFilteredUsersData;
-    _rcGetUsersBirthdaysData = rcGetUsersBirthdaysData;
   }
 
   public async Task<bool> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null)
@@ -79,12 +74,5 @@ public class UserService : IUserService
     return response is null
       ? default
       : (response.UsersData, response.TotalCount);
-  }
-
-  public async Task<List<UserBirthday>> GetUsersBirthdaysAsync()
-  {
-    return (await _rcGetUsersBirthdaysData.ProcessRequest<IGetUsersBirthdaysRequest, IGetUsersBirthdaysResponse>(
-      IGetUsersBirthdaysRequest.CreateObj()))
-      ?.UsersBirthdays;
   }
 }

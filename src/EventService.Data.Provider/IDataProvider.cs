@@ -16,5 +16,7 @@ public interface IDataProvider : IBaseDataProvider
   public DbSet<DbEventImage> EventImages { get; set; }
   public DbSet<DbEventUser> EventsUsers { get; set; }
   public DbSet<DbEventComment> EventComments { get; set; }
-  public DbSet<DbUserBirthday> UsersBirthdays { get; set; }
+  public DbSet<DbOccasion> Occasions { get; set; }
+  public DbSet<DbOccasionGroup> OccasionsGroups { get; set; }
+  public DbSet<DbGroupEventUser> GroupsEventsUsers { get; set; }
 }

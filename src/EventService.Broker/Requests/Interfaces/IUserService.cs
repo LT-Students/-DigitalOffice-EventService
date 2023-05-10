@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DigitalOffice.Models.Broker.Models.User;
 using LT.DigitalOffice.Kernel.Attributes;
+using LT.DigitalOffice.Models.Broker.Models;
 
 namespace LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 
@@ -17,5 +17,4 @@ public interface IUserService
     int takeCount = 1,
     bool? ascendingSort = null,
     string fullNameIncludeSubstring = null);
-  Task<List<UserBirthday>> GetUsersBirthdaysAsync();
 }
