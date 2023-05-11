@@ -11,5 +11,4 @@ public record FindUsersBirthdaysFilter : BaseFindFilter
 
   [FromQuery(Name = "EndTime")]
   public DateTime EndTime { get; set; }
-
 }

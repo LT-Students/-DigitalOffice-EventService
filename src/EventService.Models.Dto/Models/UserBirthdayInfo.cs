@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace LT.DigitalOffice.EventService.Models.Dto.Models
+namespace LT.DigitalOffice.EventService.Models.Dto.Models;
+
+public record UserBirthdayInfo
 {
-  public record UserBirthdayInfo
-  {
-    public Guid UserId { get; set; }
-    public DateTime DateOfBirth { get; set; }
-  }
+  public Guid UserId { get; set; }
+  public DateTime DateOfBirth { get; set; }
 }
