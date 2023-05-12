@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
@@ -14,6 +17,11 @@ namespace LT.DigitalOffice.EventService.Data
     public UserBirthdayRepository(IDataProvider provider)
     {
       _provider = provider;
+    }
+
+    public Task<List<DbUserBirthday>> FindAsync(CancellationToken cancellationToken)
+    {
+      return _provider.UsersBirthdays.AsNoTracking().Where(ub => ub.IsActive).ToListAsync(cancellationToken);
     }
 
     public async Task UpdateUserBirthdayAsync(Guid userId, DateTime? dateOfBirth)
