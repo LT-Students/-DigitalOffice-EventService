@@ -26,7 +26,6 @@ public class EditEventCommentCommand : IEditEventCommentCommand
   private readonly IPatchDbEventCommentMapper _mapper;
   private readonly IResponseCreator _responseCreator;
   private readonly IAccessValidator _accessValidator;
-  private readonly IHttpContextAccessor _httpContextAccessor;
   private readonly IHttpContextAccessor _contextAccessor;
 
   public EditEventCommentCommand(
@@ -35,7 +34,6 @@ public class EditEventCommentCommand : IEditEventCommentCommand
     IPatchDbEventCommentMapper mapper,
     IResponseCreator responseCreator,
     IAccessValidator accessValidator,
-    IHttpContextAccessor httpContextAccessor,
     IHttpContextAccessor contextAccessor)
   {
     _validator = validator;
@@ -43,7 +41,6 @@ public class EditEventCommentCommand : IEditEventCommentCommand
     _mapper = mapper;
     _responseCreator = responseCreator;
     _accessValidator = accessValidator;
-    _httpContextAccessor = httpContextAccessor;
     _contextAccessor = contextAccessor;
   }
 
@@ -51,9 +48,7 @@ public class EditEventCommentCommand : IEditEventCommentCommand
     Guid commentId,
     JsonPatchDocument<EditEventCommentRequest> request)
   {
-    Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
-
-    DbEventComment comment = await _repository.GetAsync(commentId);
+    Guid senderId = _contextAccessor.HttpContext.GetUserId();
 
     ValidationResult validationResult = await _validator.ValidateAsync((commentId, request));
 
@@ -62,6 +57,8 @@ public class EditEventCommentCommand : IEditEventCommentCommand
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest,
         validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
+
+    DbEventComment comment = await _repository.GetAsync(commentId);
 
     if (comment.UserId != senderId && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
     {

@@ -37,8 +37,6 @@ public class CreateEventCommentCommand : ICreateEventCommentCommand
   }
   public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventCommentRequest request)
   {
-    OperationResultResponse<Guid?> response = new();
-
     ValidationResult validationResult = await _validator.ValidateAsync(request);
     if (!validationResult.IsValid)
     {
@@ -49,8 +47,11 @@ public class CreateEventCommentCommand : ICreateEventCommentCommand
 
     DbEventComment dbEventComment = _mapper.Map(request);
 
-    response.Body = await _repository.CreateAsync(dbEventComment);;
-
+    OperationResultResponse<Guid?> response = new()
+    {
+      Body = await _repository.CreateAsync(dbEventComment)
+    };
+    
     _contextAccessor.HttpContext.Response.StatusCode = response.Body is null
       ? (int)HttpStatusCode.BadRequest
       : (int)HttpStatusCode.Created;

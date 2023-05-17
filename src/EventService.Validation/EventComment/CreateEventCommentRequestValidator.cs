@@ -32,7 +32,7 @@ public class CreateEventCommentRequestValidator : AbstractValidator<CreateEventC
       .Cascade(CascadeMode.Stop)
       .NotEmpty()
       .WithMessage("User id must not be empty.") 
-      .MustAsync(async (userId, cancellation) => await userService.CheckUserExistenceAsync(userId, new List<string>()))
+      .MustAsync(async (userId, _) => await userService.CheckUserExistenceAsync(userId, new List<string>()))
       .WithMessage("That user doesn't exist.");
   }
 }

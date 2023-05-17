@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
@@ -131,4 +130,3 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
       });
   }
 }
-

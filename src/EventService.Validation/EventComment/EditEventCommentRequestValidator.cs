@@ -42,7 +42,7 @@ public class EditEventCommentRequestValidator : ExtendedEditRequestValidator<Gui
       x => x == OperationType.Replace,
       new()
       {
-        { x => !string.IsNullOrEmpty(x.value?.ToString().Trim()), "Content must not be empty" },
+        { x => !string.IsNullOrEmpty(x.value?.ToString().Trim()), "Content must not be empty." },
         { x => x.value?.ToString().Length < 301, "Content is too long." }
       }, CascadeMode.Stop);
 

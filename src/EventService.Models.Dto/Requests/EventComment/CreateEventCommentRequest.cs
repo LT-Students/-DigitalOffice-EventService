@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LT.DigitalOffice.EventService.Models.Dto.Requests.EventComment;
 
-public class CreateEventCommentRequest
+public record CreateEventCommentRequest
 {
   [Required]
   [MaxLength(300)]
