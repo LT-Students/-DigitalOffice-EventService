@@ -35,6 +35,7 @@ public class CreateEventCommentCommand : ICreateEventCommentCommand
     _responseCreator = responseCreator;
     _contextAccessor = contextAccessor;
   }
+
   public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventCommentRequest request)
   {
     ValidationResult validationResult = await _validator.ValidateAsync(request);
@@ -45,11 +46,9 @@ public class CreateEventCommentCommand : ICreateEventCommentCommand
         validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
-    DbEventComment dbEventComment = _mapper.Map(request);
-
     OperationResultResponse<Guid?> response = new()
     {
-      Body = await _repository.CreateAsync(dbEventComment)
+      Body = await _repository.CreateAsync(_mapper.Map(request))
     };
     
     _contextAccessor.HttpContext.Response.StatusCode = response.Body is null
