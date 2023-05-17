@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
@@ -14,8 +15,13 @@ public class CreateEventCommentRequestValidator : AbstractValidator<CreateEventC
     IEventCommentRepository commentRepository,
     IUserService userService)
   {
+    RuleLevelCascadeMode = CascadeMode.Stop;
+
+    RuleFor(w => w.Content)
+      .MaximumLength(300)
+      .WithMessage("Content is too long.");
+
     RuleFor(x => x.EventId)
-      .Cascade(CascadeMode.Stop)
       .NotEmpty()
       .WithMessage("Event id must be specified.")
       .MustAsync(async (eventId, _) => await eventRepository.DoesExistAsync(eventId))
@@ -29,10 +35,9 @@ public class CreateEventCommentRequestValidator : AbstractValidator<CreateEventC
     });
 
     RuleFor(x => x.UserId)
-      .Cascade(CascadeMode.Stop)
       .NotEmpty()
       .WithMessage("User id must not be empty.") 
-      .MustAsync(async (userId, _) => await userService.CheckUserExistenceAsync(userId, new List<string>()))
+      .MustAsync(async (userId, _) => await userService.CheckUsersExistenceAsync(new List<Guid>() { userId }, new List<string>()))
       .WithMessage("That user doesn't exist.");
   }
 }

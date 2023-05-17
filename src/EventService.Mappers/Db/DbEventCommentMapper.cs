@@ -15,9 +15,9 @@ public class DbEventCommentMapper : IDbEventCommentMapper
       {
         Id = Guid.NewGuid(),
         Content = request.Content,
-        UserId= request.UserId,
-        EventId= request.EventId,
-        ParentId= request.ParentId,
+        UserId = request.UserId,
+        EventId = request.EventId,
+        ParentId = request.ParentId,
         IsActive = true,
         CreatedAtUtc = DateTime.UtcNow
       };
