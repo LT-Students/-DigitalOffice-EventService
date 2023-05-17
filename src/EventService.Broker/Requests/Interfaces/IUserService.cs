@@ -10,6 +10,7 @@ namespace LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 public interface IUserService
 {
   Task<bool> CheckUsersExistenceAsync(List<Guid> usersIds, List<string> errors = null);
+  Task<bool> CheckUserExistenceAsync(Guid userId, List<string> errors = null);
   Task<List<UserData>> GetUsersDataAsync(List<Guid> users);
   Task<(List<UserData> usersData, int totalCount)> FilteredUsersDataAsync(
     List<Guid> usersIds,

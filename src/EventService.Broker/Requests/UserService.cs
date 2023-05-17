@@ -40,12 +40,27 @@ public class UserService : IUserService
       return false;
     }
 
-    var existingUserIds = (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
+    List<Guid> existingUserIds = (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
         _rcCheckUserExistence,
         ICheckUsersExistence.CreateObj(usersIds),
         errors))
       ?.UserIds;
     return new HashSet<Guid>(usersIds.Distinct()).SetEquals(existingUserIds);
+  }
+
+  public async Task<bool> CheckUserExistenceAsync(Guid userId, List<string> errors = null)
+  {
+    ICheckUsersExistence checkExistence = await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
+        _rcCheckUserExistence,
+        ICheckUsersExistence.CreateObj(new List<Guid> { userId }),
+        errors);
+
+    if (checkExistence is not null)
+    {
+      return checkExistence.UserIds.Any();
+    }
+
+    return false;
   }
 
   public async Task<List<UserData>> GetUsersDataAsync(List<Guid> usersIds)

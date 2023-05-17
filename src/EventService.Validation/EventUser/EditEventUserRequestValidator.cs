@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
-using LT.DigitalOffice.EventService.Validation.EventCategory.EventUser.Resources;
 using LT.DigitalOffice.EventService.Validation.EventUser.Interfaces;
+using LT.DigitalOffice.EventService.Validation.EventUser.Resources;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Extensions;
@@ -130,3 +131,4 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
       });
   }
 }
+
