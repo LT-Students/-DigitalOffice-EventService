@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventComment;

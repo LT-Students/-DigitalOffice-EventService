@@ -17,7 +17,7 @@ public class CreateEventCommentRequestValidator : AbstractValidator<CreateEventC
   {
     RuleLevelCascadeMode = CascadeMode.Stop;
 
-    RuleFor(w => w.Content)
+    RuleFor(x => x.Content)
       .MaximumLength(300)
       .WithMessage("Content is too long.");
 
