@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Enum;
-using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
-using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
-using LT.DigitalOffice.Kernel.Helpers.Interfaces;
-using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.EventService.Broker.Publishes.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.Image.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Image;
 using LT.DigitalOffice.EventService.Validation.Image.Interfaces;
+using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
+using LT.DigitalOffice.Kernel.Constants;
+using LT.DigitalOffice.Kernel.FluentValidationExtensions;
+using LT.DigitalOffice.Kernel.Helpers.Interfaces;
+using LT.DigitalOffice.Kernel.Responses;
 using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.Image;
@@ -45,8 +42,7 @@ public class RemoveImageCommand : IRemoveImageCommand
 
   public async Task<OperationResultResponse<bool>> ExecuteAsync(RemoveImageRequest request)
   {
-    if (!await _accessValidator.IsManagerAsync(ManagerSource.Project, request.EventId)
-      && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveProjects))
+    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveProjects))
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }

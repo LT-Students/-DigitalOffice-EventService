@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Enum;
 using DigitalOffice.Models.Broker.Models.Image;
 using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.Image.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
-using LT.DigitalOffice.EventService.Mappers.Db;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Image;
 using LT.DigitalOffice.EventService.Validation.Image.Interfaces;
@@ -55,8 +53,7 @@ public class CreateImageCommand : ICreateImageCommand
 
   public async Task<OperationResultResponse<List<Guid>>> ExecuteAsync(CreateImagesRequest request)
   {
-    if (!await _accessValidator.IsManagerAsync(ManagerSource.Project, request.EventId)
-      && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveProjects))
+    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveProjects))
     {
       return _responseCreator.CreateFailureResponse<List<Guid>>(HttpStatusCode.Forbidden);
     }

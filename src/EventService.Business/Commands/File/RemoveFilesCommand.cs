@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Enum;
 using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Broker.Publishes.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.File.Interfaces;
@@ -43,8 +42,7 @@ public class RemoveFilesCommand : IRemoveFilesCommand
 
   public async Task<OperationResultResponse<bool>> ExecuteAsync(RemoveFilesRequest request)
   {
-    if (!await _accessValidator.IsManagerAsync(ManagerSource.Project, request.EventId)
-      && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveProjects))
+    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveProjects))
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }

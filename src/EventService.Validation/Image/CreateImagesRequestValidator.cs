@@ -18,15 +18,15 @@ public class CreateImagesRequestValidator : AbstractValidator<CreateImagesReques
       .ForEach(image =>
       {
         image
-        .Cascade(CascadeMode.Stop)
-        .NotNull().WithMessage("Image must not be null.")
-        .SetValidator(imageValidator);
+          .Cascade(CascadeMode.Stop)
+          .NotNull().WithMessage("Image must not be null.")
+          .SetValidator(imageValidator);
       });
 
     RuleFor(request => request.EventId)
       .Cascade(CascadeMode.Stop)
       .NotEmpty().WithMessage("Event id must not be empty.")
-      .MustAsync(async (x, _) => await eventRepository.DoesExistAsync(x))
+      .MustAsync(async (e, _) => await eventRepository.DoesExistAsync(e))
       .WithMessage("Invalid event id.");
   }
 }

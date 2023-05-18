@@ -18,6 +18,6 @@ public class RemoveFilesRequestValidator : AbstractValidator<RemoveFilesRequest>
 
     RuleFor(request => request)
       .MustAsync(async (x, _) => await projectFileRepository.CheckEventFilesAsync(x.EventId, x.FilesIds))
-      .WithMessage("All file ids must belong to the same project.");
+      .WithMessage("All file ids must belong to the same event.");
   }
 }
