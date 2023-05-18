@@ -10,7 +10,7 @@ public class RemoveFilesRequestValidator : AbstractValidator<RemoveFilesRequest>
   public RemoveFilesRequestValidator(
     IEventFileRepository eventFileRepository)
   {
-    CascadeMode = CascadeMode.Stop;
+    RuleLevelCascadeMode = CascadeMode.Stop;
 
     RuleFor(request => request.FilesIds)
       .NotEmpty().WithMessage("List of files ids must not be null or empty.");

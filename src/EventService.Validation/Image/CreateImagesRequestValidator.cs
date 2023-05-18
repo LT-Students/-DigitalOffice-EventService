@@ -11,7 +11,7 @@ public class CreateImagesRequestValidator : AbstractValidator<CreateImagesReques
     IImageValidator imageValidator,
     IEventRepository eventRepository)
   {
-    CascadeMode = CascadeMode.Stop;
+    RuleLevelCascadeMode = CascadeMode.Stop;
 
     RuleFor(request => request.Images)
       .NotEmpty().WithMessage("List of images must not be null or empty.")
