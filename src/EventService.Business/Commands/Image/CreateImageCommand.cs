@@ -53,7 +53,7 @@ public class CreateImageCommand : ICreateImageCommand
 
   public async Task<OperationResultResponse<List<Guid>>> ExecuteAsync(CreateImagesRequest request)
   {
-    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveProjects))
+    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
     {
       return _responseCreator.CreateFailureResponse<List<Guid>>(HttpStatusCode.Forbidden);
     }

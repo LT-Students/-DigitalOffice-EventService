@@ -42,7 +42,7 @@ public class RemoveFilesCommand : IRemoveFilesCommand
 
   public async Task<OperationResultResponse<bool>> ExecuteAsync(RemoveFilesRequest request)
   {
-    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveProjects))
+    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }

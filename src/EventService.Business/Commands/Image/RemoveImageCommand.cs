@@ -42,7 +42,7 @@ public class RemoveImageCommand : IRemoveImageCommand
 
   public async Task<OperationResultResponse<bool>> ExecuteAsync(RemoveImageRequest request)
   {
-    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveProjects))
+    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
     {
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }
