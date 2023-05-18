@@ -25,7 +25,7 @@ public class CreateFilesConsumer : IConsumer<ICreateEventFilesPublish>
     if (context.Message.FilesIds is not null && context.Message.FilesIds.Any())
     {
       await _repository.CreateAsync(context.Message.FilesIds
-        .Select(x => _mapper.Map(x, context.Message.EventId)).ToList());
+        .ConvertAll(x => _mapper.Map(x, context.Message.EventId)));
     }
   }
 }

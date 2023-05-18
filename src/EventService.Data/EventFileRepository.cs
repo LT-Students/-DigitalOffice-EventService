@@ -30,7 +30,7 @@ public class EventFileRepository : IEventFileRepository
     _provider.EventFiles.AddRange(files);
     await _provider.SaveAsync();
 
-    return files.Select(x => x.FileId).ToList();
+    return files.ConvertAll(x => x.FileId);
   }
 
   public async Task<bool> RemoveAsync(List<Guid> filesIds)

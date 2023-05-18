@@ -34,10 +34,10 @@ public class FindFilesCommand : IFindFilesCommand
     List<string> errors = new();
     (List<DbEventFile> dbFiles, int totalCount) = await _repository.FindAsync(findFilter);
 
-    List<FileCharacteristicsData> files = await _fileService.GetFilesCharacteristicsAsync(dbFiles?.Select(file => file.FileId).ToList(), errors);
+    List<FileCharacteristicsData> files = await _fileService.GetFilesCharacteristicsAsync(dbFiles?.ConvertAll(file => file.FileId), errors);
 
     return new FindResultResponse<FileInfo>(
-      body: files?.Select(_fileMapper.Map).ToList(),
+      body: files?.ConvertAll(_fileMapper.Map),
       totalCount: totalCount);
   }
 }

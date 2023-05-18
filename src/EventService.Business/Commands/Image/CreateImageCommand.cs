@@ -87,11 +87,10 @@ public class CreateImageCommand : ICreateImageCommand
       return response;
     }
 
-    response.Body = await _repository.CreateAsync(imagesIds.Select(imageId =>
+    response.Body = await _repository.CreateAsync(imagesIds.ConvertAll(imageId =>
       _dbEventImageMapper.Map(
         imageId: imageId,
-        eventId: request.EventId))
-      .ToList());
+        eventId: request.EventId)));
 
     _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 

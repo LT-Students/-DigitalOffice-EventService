@@ -41,7 +41,7 @@ public class ImageService : IImageService
         .ProcessRequest<ICreateImagesRequest, ICreateImagesResponse>(
           _rcCreateImages,
           ICreateImagesRequest.CreateObj(
-            images: eventImages.Select(x => new CreateImageData(x.Name, x.Content, x.Extension, resizeParameters)).ToList(),
+            images: eventImages.ConvertAll(x => new CreateImageData(x.Name, x.Content, x.Extension, resizeParameters)),
             imageSource: ImageSource.Event,
             createdBy: _httpContextAccessor.HttpContext.GetUserId()),
           errors,

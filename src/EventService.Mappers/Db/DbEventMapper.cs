@@ -78,8 +78,7 @@ public class DbEventMapper : IDbEventMapper
         Users = MapEventUsers(request, senderId, eventId),
         EventsCategories = MapEventCategories(request, senderId, eventId),
         Images = imagesIds?
-          .Select(imageId => _imageMapper.Map(imageId, eventId))
-          .ToList()
+          .ConvertAll(imageId => _imageMapper.Map(imageId, eventId))
       };
   }
 }
