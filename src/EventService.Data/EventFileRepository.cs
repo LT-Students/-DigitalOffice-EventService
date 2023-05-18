@@ -41,8 +41,8 @@ public class EventFileRepository : IEventFileRepository
     }
 
     _provider.EventFiles.RemoveRange(
-      _provider.EventFiles
-        .Where(x => filesIds.Contains(x.FileId)));
+      await _provider.EventFiles
+        .Where(x => filesIds.Contains(x.FileId)).ToListAsync());
 
     await _provider.SaveAsync();
 

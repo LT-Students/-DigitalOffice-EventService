@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
+using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -38,10 +39,11 @@ public class EventImageRepository : IEventImageRepository
       return false;
     }
 
-    IEnumerable<DbEventImage> images = _provider.EventImages
-      .Where(x => imagesIds.Contains(x.ImageId));
+    List<DbEventImage> images = await _provider.EventImages
+      .Where(x => imagesIds.Contains(x.ImageId)).ToListAsync();
 
     _provider.EventImages.RemoveRange(images);
+
     await _provider.SaveAsync();
 
     return true;

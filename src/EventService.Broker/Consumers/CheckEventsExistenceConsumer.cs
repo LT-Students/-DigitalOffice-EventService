@@ -20,9 +20,9 @@ public class CheckEventsExistenceConsumer : IConsumer<ICheckEventsExistence>
 
   public async Task Consume(ConsumeContext<ICheckEventsExistence> context)
   {
-    List<Guid> existEvents = await _eventRepository.GetExisting(context.Message.EventsIds);
+    List<Guid> existingEvents = await _eventRepository.GetExisting(context.Message.EventsIds);
 
-    object response = OperationResultWrapper.CreateResponse((_) => ICheckEventsExistence.CreateObj(existEvents), context);
+    object response = OperationResultWrapper.CreateResponse((_) => ICheckEventsExistence.CreateObj(existingEvents), context);
 
     await context.RespondAsync<IOperationResult<ICheckEventsExistence>>(response);
   }

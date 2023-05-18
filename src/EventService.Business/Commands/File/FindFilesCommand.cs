@@ -31,10 +31,9 @@ public class FindFilesCommand : IFindFilesCommand
 
   public async Task<FindResultResponse<FileInfo>> ExecuteAsync(FindEventFilesFilter findFilter)
   {
-    List<string> errors = new();
     (List<DbEventFile> dbFiles, int totalCount) = await _repository.FindAsync(findFilter);
 
-    List<FileCharacteristicsData> files = await _fileService.GetFilesCharacteristicsAsync(dbFiles?.ConvertAll(file => file.FileId), errors);
+    List<FileCharacteristicsData> files = await _fileService.GetFilesCharacteristicsAsync(dbFiles?.ConvertAll(file => file.FileId));
 
     return new FindResultResponse<FileInfo>(
       body: files?.ConvertAll(_fileMapper.Map),

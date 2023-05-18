@@ -14,17 +14,20 @@ public class CreateImagesRequestValidator : AbstractValidator<CreateImagesReques
     RuleLevelCascadeMode = CascadeMode.Stop;
 
     RuleFor(request => request.Images)
-      .NotEmpty().WithMessage("List of images must not be null or empty.")
+      .NotEmpty()
+      .WithMessage("List of images must not be null or empty.")
       .ForEach(image =>
       {
         image
-          .NotNull().WithMessage("Image must not be null.")
+          .NotNull()
+          .WithMessage("Image must not be null.")
           .SetValidator(imageValidator);
       });
 
     RuleFor(request => request.EventId)
-      .NotEmpty().WithMessage("Event id must not be empty.")
-      .MustAsync(async (e, _) => await eventRepository.DoesExistAsync(e))
+      .NotEmpty()
+      .WithMessage("Event id must not be empty.")
+      .MustAsync(async (eventId, _) => await eventRepository.DoesExistAsync(eventId))
       .WithMessage("Invalid event id.");
   }
 }

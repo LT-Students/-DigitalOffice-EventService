@@ -13,7 +13,8 @@ public class RemoveFilesRequestValidator : AbstractValidator<RemoveFilesRequest>
     RuleLevelCascadeMode = CascadeMode.Stop;
 
     RuleFor(request => request.FilesIds)
-      .NotEmpty().WithMessage("List of files ids must not be null or empty.");
+      .NotEmpty()
+      .WithMessage("List of files ids must not be null or empty.");
 
     RuleFor(request => request)
       .MustAsync(async (x, _) => await eventFileRepository.CheckEventFilesAsync(x.EventId, x.FilesIds))

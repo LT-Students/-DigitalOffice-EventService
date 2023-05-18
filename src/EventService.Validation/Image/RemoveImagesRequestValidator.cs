@@ -9,8 +9,10 @@ public class RemoveImagesRequestValidator : AbstractValidator<RemoveImageRequest
   public RemoveImagesRequestValidator()
   {
     RuleFor(request => request.ImagesIds)
-      .NotEmpty().WithMessage("List of images ids must not be null or empty.")
-      .ForEach(x =>
-        x.NotEmpty().WithMessage("Image Id must not be empty."));
+      .NotEmpty()
+      .WithMessage("List of images ids must not be null or empty.")
+      .ForEach(imageId => 
+        imageId.NotEmpty()
+          .WithMessage("Image Id must not be empty."));
   }
 }
