@@ -19,4 +19,5 @@ public record CreateEventRequest
   [Required]
   public List<UserRequest> Users { get; set; }
   public List<Guid> CategoriesIds { get; set; }
+  public List<ImageContent> EventImages { get; set; }
 }

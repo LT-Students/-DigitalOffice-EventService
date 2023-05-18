@@ -5,6 +5,8 @@ using LT.DigitalOffice.Kernel.BrokerSupport.Attributes;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Models.Broker.Common;
 using LT.DigitalOffice.Models.Broker.Requests.Email;
+using LT.DigitalOffice.Models.Broker.Requests.File;
+using LT.DigitalOffice.Models.Broker.Requests.Image;
 using LT.DigitalOffice.Models.Broker.Requests.User;
 
 namespace LT.DigitalOffice.EventService.Broker.Configuration;
@@ -15,6 +17,12 @@ public class RabbitMqConfig : BaseRabbitMqConfig
 
   [MassTransitEndpoint(typeof(UpdateUserBirthdayConsumer))]
   public string UpdateUserBirthdayEndpoint { get; init; }
+
+  [MassTransitEndpoint(typeof(CreateFilesConsumer))]
+  public string CreateFilesEndpoint { get; init; }
+
+  [MassTransitEndpoint(typeof(CheckEventsExistenceConsumer))]
+  public string CheckEventsExistenceEndpoint { get; init; }
 
   #endregion
 
@@ -36,4 +44,14 @@ public class RabbitMqConfig : BaseRabbitMqConfig
 
   [AutoInjectRequest(typeof(ISendEmailRequest))]
   public string SendEmailEndpoint { get; set; }
+
+  // file
+
+  [AutoInjectRequest(typeof(IGetFilesRequest))]
+  public string GetFilesEndpoint { get; init; }
+
+  // image
+
+  [AutoInjectRequest(typeof(ICreateImagesRequest))]
+  public string CreateImagesEndpoint { get; init; }
 }

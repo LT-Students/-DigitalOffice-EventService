@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using DigitalOffice.Models.Broker.Models.Image;
 using DigitalOffice.Models.Broker.Models.User;
 using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
@@ -32,6 +33,11 @@ public class CreateEventCommand : ICreateEventCommand
   private readonly IHttpContextAccessor _contextAccessor;
   private readonly IEmailService _emailService;
   private readonly IUserService _userService;
+  private readonly IImageService _imageService;
+
+  private const int ResizeMaxValue = 1000;
+  private const int ConditionalWidth = 4;
+  private const int ConditionalHeight = 3;
 
   private async Task SendInviteEmailsAsync(List<Guid> userIds, string eventName)
   {
@@ -59,7 +65,8 @@ public class CreateEventCommand : ICreateEventCommand
     IResponseCreator responseCreator,
     IHttpContextAccessor contextAccessor,
     IUserService userService,
-    IEmailService emailService)
+    IEmailService emailService,
+    IImageService imageService)
   {
     _eventRepository = repository;
     _eventMapper = eventMapper;
@@ -69,6 +76,7 @@ public class CreateEventCommand : ICreateEventCommand
     _contextAccessor = contextAccessor;
     _userService = userService;
     _emailService = emailService;
+    _imageService = imageService;
   }
 
   public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventRequest request)
@@ -86,7 +94,6 @@ public class CreateEventCommand : ICreateEventCommand
     request.Users = request.Users.Distinct().ToList();
     request.CategoriesIds = request.CategoriesIds?.Distinct().ToList();
 
-
     ValidationResult validationResult = await _validator.ValidateAsync(request);
     if (!validationResult.IsValid)
     {
@@ -95,7 +102,23 @@ public class CreateEventCommand : ICreateEventCommand
         validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
-    DbEvent dbEvent = _eventMapper.Map(request, senderId);
+    List<Guid> imagesIds = null;
+    if (request.EventImages is not null && request.EventImages.Any())
+    {
+      imagesIds = await _imageService.CreateImagesAsync(
+        request.EventImages,
+        new ResizeParameters(
+          maxResizeValue: ResizeMaxValue,
+          maxSizeCompress: null,
+          previewParameters: new PreviewParameters(
+            conditionalWidth: ConditionalWidth,
+            conditionalHeight: ConditionalHeight,
+            resizeMaxValue: null,
+            maxSizeCompress: null)),
+        response.Errors);
+    }
+
+    DbEvent dbEvent = _eventMapper.Map(request, senderId, imagesIds);
 
     response.Body = await _eventRepository.CreateAsync(dbEvent);
 
