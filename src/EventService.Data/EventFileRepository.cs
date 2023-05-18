@@ -22,7 +22,7 @@ public class EventFileRepository : IEventFileRepository
 
   public async Task<List<Guid>> CreateAsync(List<DbEventFile> files)
   {
-    if (files is null)
+    if (files is null || !files.Any())
     {
       return null;
     }
@@ -35,7 +35,7 @@ public class EventFileRepository : IEventFileRepository
 
   public async Task<bool> RemoveAsync(List<Guid> filesIds)
   {
-    if (filesIds is null)
+    if (filesIds is null || !filesIds.Any())
     {
       return false;
     }
@@ -53,7 +53,7 @@ public class EventFileRepository : IEventFileRepository
   {
     if (filter is null)
     {
-      return (null, 0);
+      return default;
     }
 
     IQueryable<DbEventFile> dbFilesQuery = _provider.EventFiles
@@ -65,21 +65,19 @@ public class EventFileRepository : IEventFileRepository
       await dbFilesQuery.CountAsync());
   }
 
-
   public Task<List<DbEventFile>> GetAsync(List<Guid> filesIds)
   {
-    return _provider.EventFiles.Where(x => filesIds.Contains(x.FileId)).ToListAsync();
+    return _provider.EventFiles.AsNoTracking().Where(x => filesIds.Contains(x.FileId)).ToListAsync();
   }
 
   public async Task<bool> CheckEventFilesAsync(Guid eventId, List<Guid> filesIds)
   {
-    if (filesIds is null)
+    if (filesIds is null || !filesIds.Any())
     {
       return false;
     }
 
     return !await _provider.EventFiles
-      .AsNoTracking()
       .AnyAsync(p => filesIds.Contains(p.FileId) && p.EventId != eventId);
   }
 }

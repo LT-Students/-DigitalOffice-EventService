@@ -43,13 +43,13 @@ public class EventRepository : IEventRepository
     return _provider.Events.AnyAsync(e => e.Id == eventId && e.IsActive);
   }
 
-  public async Task<List<Guid>> DoExistAsync(List<Guid> eventsIds)
+  public Task<List<Guid>> GetExisting(List<Guid> eventsIds)
   {
-    return await _provider.Events.Where(p => eventsIds.Contains(p.Id)).Select(p => p.Id).ToListAsync();
+    return _provider.Events.AsNoTracking().Where(p => eventsIds.Contains(p.Id)).Select(p => p.Id).ToListAsync();
   }
 
-  public async Task<DbEvent> GetAsync(Guid eventId)
+  public Task<DbEvent> GetAsync(Guid eventId)
   {
-    return await _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
+    return _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
   }
 }

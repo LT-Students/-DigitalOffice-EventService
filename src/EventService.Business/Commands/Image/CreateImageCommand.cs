@@ -63,7 +63,7 @@ public class CreateImageCommand : ICreateImageCommand
     {
       return _responseCreator.CreateFailureResponse<List<Guid>>(
         HttpStatusCode.BadRequest,
-        validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+        validationResult.Errors.ConvertAll(x => x.ErrorMessage));
     }
 
     OperationResultResponse<List<Guid>> response = new();

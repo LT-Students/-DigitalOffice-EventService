@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Broker.Publishes.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.Image.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
@@ -47,11 +49,12 @@ public class RemoveImageCommand : IRemoveImageCommand
       return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
     }
 
-    if (!_validator.ValidateCustom(request, out List<string> errors))
+    ValidationResult validationResult = await _validator.ValidateAsync(request);
+    if (!validationResult.IsValid)
     {
       return _responseCreator.CreateFailureResponse<bool>(
         HttpStatusCode.BadRequest,
-        errors);
+        validationResult.Errors.ConvertAll(x => x.ErrorMessage));
     }
 
     OperationResultResponse<bool> response = new();

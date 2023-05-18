@@ -20,7 +20,7 @@ public class EventImageRepository : IEventImageRepository
 
   public async Task<List<Guid>> CreateAsync(List<DbEventImage> images)
   {
-    if (images == null)
+    if (images is null || !images.Any())
     {
       return null;
     }
@@ -28,12 +28,12 @@ public class EventImageRepository : IEventImageRepository
     _provider.EventImages.AddRange(images);
     await _provider.SaveAsync();
 
-    return images.Select(x => x.ImageId).ToList();
+    return images.ConvertAll(x => x.ImageId);
   }
 
   public async Task<bool> RemoveAsync(List<Guid> imagesIds)
   {
-    if (imagesIds == null)
+    if (imagesIds is null || !imagesIds.Any())
     {
       return false;
     }

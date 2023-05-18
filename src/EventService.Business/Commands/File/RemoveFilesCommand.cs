@@ -52,7 +52,7 @@ public class RemoveFilesCommand : IRemoveFilesCommand
     {
       return _responseCreator.CreateFailureResponse<bool>(
         HttpStatusCode.BadRequest,
-        validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+        validationResult.Errors.ConvertAll(x => x.ErrorMessage));
     }
 
     OperationResultResponse<bool> response = new(body: await _repository.RemoveAsync(request.FilesIds));

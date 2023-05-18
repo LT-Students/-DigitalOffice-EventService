@@ -11,6 +11,6 @@ public interface IEventRepository
 {
   Task<Guid?> CreateAsync(DbEvent dbEvent);
   Task<bool> DoesExistAsync(Guid eventId);
-  Task<List<Guid>> DoExistAsync(List<Guid> eventsIds);
+  Task<List<Guid>> GetExisting(List<Guid> eventsIds);
   Task<DbEvent> GetAsync(Guid eventId);
 }

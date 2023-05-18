@@ -11,20 +11,18 @@ public class CreateImagesRequestValidator : AbstractValidator<CreateImagesReques
     IImageValidator imageValidator,
     IEventRepository eventRepository)
   {
+    CascadeMode = CascadeMode.Stop;
+
     RuleFor(request => request.Images)
-      .Cascade(CascadeMode.Stop)
-      .NotNull().WithMessage("List of images must not be null.")
-      .NotEmpty().WithMessage("List of images must not be empty.")
+      .NotEmpty().WithMessage("List of images must not be null or empty.")
       .ForEach(image =>
       {
         image
-          .Cascade(CascadeMode.Stop)
           .NotNull().WithMessage("Image must not be null.")
           .SetValidator(imageValidator);
       });
 
     RuleFor(request => request.EventId)
-      .Cascade(CascadeMode.Stop)
       .NotEmpty().WithMessage("Event id must not be empty.")
       .MustAsync(async (e, _) => await eventRepository.DoesExistAsync(e))
       .WithMessage("Invalid event id.");
