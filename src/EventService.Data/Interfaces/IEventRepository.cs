@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.Kernel.Attributes;
@@ -10,5 +11,6 @@ public interface IEventRepository
 {
   Task<Guid?> CreateAsync(DbEvent dbEvent);
   Task<bool> DoesExistAsync(Guid eventId);
+  Task<List<Guid>> GetExisting(List<Guid> eventsIds);
   Task<DbEvent> GetAsync(Guid eventId);
 }

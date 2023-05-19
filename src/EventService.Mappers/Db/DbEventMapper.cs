@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
@@ -9,6 +10,8 @@ namespace LT.DigitalOffice.EventService.Mappers.Db;
 
 public class DbEventMapper : IDbEventMapper
 {
+  private readonly IDbEventImageMapper _imageMapper;
+
   private List<DbEventUser> MapEventUsers(
     CreateEventRequest request,
     Guid senderId,
@@ -45,9 +48,16 @@ public class DbEventMapper : IDbEventMapper
       });
   }
 
+  public DbEventMapper(
+    IDbEventImageMapper imageMapper)
+  {
+    _imageMapper = imageMapper;
+  }
+
   public DbEvent Map(
     CreateEventRequest request,
-    Guid senderId)
+    Guid senderId,
+    List<Guid> imagesIds)
   {
     Guid eventId = Guid.NewGuid();
 
@@ -67,6 +77,8 @@ public class DbEventMapper : IDbEventMapper
         CreatedAtUtc = DateTime.UtcNow,
         Users = MapEventUsers(request, senderId, eventId),
         EventsCategories = MapEventCategories(request, senderId, eventId),
+        Images = imagesIds?
+          .ConvertAll(imageId => _imageMapper.Map(imageId, eventId))
       };
   }
 }

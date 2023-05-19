@@ -3,6 +3,11 @@
   <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
 
   <ItemGroup>
+    <Compile Remove="Commands\File\EditFilesCommand.cs" />
+    <Compile Remove="Commands\File\Interfaces\IEditFilesCommand.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EventService.Broker\EventService.Broker.csproj" />
     <ProjectReference Include="..\EventService.Data\EventService.Data.csproj" />
     <ProjectReference Include="..\EventService.Mappers\EventService.Mappers.csproj" />
