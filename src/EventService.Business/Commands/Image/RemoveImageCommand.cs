@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Broker.Publishes.Interfaces;
@@ -10,7 +8,6 @@ using LT.DigitalOffice.EventService.Models.Dto.Requests.Image;
 using LT.DigitalOffice.EventService.Validation.Image.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +18,6 @@ public class RemoveImageCommand : IRemoveImageCommand
 {
   private readonly IEventImageRepository _repository;
   private readonly IAccessValidator _accessValidator;
-  private readonly IHttpContextAccessor _httpContextAccessor;
   private readonly IRemoveImagesRequestValidator _validator;
   private readonly IResponseCreator _responseCreator;
   private readonly IPublish _publish;
@@ -29,14 +25,12 @@ public class RemoveImageCommand : IRemoveImageCommand
   public RemoveImageCommand(
     IEventImageRepository repository,
     IAccessValidator accessValidator,
-    IHttpContextAccessor httpContextAccessor,
     IRemoveImagesRequestValidator validator,
     IResponseCreator responseCreator,
     IPublish publish)
   {
     _repository = repository;
     _accessValidator = accessValidator;
-    _httpContextAccessor = httpContextAccessor;
     _validator = validator;
     _responseCreator = responseCreator;
     _publish = publish;
