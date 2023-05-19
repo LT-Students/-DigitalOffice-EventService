@@ -40,7 +40,7 @@ public class UserService : IUserService
       return false;
     }
 
-    var existingUserIds = (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
+    List<Guid> existingUserIds = (await RequestHandler.ProcessRequest<ICheckUsersExistence, ICheckUsersExistence>(
         _rcCheckUserExistence,
         ICheckUsersExistence.CreateObj(usersIds),
         errors))

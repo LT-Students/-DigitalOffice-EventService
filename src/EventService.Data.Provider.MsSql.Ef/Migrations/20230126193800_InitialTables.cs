@@ -102,7 +102,7 @@ public class InitialTables : Migration
       columns: table => new
       {
         Id = table.Column<Guid>(nullable: false),
-        Content = table.Column<string>(nullable: false),
+        Content = table.Column<string>(nullable: true),
         UserId = table.Column<Guid>(nullable: false),
         EventId = table.Column<Guid>(nullable: false),
         ParentId = table.Column<Guid>(nullable: true),
