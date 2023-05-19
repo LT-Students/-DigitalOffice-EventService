@@ -5,6 +5,8 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -41,8 +43,13 @@ public class EventRepository : IEventRepository
     return _provider.Events.AnyAsync(e => e.Id == eventId && e.IsActive);
   }
 
-  public async Task<DbEvent> GetAsync(Guid eventId)
+  public Task<List<Guid>> GetExisting(List<Guid> eventsIds)
   {
-    return await _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
+    return _provider.Events.AsNoTracking().Where(p => eventsIds.Contains(p.Id)).Select(p => p.Id).ToListAsync();
+  }
+
+  public Task<DbEvent> GetAsync(Guid eventId)
+  {
+    return _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
   }
 }

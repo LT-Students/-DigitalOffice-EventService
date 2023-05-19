@@ -125,9 +125,7 @@ public class InitialTables : Migration
       {
         Id = table.Column<Guid>(nullable: false),
         EventId = table.Column<Guid>(nullable: false),
-        ImageId = table.Column<Guid>(nullable: false),
-        CreatedBy = table.Column<Guid>(nullable: false),
-        CreatedAtUtc = table.Column<DateTime>(nullable: false),
+        ImageId = table.Column<Guid>(nullable: false)
       },
       constraints: table =>
       {
@@ -143,9 +141,7 @@ public class InitialTables : Migration
       {
         Id = table.Column<Guid>(nullable: false),
         EventId = table.Column<Guid>(nullable: false),
-        FileId = table.Column<Guid>(nullable: false),
-        CreatedBy = table.Column<Guid>(nullable: false),
-        CreatedAtUtc = table.Column<DateTime>(nullable: false),
+        FileId = table.Column<Guid>(nullable: false)
       },
       constraints: table =>
       {

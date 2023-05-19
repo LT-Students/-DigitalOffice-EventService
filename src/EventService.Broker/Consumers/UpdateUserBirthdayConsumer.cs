@@ -3,31 +3,30 @@ using DigitalOffice.Models.Broker.Publishing.Subscriber.User;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using MassTransit;
 
-namespace LT.DigitalOffice.EventService.Broker.Consumers
+namespace LT.DigitalOffice.EventService.Broker.Consumers;
+
+public class UpdateUserBirthdayConsumer : IConsumer<IUpdateUserBirthdayPublish>
 {
-  public class UpdateUserBirthdayConsumer : IConsumer<IUpdateUserBirthdayPublish>
+  private readonly IUserBirthdayRepository _userBirthdayRepository;
+
+  private async Task UpdateUserBirthdayAsync(IUpdateUserBirthdayPublish publish)
   {
-    private readonly IUserBirthdayRepository _userBirthdayRepository;
-
-    private async Task UpdateUserBirthdayAsync(IUpdateUserBirthdayPublish publish)
+    if (publish is null)
     {
-      if (publish is null)
-      {
-        return;
-      }
-
-      await _userBirthdayRepository.UpdateUserBirthdayAsync(publish.UserId, publish.DateOfBirth);
+      return;
     }
 
-    public UpdateUserBirthdayConsumer(
-      IUserBirthdayRepository userBirthdayRepository)
-    {
-      _userBirthdayRepository = userBirthdayRepository;
-    }
+    await _userBirthdayRepository.UpdateUserBirthdayAsync(publish.UserId, publish.DateOfBirth);
+  }
 
-    public async Task Consume(ConsumeContext<IUpdateUserBirthdayPublish> context)
-    {
-      await UpdateUserBirthdayAsync(context.Message);
-    }
+  public UpdateUserBirthdayConsumer(
+    IUserBirthdayRepository userBirthdayRepository)
+  {
+    _userBirthdayRepository = userBirthdayRepository;
+  }
+
+  public async Task Consume(ConsumeContext<IUpdateUserBirthdayPublish> context)
+  {
+    await UpdateUserBirthdayAsync(context.Message);
   }
 }
