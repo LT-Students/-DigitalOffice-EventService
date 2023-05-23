@@ -24,7 +24,6 @@ public class FindCategoriesCommand : IFindCategoriesCommand
     _mapper = mapper;
   }
   
-  
   public async Task<FindResultResponse<CategoryInfo>> ExecuteAsync(
     FindCategoriesFilter filter, 
     CancellationToken cancellationToken = default)

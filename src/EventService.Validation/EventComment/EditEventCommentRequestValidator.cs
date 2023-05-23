@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventComment;
@@ -14,8 +12,6 @@ namespace LT.DigitalOffice.EventService.Validation.EventComment;
 
 public class EditEventCommentRequestValidator : ExtendedEditRequestValidator<Guid, EditEventCommentRequest>, IEditEventCommentRequestValidator
 {
-  private readonly IEventCommentRepository _repository;
-
   private void HandleInternalPropertyValidation(
     Operation<EditEventCommentRequest> requestedOperation,
     ValidationContext<(Guid, JsonPatchDocument<EditEventCommentRequest>)> context)
@@ -65,13 +61,11 @@ public class EditEventCommentRequestValidator : ExtendedEditRequestValidator<Gui
 
   public EditEventCommentRequestValidator(IEventCommentRepository repository)
   {
-    _repository = repository;
-
     RuleForEach(x => x.Item2.Operations)
       .Custom(HandleInternalPropertyValidation);
 
     RuleFor(request => request.Item1)
-      .MustAsync(async (commentId, _) => await _repository.DoesExistAsync(commentId))
+      .MustAsync(async (commentId, _) => await repository.DoesExistAsync(commentId))
       .WithMessage("This comment doesn't exist.");
   }
 }

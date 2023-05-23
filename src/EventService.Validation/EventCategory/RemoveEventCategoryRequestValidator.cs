@@ -19,7 +19,7 @@ public class RemoveEventCategoryRequestValidator : AbstractValidator<RemoveEvent
     RuleFor(request => request.CategoriesIds)
       .NotEmpty()
       .WithMessage("There are no categories to delete.")
-      .Must(categoryRepository.DoesExistAllAsync)
+      .MustAsync(async (categories, _) => await categoryRepository.DoesExistAllAsync(categories))
       .WithMessage("Some categories doesn't exist.");
 
     RuleFor(request => request)
