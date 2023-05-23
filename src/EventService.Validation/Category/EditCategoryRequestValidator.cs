@@ -7,6 +7,7 @@ using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 using LT.DigitalOffice.EventService.Validation.Category.Interfaces;
 using LT.DigitalOffice.EventService.Validation.EventUser.Resources;
 using LT.DigitalOffice.Kernel.Validators;
+using MassTransit.Contracts.Conductor;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
@@ -69,7 +70,7 @@ namespace LT.DigitalOffice.EventService.Validation.Category
 
       RuleFor(categoryId => categoryId.Item1)
         .MustAsync(async (categoryId, _) => await categoryRepository.DoesExistAllAsync(new List<Guid> { categoryId }))
-        .WithMessage(EventUserRequestValidatorResource.EventUserIdDoesNotExist);
+        .WithMessage("This Id doesn't exist.");
     }
   }
 }
