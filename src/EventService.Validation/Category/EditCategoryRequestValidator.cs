@@ -67,7 +67,7 @@ public class EditCategoryRequestValidator : ExtendedEditRequestValidator<Guid, E
       .Custom(HandleInternalPropertyValidation);
 
     RuleFor(categoryId => categoryId.Item1)
-      .MustAsync(async (categoryId, _) => await categoryRepository.DoExistAllAsync(new List<Guid> { categoryId }))
+      .MustAsync((categoryId, _) => categoryRepository.DoExistAllAsync(new List<Guid> { categoryId }))
       .WithMessage("This Id doesn't exist.");
   }
 }
