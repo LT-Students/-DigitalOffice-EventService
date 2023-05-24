@@ -65,7 +65,7 @@ public class EditEventCommentRequestValidator : ExtendedEditRequestValidator<Gui
       .Custom(HandleInternalPropertyValidation);
 
     RuleFor(request => request.Item1)
-      .MustAsync(async (commentId, _) => await repository.DoesExistAsync(commentId))
+      .MustAsync((commentId, _) => repository.DoesExistAsync(commentId))
       .WithMessage("This comment doesn't exist.");
   }
 }
