@@ -52,7 +52,7 @@ public class CategoryRepository : ICategoryRepository
     _httpContextAccessor = httpContextAccessor;
   }
 
-  public async Task<bool> DoesExistAllAsync(List<Guid> categoriesIds)
+  public async Task<bool> DoExistAllAsync(List<Guid> categoriesIds)
   {
     return (await _provider.Categories
       .Where(p => categoriesIds.Contains(p.Id))

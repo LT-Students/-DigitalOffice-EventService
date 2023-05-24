@@ -12,7 +12,7 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces;
 [AutoInject]
 public interface ICategoryRepository
 {
-  Task<bool> DoesExistAllAsync(List<Guid> categoriesIds);
+  Task<bool> DoExistAllAsync(List<Guid> categoriesIds);
   Task<Guid?> CreateAsync(DbCategory dbCategory);
   Task<(List<DbCategory> dbCategories, int totalCount)> FindAsync(
     FindCategoriesFilter filter,
