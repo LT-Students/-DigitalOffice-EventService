@@ -3,7 +3,6 @@ using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
-using Microsoft.IdentityModel.Tokens;
 
 namespace LT.DigitalOffice.EventService.Mappers.Patch;
 

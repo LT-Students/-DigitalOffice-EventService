@@ -1,5 +1,4 @@
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
 
 namespace LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
