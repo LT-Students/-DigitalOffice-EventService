@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
@@ -22,8 +21,7 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
     IUserService userService,
     IHttpContextAccessor contextAccessor,
     ICategoryRepository categoryRepository,
-    ICreateCategoryRequestValidator categoryValidator,
-    IDbCategoryMapper categoryMapper)
+    ICreateCategoryRequestValidator categoryValidator)
   {
     RuleFor(ev => ev.Name)
       .MaximumLength(150)
@@ -90,26 +88,26 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       RuleFor(ev => ev)
         .Must((ev) =>
         {
-          List<Guid> categoriesIds = new();
+          int countCategories = default;
 
           if (!ev.CategoriesRequests.IsNullOrEmpty())
           {
             if (!ev.CategoriesIds.IsNullOrEmpty())
             {
-              categoriesIds.AddRange(ev.CategoriesIds);
+              countCategories = ev.CategoriesIds.Count();
             }
             
             foreach (CreateCategoryRequest categoryRequest in ev.CategoriesRequests)
             {
-              categoriesIds.Add(categoryMapper.Map(categoryRequest).Id);
+              ++countCategories;
             }
           }
           else
           {
-            categoriesIds.AddRange(ev.CategoriesIds);
+            countCategories = ev.CategoriesIds.Count();
           };
 
-          return categoriesIds.Count < 2;
+          return countCategories < 2;
         })
         .WithMessage("Count of categories to event must be no more than 1");
     });
