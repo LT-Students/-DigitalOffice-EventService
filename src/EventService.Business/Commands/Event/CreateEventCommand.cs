@@ -110,16 +110,6 @@ public class CreateEventCommand : ICreateEventCommand
         validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
-    List<DbCategory> dbCategories = new();
-
-    if (!request.CategoriesRequests.IsNullOrEmpty())
-    {
-      foreach (CreateCategoryRequest categoryRequest in request.CategoriesRequests)
-      {
-        dbCategories.Add(_categoryMapper.Map(categoryRequest));
-      }
-    }
-
     List<Guid> imagesIds = null;
     if (request.EventImages is not null && request.EventImages.Any())
     {
@@ -142,14 +132,14 @@ public class CreateEventCommand : ICreateEventCommand
 
     await SendInviteEmailsAsync(dbEvent.Users.Select(x => x.UserId).ToList(), dbEvent.Name);
 
-    if(response.Body != null)
+    List<DbCategory> dbCategories = new();
+    if (response.Body is not null)
     {
-      if (dbCategories.Any())
+      if (!request.CategoriesRequests.IsNullOrEmpty())
       {
-        foreach (DbCategory category in dbCategories)
-        {
-          await _categoryRepository.CreateAsync(category);
-        }
+        dbCategories.AddRange(request.CategoriesRequests.ConvertAll(_categoryMapper.Map));
+        
+        await _categoryRepository.CreateAsync(dbCategories);
       }
 
       _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;

@@ -11,6 +11,7 @@ using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -71,6 +72,18 @@ public class CategoryRepository : ICategoryRepository
     await _provider.SaveAsync();
 
     return dbCategory.Id;
+  }
+
+  public Task CreateAsync(List<DbCategory> dbCategories)
+  {
+    if (!dbCategories.IsNullOrEmpty())
+    {
+      return null;
+    }
+
+    _provider.Categories.AddRange(dbCategories);
+
+    return _provider.SaveAsync();
   }
 
   public async Task<(List<DbCategory> dbCategories, int totalCount)> FindAsync(

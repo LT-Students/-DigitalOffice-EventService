@@ -106,7 +106,7 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
 
           return countCategories < 2;
         })
-        .WithMessage("Count of categories to event must be no more than 1");
+        .WithMessage("Count of categories to event must be no more than 1.");
     });
   }
 }

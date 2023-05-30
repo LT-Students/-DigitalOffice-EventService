@@ -14,6 +14,7 @@ public interface ICategoryRepository
 {
   Task<bool> DoExistAllAsync(List<Guid> categoriesIds);
   Task<Guid?> CreateAsync(DbCategory dbCategory);
+  Task CreateAsync(List<DbCategory> dbCategories);
   Task<(List<DbCategory> dbCategories, int totalCount)> FindAsync(
     FindCategoriesFilter filter,
     CancellationToken cancellationToken = default);
