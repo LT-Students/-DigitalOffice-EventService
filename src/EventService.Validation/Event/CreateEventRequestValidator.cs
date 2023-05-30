@@ -96,11 +96,8 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
             {
               countCategories = ev.CategoriesIds.Count();
             }
-            
-            foreach (CreateCategoryRequest categoryRequest in ev.CategoriesRequests)
-            {
-              ++countCategories;
-            }
+
+            countCategories = countCategories + ev.CategoriesRequests.Count();
           }
           else
           {
