@@ -27,7 +27,7 @@ public class CreateImagesRequestValidator : AbstractValidator<CreateImagesReques
     RuleFor(request => request.EventId)
       .NotEmpty()
       .WithMessage("Event id must not be empty.")
-      .MustAsync(async (eventId, _) => await eventRepository.DoesExistAsync(eventId))
+      .MustAsync(async (eventId, _) => await eventRepository.DoesExistAsync(eventId, true))
       .WithMessage("Invalid event id.");
   }
 }

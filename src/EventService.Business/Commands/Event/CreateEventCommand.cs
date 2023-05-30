@@ -11,6 +11,7 @@ using LT.DigitalOffice.EventService.Business.Commands.Event.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
@@ -20,6 +21,7 @@ using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.Event;
 
@@ -34,6 +36,8 @@ public class CreateEventCommand : ICreateEventCommand
   private readonly IEmailService _emailService;
   private readonly IUserService _userService;
   private readonly IImageService _imageService;
+  private readonly IDbCategoryMapper _categoryMapper;
+  private readonly ICategoryRepository _categoryRepository;
 
   private const int ResizeMaxValue = 1000;
   private const int ConditionalWidth = 4;
@@ -66,7 +70,9 @@ public class CreateEventCommand : ICreateEventCommand
     IHttpContextAccessor contextAccessor,
     IUserService userService,
     IEmailService emailService,
-    IImageService imageService)
+    IImageService imageService,
+    IDbCategoryMapper categoryMapper,
+    ICategoryRepository categoryRepository)
   {
     _eventRepository = repository;
     _eventMapper = eventMapper;
@@ -77,6 +83,8 @@ public class CreateEventCommand : ICreateEventCommand
     _userService = userService;
     _emailService = emailService;
     _imageService = imageService;
+    _categoryMapper = categoryMapper;
+    _categoryRepository = categoryRepository;
   }
 
   public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventRequest request)
@@ -102,6 +110,15 @@ public class CreateEventCommand : ICreateEventCommand
         validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
+    List<DbCategory> dbCategories = new();
+    if (!request.CategoriesRequests.IsNullOrEmpty())
+    {
+      foreach (CreateCategoryRequest categoryRequest in request.CategoriesRequests)
+      {
+        dbCategories.Add(_categoryMapper.Map(categoryRequest));
+      }
+    }
+
     List<Guid> imagesIds = null;
     if (request.EventImages is not null && request.EventImages.Any())
     {
@@ -124,9 +141,22 @@ public class CreateEventCommand : ICreateEventCommand
 
     await SendInviteEmailsAsync(dbEvent.Users.Select(x => x.UserId).ToList(), dbEvent.Name);
 
-    _contextAccessor.HttpContext.Response.StatusCode = response.Body is null
-      ? (int)HttpStatusCode.BadRequest
-      : (int)HttpStatusCode.Created;
+    if(response.Body != null)
+    {
+      if (dbCategories.Any())
+      {
+        foreach (DbCategory category in dbCategories)
+        {
+          await _categoryRepository.CreateAsync(category);
+        }
+      }
+
+      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+    }
+    else
+    {
+      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+    }
 
     return response;
   }

@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
+using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
+using LT.DigitalOffice.EventService.Validation.Category.Interfaces;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
 using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +21,9 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
   public CreateEventRequestValidator(
     IUserService userService,
     IHttpContextAccessor contextAccessor,
-    ICategoryRepository categoryRepository)
+    ICategoryRepository categoryRepository,
+    ICreateCategoryRequestValidator categoryValidator,
+    IDbCategoryMapper categoryMapper)
   {
     RuleFor(ev => ev.Name)
       .MaximumLength(150)
@@ -37,6 +43,13 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
     RuleFor(ev => ev.Date)
       .Must(d => d > DateTime.UtcNow)
       .WithMessage("The event date must be later than the date the event was created");
+
+    When(ev => ev.EndDate.HasValue, () =>
+    {
+      RuleFor(ev => ev)
+        .Must(ev => ev.EndDate > ev.Date )
+        .WithMessage("The end date must be later than the event date.");
+    });
 
     RuleLevelCascadeMode = CascadeMode.Stop;
     RuleFor(ev => ev.Users)
@@ -60,13 +73,45 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       .Must((ev, users) => users.All(user => user.NotifyAtUtc is null || (user.NotifyAtUtc > DateTime.UtcNow && user.NotifyAtUtc < ev.Date)))
       .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now or later than date of the event");
 
-    When(ev => !ev.CategoriesIds.IsNullOrEmpty(), () =>
+    When(ev => !ev.CategoriesRequests.IsNullOrEmpty(),
+        () =>
+          RuleForEach(request => request.CategoriesRequests)
+            .SetValidator(categoryValidator));
+
+    When(ev => !ev.CategoriesIds.IsNullOrEmpty() || !ev.CategoriesRequests.IsNullOrEmpty(), () =>
     {
-      RuleFor(ev => ev.CategoriesIds)
+      When(ev => !ev.CategoriesIds.IsNullOrEmpty(), () =>
+      {
+        RuleFor(ev => ev.CategoriesIds)
         .Must(categoryRepository.DoesExistAllAsync)
-        .WithMessage("Some of categories in the list doesn't exist.")
-        .Must(cat => cat.Count < 6)
-        .WithMessage("Count of categories to event must be no more than 5");
+        .WithMessage("Some of categories in the list doesn't exist.");
+      });
+
+      RuleFor(ev => ev)
+        .Must((ev) =>
+        {
+          List<Guid> categoriesIds = new();
+
+          if (!ev.CategoriesRequests.IsNullOrEmpty())
+          {
+            if (!ev.CategoriesIds.IsNullOrEmpty())
+            {
+              categoriesIds.AddRange(ev.CategoriesIds);
+            }
+            
+            foreach (CreateCategoryRequest categoryRequest in ev.CategoriesRequests)
+            {
+              categoriesIds.Add(categoryMapper.Map(categoryRequest).Id);
+            }
+          }
+          else
+          {
+            categoriesIds.AddRange(ev.CategoriesIds);
+          };
+
+          return categoriesIds.Count < 2;
+        })
+        .WithMessage("Count of categories to event must be no more than 1");
     });
   }
 }

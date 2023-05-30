@@ -83,7 +83,7 @@ public class EditEventCommentCommand : IEditEventCommentCommand
     }
     else if (!response.Body)
     {
-      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+      return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
     }
 
     return response;

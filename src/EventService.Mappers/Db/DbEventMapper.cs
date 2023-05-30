@@ -70,6 +70,7 @@ public class DbEventMapper : IDbEventMapper
         Address = request.Address,
         Description = request.Description,
         Date = request.Date,
+        EndDate = request.EndDate,
         Format = request.Format,
         Access = request.Access,
         IsActive = true,

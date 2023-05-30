@@ -13,7 +13,7 @@ public class RemoveEventCategoryRequestValidator : AbstractValidator<RemoveEvent
     IEventCategoryRepository eventCategoryRepository)
   {
     RuleFor(request => request.EventId)
-      .MustAsync(async (x, _) => await eventRepository.DoesExistAsync(x))
+      .MustAsync(async (x, _) => await eventRepository.DoesExistAsync(x, true))
       .WithMessage("This event doesn't exist.");
 
     RuleFor(request => request.CategoriesIds)

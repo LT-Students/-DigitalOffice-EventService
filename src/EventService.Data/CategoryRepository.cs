@@ -48,7 +48,7 @@ public class CategoryRepository : ICategoryRepository
   public bool DoesExistAllAsync(List<Guid> categoriesIds)
   {
     return categoriesIds.All(categoryId =>
-      _provider.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
+      _provider.Categories.AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
   }
 
   public async Task<Guid?> CreateAsync(DbCategory dbCategory)

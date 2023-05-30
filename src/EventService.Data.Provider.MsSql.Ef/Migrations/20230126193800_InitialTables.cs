@@ -17,9 +17,10 @@ public class InitialTables : Migration
       {
         Id = table.Column<Guid>(nullable: false),
         Name = table.Column<string>(nullable: false),
-        Address = table.Column<string>(nullable: false),
+        Address = table.Column<string>(nullable: true),
         Description = table.Column<string>(nullable: true),
         Date = table.Column<DateTime>(nullable: false),
+        EndDate = table.Column<DateTime>(nullable: true),
         Format = table.Column<int>(nullable: false),
         Access = table.Column<int>(nullable: false),
         IsActive = table.Column<bool>(nullable: false),

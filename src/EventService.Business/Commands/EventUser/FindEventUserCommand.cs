@@ -47,7 +47,7 @@ public class FindEventUserCommand : IFindEventUserCommand
     FindEventUsersFilter filter,
     CancellationToken cancellationToken)
   {
-    if (!await _eventRepository.DoesExistAsync(eventId))
+    if (!await _eventRepository.DoesExistAsync(eventId, true))
     {
       return _responseCreator.CreateFailureFindResponse<EventUserInfo>(HttpStatusCode.BadRequest);
     }
