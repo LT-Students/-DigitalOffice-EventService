@@ -83,7 +83,7 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       When(ev => !ev.CategoriesIds.IsNullOrEmpty(), () =>
       {
         RuleFor(ev => ev.CategoriesIds)
-        .Must(categoryRepository.DoesExistAllAsync)
+        .MustAsync((categories, _) => categoryRepository.DoExistAllAsync(categories))
         .WithMessage("Some of categories in the list doesn't exist.");
       });
 
