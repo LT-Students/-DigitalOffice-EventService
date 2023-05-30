@@ -111,6 +111,7 @@ public class CreateEventCommand : ICreateEventCommand
     }
 
     List<DbCategory> dbCategories = new();
+
     if (!request.CategoriesRequests.IsNullOrEmpty())
     {
       foreach (CreateCategoryRequest categoryRequest in request.CategoriesRequests)

@@ -104,7 +104,6 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
       x => x == OperationType.Replace,
       new()
       {
-
         { x => x.value is null || (DateTime.TryParse(x.value.ToString().Trim(), out _)), "Incorrect end date value." }
       }, CascadeMode.Stop);
 

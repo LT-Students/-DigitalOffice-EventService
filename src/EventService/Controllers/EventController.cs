@@ -21,7 +21,7 @@ public class EventController : ControllerBase
   }
 
   [HttpPatch("edit")]
-  public async Task<OperationResultResponse<bool>> EditAsync( //async?
+  public async Task<OperationResultResponse<bool>> EditAsync(
     [FromServices] IEditEventCommand command,
     [FromQuery] Guid eventId,
     [FromBody] JsonPatchDocument<EditEventRequest> request)
