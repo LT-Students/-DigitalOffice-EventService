@@ -149,9 +149,11 @@ public class CreateEventCommand : ICreateEventCommand
         
         await _categoryRepository.CreateAsync(dbCategories);
 
-        List<Guid> categoriesIds = new(dbCategories.Select(c => c.Id).ToList());
         List<DbEventCategory> eventCategories = _eventCategoryMapper.Map(
-          new CreateEventCategoryRequest { EventId = response.Body.Value, CategoriesIds = categoriesIds }).ToList();
+          new CreateEventCategoryRequest {
+            EventId = response.Body.Value,
+            CategoriesIds = dbCategories.Select(c => c.Id).ToList() })
+          .ToList();
 
         await _eventCategoryRepository.CreateAsync(eventCategories);
       }
