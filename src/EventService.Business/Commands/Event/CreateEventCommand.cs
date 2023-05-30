@@ -13,6 +13,7 @@ using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
+using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
@@ -28,16 +29,18 @@ namespace LT.DigitalOffice.EventService.Business.Commands.Event;
 public class CreateEventCommand : ICreateEventCommand
 {
   private readonly IEventRepository _eventRepository;
+  private readonly ICategoryRepository _categoryRepository;
+  private readonly IEventCategoryRepository _eventCategoryRepository;
   private readonly ICreateEventRequestValidator _validator;
   private readonly IDbEventMapper _eventMapper;
+  private readonly IDbCategoryMapper _categoryMapper;
+  private readonly IDbEventCategoryMapper _eventCategoryMapper;
   private readonly IAccessValidator _accessValidator;
   private readonly IResponseCreator _responseCreator;
   private readonly IHttpContextAccessor _contextAccessor;
   private readonly IEmailService _emailService;
   private readonly IUserService _userService;
   private readonly IImageService _imageService;
-  private readonly IDbCategoryMapper _categoryMapper;
-  private readonly ICategoryRepository _categoryRepository;
 
   private const int ResizeMaxValue = 1000;
   private const int ConditionalWidth = 4;
@@ -63,16 +66,19 @@ public class CreateEventCommand : ICreateEventCommand
 
   public CreateEventCommand(
     IEventRepository repository,
+    ICategoryRepository categoryRepository,
+    IEventCategoryRepository eventCategoryRepository,
     ICreateEventRequestValidator validator,
     IDbEventMapper eventMapper,
+    IDbCategoryMapper categoryMapper,
+    IDbEventCategoryMapper eventCategoryMapper,
     IAccessValidator accessValidator,
     IResponseCreator responseCreator,
     IHttpContextAccessor contextAccessor,
     IUserService userService,
     IEmailService emailService,
-    IImageService imageService,
-    IDbCategoryMapper categoryMapper,
-    ICategoryRepository categoryRepository)
+    IImageService imageService
+    )
   {
     _eventRepository = repository;
     _eventMapper = eventMapper;
@@ -85,6 +91,8 @@ public class CreateEventCommand : ICreateEventCommand
     _imageService = imageService;
     _categoryMapper = categoryMapper;
     _categoryRepository = categoryRepository;
+    _eventCategoryMapper = eventCategoryMapper;
+    _eventCategoryRepository = eventCategoryRepository;
   }
 
   public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventRequest request)
@@ -140,6 +148,12 @@ public class CreateEventCommand : ICreateEventCommand
         dbCategories.AddRange(request.CategoriesRequests.ConvertAll(_categoryMapper.Map));
         
         await _categoryRepository.CreateAsync(dbCategories);
+
+        List<Guid> categoriesIds = new(dbCategories.Select(c => c.Id).ToList());
+        List<DbEventCategory> eventCategories = _eventCategoryMapper.Map(
+          new CreateEventCategoryRequest { EventId = response.Body.Value, CategoriesIds = categoriesIds }).ToList();
+
+        await _eventCategoryRepository.CreateAsync(eventCategories);
       }
 
       _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;

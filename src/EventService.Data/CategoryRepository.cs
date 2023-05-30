@@ -76,7 +76,7 @@ public class CategoryRepository : ICategoryRepository
 
   public Task CreateAsync(List<DbCategory> dbCategories)
   {
-    if (!dbCategories.IsNullOrEmpty())
+    if (dbCategories.IsNullOrEmpty())
     {
       return null;
     }
