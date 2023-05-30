@@ -1,22 +1,26 @@
 ﻿using System;
-using System.Linq;
-using LT.DigitalOffice.EventService.Models.Db;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
+using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
+using LT.DigitalOffice.Kernel.Extensions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.EventService.Data;
 
 public class CategoryRepository : ICategoryRepository
 {
   private readonly IDataProvider _provider;
+  private readonly IHttpContextAccessor _httpContextAccessor;
 
   private IQueryable<DbCategory> CreateFindPredicates(
-  FindCategoriesFilter filter)
+    FindCategoriesFilter filter)
   {
     IQueryable<DbCategory> dbCategories = _provider.Categories.AsNoTracking().Where(c => c.IsActive);
 
@@ -29,7 +33,7 @@ public class CategoryRepository : ICategoryRepository
     {
       dbCategories = dbCategories.Where(c => c.Color == filter.Color);
     }
-    
+
     if (filter.IsAscendingSort.HasValue)
     {
       dbCategories = filter.IsAscendingSort.Value
@@ -39,16 +43,21 @@ public class CategoryRepository : ICategoryRepository
 
     return dbCategories;
   }
-  
-  public CategoryRepository(IDataProvider provider)
+
+  public CategoryRepository(
+    IDataProvider provider,
+    IHttpContextAccessor httpContextAccessor)
   {
     _provider = provider;
+    _httpContextAccessor = httpContextAccessor;
   }
 
-  public bool DoesExistAllAsync(List<Guid> categoriesIds)
+  public async Task<bool> DoExistAllAsync(List<Guid> categoriesIds)
   {
-    return categoriesIds.All(categoryId =>
-      _provider.Categories.AnyAsync(c => c.Id == categoryId && c.IsActive).Result);
+    return (await _provider.Categories
+      .Where(p => categoriesIds.Contains(p.Id))
+      .Select(p => p.Id)
+      .ToListAsync()).Count == categoriesIds.Count;
   }
 
   public async Task<Guid?> CreateAsync(DbCategory dbCategory)
@@ -65,7 +74,7 @@ public class CategoryRepository : ICategoryRepository
   }
 
   public async Task<(List<DbCategory> dbCategories, int totalCount)> FindAsync(
-    FindCategoriesFilter filter, 
+    FindCategoriesFilter filter,
     CancellationToken cancellationToken = default)
   {
     if (filter is null)
@@ -81,6 +90,24 @@ public class CategoryRepository : ICategoryRepository
         .Take(filter.TakeCount)
         .ToListAsync(cancellationToken),
       await dbCategories.CountAsync(cancellationToken));
+  }
+
+  public async Task<bool> EditAsync(Guid categoryId, JsonPatchDocument<DbCategory> request)
+  {
+    DbCategory dbCategory = await _provider.Categories.FirstOrDefaultAsync(x => x.Id == categoryId);
+
+    if (dbCategory is null || request is null)
+    {
+      return false;
+    }
+
+    request.ApplyTo(dbCategory);
+    dbCategory.ModifiedBy = _httpContextAccessor.HttpContext.GetUserId();
+    dbCategory.ModifiedAtUtc = DateTime.UtcNow;
+
+    await _provider.SaveAsync();
+
+    return true;
   }
 }
 

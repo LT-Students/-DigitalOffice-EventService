@@ -17,7 +17,7 @@ public class CreateEventCategoryRequestValidator : AbstractValidator<CreateEvent
       .WithMessage("This event doesn't exist.");
 
     RuleFor(x => x.CategoriesIds)
-      .Must(categoryRepository.DoesExistAllAsync)
+      .MustAsync((categories, _) => categoryRepository.DoExistAllAsync(categories))
       .WithMessage("Some of categories in the list doesn't exist.");
 
     RuleFor(x => x)
