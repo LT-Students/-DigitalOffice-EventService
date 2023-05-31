@@ -13,7 +13,7 @@ public interface IEventRepository
   Task<Guid?> CreateAsync(DbEvent dbEvent);
   Task<bool> EditAsync(Guid eventId, JsonPatchDocument<DbEvent> request);
   Task<bool> DoesExistAsync(Guid eventId, bool? isActive);
-  public Task<bool> IsEventCompletedAsync(Guid eventId);
+  Task<bool> IsEventCompletedAsync(Guid eventId);
   Task<List<Guid>> GetExisting(List<Guid> eventsIds);
   Task<DbEvent> GetAsync(Guid eventId);
 }

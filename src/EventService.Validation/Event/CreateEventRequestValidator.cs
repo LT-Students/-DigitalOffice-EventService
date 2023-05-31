@@ -88,7 +88,7 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       RuleFor(ev => ev)
         .Must((ev) =>
         {
-          int countCategories = default;
+          int countCategories = 0;
 
           if (!ev.CategoriesRequests.IsNullOrEmpty())
           {

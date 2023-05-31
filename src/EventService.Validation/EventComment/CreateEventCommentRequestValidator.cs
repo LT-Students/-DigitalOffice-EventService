@@ -24,7 +24,7 @@ public class CreateEventCommentRequestValidator : AbstractValidator<CreateEventC
     RuleFor(x => x.EventId)
       .NotEmpty()
       .WithMessage("Event id must be specified.")
-      .MustAsync(async (eventId, _) => await eventRepository.DoesExistAsync(eventId, true))
+      .MustAsync((eventId, _) => eventRepository.DoesExistAsync(eventId, true))
       .WithMessage("This event doesn't exist.");
 
     When(x => x.ParentId.HasValue, () => 
