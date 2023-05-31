@@ -54,4 +54,7 @@ public class RabbitMqConfig : BaseRabbitMqConfig
 
   [AutoInjectRequest(typeof(ICreateImagesRequest))]
   public string CreateImagesEndpoint { get; init; }
+
+  [AutoInjectRequest(typeof(IGetImagesRequest))]
+  public string GetImagesEndpoint { get; init; }
 }

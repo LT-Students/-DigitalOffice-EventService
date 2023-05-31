@@ -62,6 +62,38 @@ public class EventRepository : IEventRepository
       await query.CountAsync(ct));
   }
 
+  private Task<DbEvent> CreateGetPredicate(GetEventFilter filter)
+  {
+    IQueryable<DbEvent> query = _provider.Events.AsNoTracking();
+
+    if (filter.IncludeCategories)
+    {
+      query = query.Include(e => e.EventsCategories);
+    }
+
+    if (filter.IncludeUsers)
+    {
+      query = query.Include(e => e.Users);
+    }
+
+    if (filter.IncludeImages)
+    {
+      query = query.Include(e => e.Images);
+    }
+
+    if (filter.IncludeFiles)
+    {
+      query = query.Include(e => e.Files);
+    }
+
+    if (filter.IncludeComments)
+    {
+      query = query.Include(e => e.Comments.OrderBy(c => c.CreatedAtUtc));
+    }
+
+    return query.FirstOrDefaultAsync(e => e.Id == filter.EventId);
+  }
+
   public EventRepository(IDataProvider provider)
   {
     _provider = provider;
@@ -96,9 +128,16 @@ public class EventRepository : IEventRepository
     return _provider.Events.AsNoTracking().Where(p => eventsIds.Contains(p.Id)).Select(p => p.Id).ToListAsync();
   }
 
-  public Task<DbEvent> GetAsync(Guid eventId)
+  public Task<DbEvent> GetAsync(
+    Guid eventId,
+    GetEventFilter filter = null)
   {
-    return _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
+    if (filter is null)
+    {
+      return _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
+    }
+
+    return CreateGetPredicate(filter);
   }
 
   public async Task<(List<DbEvent>, int totalCount)> FindAsync(FindEventsFilter filter, CancellationToken ct)

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
+using LT.DigitalOffice.EventService.Models.Dto.Models;
 
 namespace LT.DigitalOffice.EventService.Models.Dto.Responses.Event;
 
@@ -13,4 +15,9 @@ public class EventResponse
   public FormatType Format { get; set; }
   public AccessType Access { get; set; }
   public DateTime CreatedAtUtc { get; set; }
+  public List<FileInfo> EventFiles { get; set; }
+  public List<CategoryInfo> EventCategories { get; set; }
+  public List<UserInfo> EventUsers { get; set; }
+  public List<ImageInfo> EventImages { get; set; }
+  public List<CommentInfo> EventComments { get; set; }
 }

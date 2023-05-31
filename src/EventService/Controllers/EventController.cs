@@ -34,9 +34,9 @@ public class EventController : ControllerBase
   [HttpGet("get")]
   public async Task<OperationResultResponse<EventResponse>> GetAsync(
     [FromServices] IGetEventCommand command,
-    [FromQuery] Guid eventId,
+    [FromQuery] GetEventFilter filter,
     CancellationToken ct)
   {
-    return await command.ExecuteAsync(eventId: eventId, ct: ct);
+    return await command.ExecuteAsync(filter: filter, ct: ct);
   }
 }

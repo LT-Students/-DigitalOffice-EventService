@@ -5,7 +5,7 @@ using LT.DigitalOffice.Kernel.Attributes;
 namespace LT.DigitalOffice.EventService.Mappers.Models.Interface;
 
 [AutoInject]
-public interface IEventInfoMapper
+public interface ICommentInfoMapper
 {
-  EventInfo Map(DbEvent dbEvent);
+  CommentInfo Map(DbEventComment dbComment);
 }
