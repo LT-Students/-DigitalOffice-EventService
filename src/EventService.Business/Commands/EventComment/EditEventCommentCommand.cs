@@ -68,10 +68,10 @@ public class EditEventCommentCommand : IEditEventCommentCommand
     OperationResultResponse<bool> response = new();
 
     object isActiveOperation = request.Operations.FirstOrDefault(o =>
-        o.path.EndsWith(nameof(EditEventCommentRequest.IsActive), StringComparison.OrdinalIgnoreCase))?.value;
+        o.path.Equals("/" + nameof(EditEventCommentRequest.IsActive), StringComparison.OrdinalIgnoreCase))?.value;
 
     object contentOperation = request.Operations.FirstOrDefault(o =>
-        o.path.EndsWith(nameof(EditEventCommentRequest.Content), StringComparison.OrdinalIgnoreCase))?.value;
+        o.path.Equals("/" + nameof(EditEventCommentRequest.Content), StringComparison.OrdinalIgnoreCase))?.value;
 
     if (isActiveOperation is not null && bool.TryParse(isActiveOperation.ToString(), out bool isActive) && !isActive)
     {
