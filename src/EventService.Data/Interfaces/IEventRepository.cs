@@ -16,4 +16,5 @@ public interface IEventRepository
   Task<bool> IsEventCompletedAsync(Guid eventId);
   Task<List<Guid>> GetExisting(List<Guid> eventsIds);
   Task<DbEvent> GetAsync(Guid eventId);
+  Task<(List<Guid> filesIds, List<Guid> imagesIds)> RemoveImagesFilesAsync(Guid eventId);
 }

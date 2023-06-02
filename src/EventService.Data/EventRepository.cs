@@ -67,8 +67,6 @@ public class EventRepository : IEventRepository
     if (oldIsActive != newIsActive)
     {
       _provider.EventsUsers.RemoveRange(_provider.EventsUsers.Where(x => x.EventId == eventId));
-      _provider.EventImages.RemoveRange(_provider.EventImages.Where(x => x.EventId == eventId));
-      _provider.EventFiles.RemoveRange(_provider.EventFiles.Where(x => x.EventId == eventId));
 
       List<DbEventComment> comments = _provider.EventComments.Where(x => x.EventId == eventId && (x.Content != null)).ToList();
       foreach (DbEventComment comment in comments)
@@ -112,5 +110,23 @@ public class EventRepository : IEventRepository
   public Task<DbEvent> GetAsync(Guid eventId)
   {
     return _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
+  }
+
+  public async Task<(List<Guid> filesIds, List<Guid> imagesIds)> RemoveImagesFilesAsync(Guid eventId)
+  {
+    DbEvent dbEvent = await _provider.Events
+      .Include(x => x.Files)
+      .Include(x => x.Images)
+      .FirstOrDefaultAsync(p => p.Id == eventId);
+
+    _provider.EventImages.RemoveRange(_provider.EventImages.Where(x => x.EventId == eventId));
+    _provider.EventFiles.RemoveRange(_provider.EventFiles.Where(x => x.EventId == eventId));
+
+    List<Guid> filesIds = dbEvent.Files.Select(file => file.FileId).ToList();
+    List<Guid> imagesIds = dbEvent.Images.Select(image => image.ImageId).ToList();
+
+    await _provider.SaveAsync();
+
+    return (filesIds, imagesIds);
   }
 }

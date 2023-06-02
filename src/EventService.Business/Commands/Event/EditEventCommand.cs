@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,13 +10,11 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Patch.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.EventComment;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
-using LT.DigitalOffice.Models.Broker.Enums;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.Event;
@@ -64,15 +61,14 @@ public class EditEventCommand : IEditEventCommand
         validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
+    OperationResultResponse<bool> response = new(body: await _repository.EditAsync(eventId, _mapper.Map(request)));
+
     object isActiveOperation = request.Operations.FirstOrDefault(o =>
         o.path.EndsWith(nameof(EditEventRequest.IsActive), StringComparison.OrdinalIgnoreCase))?.value;
 
-    if (isActiveOperation is not null && bool.TryParse(isActiveOperation.ToString(), out bool isActive) && !isActive)
+    if (isActiveOperation is not null && bool.TryParse(isActiveOperation.ToString(), out bool isActive) && !isActive && response.Body)
     {
-      DbEvent dbEvent = await _repository.GetAsync(eventId);
-
-      List<Guid> filesIds = dbEvent.Files.Select(file => file.FileId).ToList();
-      List<Guid> imagesIds = dbEvent.Images.Select(image => image.ImageId).ToList();
+      (List<Guid> filesIds, List<Guid> imagesIds) = await _repository.RemoveImagesFilesAsync(eventId);
 
       if (filesIds.Any())
       {
@@ -84,8 +80,6 @@ public class EditEventCommand : IEditEventCommand
         await _publish.RemoveImagesAsync(imagesIds);
       }
     }
-
-    OperationResultResponse<bool> response = new(body: await _repository.EditAsync(eventId, _mapper.Map(request)));
 
     if (!response.Body)
     {
