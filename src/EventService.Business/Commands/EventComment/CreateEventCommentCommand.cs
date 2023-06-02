@@ -5,7 +5,6 @@ using FluentValidation.Results;
 using LT.DigitalOffice.EventService.Business.Commands.EventComment.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
-using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventComment;
 using LT.DigitalOffice.EventService.Validation.EventComment.Interfaces;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
@@ -50,7 +49,7 @@ public class CreateEventCommentCommand : ICreateEventCommentCommand
     {
       Body = await _repository.CreateAsync(_mapper.Map(request))
     };
-    
+
     _contextAccessor.HttpContext.Response.StatusCode = response.Body is null
       ? (int)HttpStatusCode.BadRequest
       : (int)HttpStatusCode.Created;
