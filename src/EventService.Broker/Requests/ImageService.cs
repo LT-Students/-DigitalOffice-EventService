@@ -66,6 +66,6 @@ public class ImageService : IImageService
           errors,
           _logger))
         ?.ImagesData
-        .Select(_mapper.Map).ToList();
+        .ConvertAll(_mapper.Map);
   }
 }

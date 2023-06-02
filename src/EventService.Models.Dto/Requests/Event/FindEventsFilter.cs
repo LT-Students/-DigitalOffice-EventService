@@ -10,8 +10,14 @@ public record FindEventsFilter : BaseFindFilter
   [FromQuery(Name = "userId")]
   public Guid? UserId { get; set; }
 
-  [FromQuery(Name = "nameIncludeSubstring")]
+  [FromQuery(Name = "categoryNameIncludeSubstring")]
   public string NameIncludeSubstring { get; set; }
+
+  [FromQuery(Name = "categoryNameIncludeSubstring")]
+  public string CategoryNameIncludeSubstring { get; set; }
+
+  [FromQuery(Name = "includeDeactivated")]
+  public bool IncludeDeactivated { get; set; } = false;
 
   [FromQuery(Name = "startTime")]
   public DateTime? StartTime { get; set; }

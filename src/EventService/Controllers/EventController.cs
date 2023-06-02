@@ -28,7 +28,7 @@ public class EventController : ControllerBase
     [FromQuery] FindEventsFilter filter,
     CancellationToken ct)
   {
-    return await command.ExecuteAsync(filter: filter, ct: ct);
+    return await command.ExecuteAsync(filter, ct);
   }
 
   [HttpGet("get")]
@@ -37,6 +37,6 @@ public class EventController : ControllerBase
     [FromQuery] GetEventFilter filter,
     CancellationToken ct)
   {
-    return await command.ExecuteAsync(filter: filter, ct: ct);
+    return await command.ExecuteAsync(filter, ct);
   }
 }

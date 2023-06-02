@@ -27,6 +27,12 @@ public class EventRepository : IEventRepository
         p.Description.Contains(filter.NameIncludeSubstring)).OrderByDescending(p => p.Date);
     }
 
+    if (!string.IsNullOrWhiteSpace(filter.CategoryNameIncludeSubstring))
+    {
+      query = query.Where(p =>
+        p.EventsCategories.Where(ec => ec.Category.Name.Contains(filter.CategoryNameIncludeSubstring)).Any()).OrderByDescending(p => p.Date);
+    }
+
     if (filter.Color.HasValue)
     {
       query = query.Where(p =>
