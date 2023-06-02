@@ -60,6 +60,11 @@ public class EventRepository : IEventRepository
       query = query.Where(p => p.Date <= filter.EndTime.Value);
     }
 
+    if (filter.IncludeDeactivated)
+    {
+      query = query.Where(p => !p.IsActive);
+    }
+
     return (
       await query
         .Skip(filter.SkipCount)
