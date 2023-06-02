@@ -48,7 +48,7 @@ public class GetEventCommand : IGetEventCommand
 
   public async Task<OperationResultResponse<EventResponse>> ExecuteAsync(GetEventFilter filter, CancellationToken ct)
   {
-    DbEvent dbEvent = await _repository.GetAsync(eventId: filter.EventId, filter: filter);
+    DbEvent dbEvent = await _repository.GetAsync(filter.EventId, filter);
 
     if (dbEvent is null)
     {

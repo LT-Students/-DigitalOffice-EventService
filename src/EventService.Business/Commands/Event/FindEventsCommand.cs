@@ -49,7 +49,7 @@ public class FindEventsCommand : IFindEventsCommand
     }
 
     (List<DbEvent> events, int totalCount) =
-      await _repository.FindAsync(filter: filter, ct: ct);
+      await _repository.FindAsync(filter, ct);
 
     if (events is null || !events.Any())
     {
