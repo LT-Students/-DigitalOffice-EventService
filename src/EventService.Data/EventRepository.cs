@@ -7,13 +7,11 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
+using LT.DigitalOffice.Kernel.Extensions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Http;
-using LT.DigitalOffice.Kernel.Extensions;
 
 namespace LT.DigitalOffice.EventService.Data;
 
@@ -111,7 +109,6 @@ public class EventRepository : IEventRepository
     return query.FirstOrDefaultAsync(e => e.Id == filter.EventId);
   }
 
-  public EventRepository(IDataProvider provider)
   public EventRepository(
     IDataProvider provider,
     IHttpContextAccessor httpContextAccessor)
@@ -191,7 +188,7 @@ public class EventRepository : IEventRepository
   public Task<bool> IsEventCompletedAsync(Guid eventId)
   {
     return _provider.Events.AnyAsync(
-      e => e.Id == eventId &&
+      e => e.Id == eventId && e.IsActive &&
       (e.Date > DateTime.UtcNow && e.EndDate == null) ||
       (e.Date > DateTime.UtcNow && e.EndDate > DateTime.UtcNow));
   }
@@ -222,6 +219,7 @@ public class EventRepository : IEventRepository
 
     return await CreateFindPredicate(filter, ct);
   }
+
   public Task<DbEvent> GetAsync(Guid eventId)
   {
     return _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
@@ -234,11 +232,11 @@ public class EventRepository : IEventRepository
       .Include(x => x.Images)
       .FirstOrDefaultAsync(p => p.Id == eventId);
 
-    _provider.EventImages.RemoveRange(_provider.EventImages.Where(x => x.EventId == eventId));
-    _provider.EventFiles.RemoveRange(_provider.EventFiles.Where(x => x.EventId == eventId));
-
     List<Guid> filesIds = dbEvent.Files.Select(file => file.FileId).ToList();
     List<Guid> imagesIds = dbEvent.Images.Select(image => image.ImageId).ToList();
+
+    dbEvent.Images.Clear();
+    dbEvent.Files.Clear();
 
     await _provider.SaveAsync();
 
