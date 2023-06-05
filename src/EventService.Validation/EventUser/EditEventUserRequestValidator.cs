@@ -106,7 +106,7 @@ public class EditEventUserRequestValidator : ExtendedEditRequestValidator<Guid, 
     _httpContextAccessor = httpContextAccessor;
 
     RuleFor(eventUserId => eventUserId.Item1)
-      .MustAsync(async (eventUserId, _) => await _eventUserRepository.DoesExistAsync(eventUserId))
+      .MustAsync((eventUserId, _) => _eventUserRepository.DoesExistAsync(eventUserId))
       .WithMessage(EventUserRequestValidatorResource.EventUserIdDoesNotExist);
 
     RuleFor(paths => paths)

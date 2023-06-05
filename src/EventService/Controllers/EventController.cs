@@ -6,6 +6,7 @@ using LT.DigitalOffice.EventService.Models.Dto.Models;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Models.Dto.Responses.Event;
 using LT.DigitalOffice.Kernel.Responses;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LT.DigitalOffice.EventService.Controllers;
@@ -38,5 +39,14 @@ public class EventController : ControllerBase
     CancellationToken ct)
   {
     return await command.ExecuteAsync(filter, ct);
+  }
+
+  [HttpPatch("edit")]
+  public async Task<OperationResultResponse<bool>> EditAsync(
+    [FromServices] IEditEventCommand command,
+    [FromQuery] Guid eventId,
+    [FromBody] JsonPatchDocument<EditEventRequest> request)
+  {
+    return await command.ExecuteAsync(eventId, request);
   }
 }

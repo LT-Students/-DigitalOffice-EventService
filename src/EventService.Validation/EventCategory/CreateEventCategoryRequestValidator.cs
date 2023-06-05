@@ -13,7 +13,7 @@ public class CreateEventCategoryRequestValidator : AbstractValidator<CreateEvent
     IEventCategoryRepository eventCategoryRepository)
   {
     RuleFor(x => x.EventId)
-      .MustAsync(async (eventId, _) => await eventRepository.DoesExistAsync(eventId))
+      .MustAsync((eventId, _) => eventRepository.DoesExistAsync(eventId, true))
       .WithMessage("This event doesn't exist.");
 
     RuleFor(x => x.CategoriesIds)
@@ -23,7 +23,7 @@ public class CreateEventCategoryRequestValidator : AbstractValidator<CreateEvent
     RuleFor(x => x)
       .Must(ec => !eventCategoryRepository.DoesExistAsync(ec.EventId, ec.CategoriesIds))
       .WithMessage("This event already belongs to this category.")
-      .MustAsync(async (ec, _) => await eventCategoryRepository.CountCategoriesAsync(ec.EventId) + ec.CategoriesIds.Count < 6)
+      .MustAsync(async (ec, _) => await eventCategoryRepository.CountCategoriesAsync(ec.EventId) + ec.CategoriesIds.Count < 2)
       .WithMessage("This event already has 5 categories.");
   }
 }

@@ -17,7 +17,7 @@ public class RemoveFilesRequestValidator : AbstractValidator<RemoveFilesRequest>
       .WithMessage("List of files ids must not be null or empty.");
 
     RuleFor(request => request)
-      .MustAsync(async (x, _) => await eventFileRepository.CheckEventFilesAsync(x.EventId, x.FilesIds))
+      .MustAsync((x, _) => eventFileRepository.CheckEventFilesAsync(x.EventId, x.FilesIds))
       .WithMessage("All file ids must belong to the same event.");
   }
 }
