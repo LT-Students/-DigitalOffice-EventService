@@ -1,7 +1,6 @@
-﻿using LT.DigitalOffice.Models.Broker.Enums;
-using LT.DigitalOffice.Models.Broker.Models.File;
-using LT.DigitalOffice.EventService.Mappers.Models.Interfaces;
+﻿using LT.DigitalOffice.EventService.Mappers.Models.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Models;
+using LT.DigitalOffice.Models.Broker.Models.File;
 
 namespace LT.DigitalOffice.EventService.Mappers.Models;
 
