@@ -151,7 +151,7 @@ public class EventRepository : IEventRepository
 
     if (oldIsActive != newIsActive)
     {
-      List<DbEventComment> comments = _provider.EventComments.Include(c => c.Images).Include(c => c.Files)
+      List<DbEventComment> comments = dbEvent.Comments
         .Where(x => x.EventId == eventId && (x.Content != null)).ToList();
 
       foreach (DbEventComment comment in comments)
@@ -159,9 +159,6 @@ public class EventRepository : IEventRepository
         comment.IsActive = newIsActive;
         comment.ModifiedBy = senderId;
         comment.ModifiedAtUtc = DateTime.UtcNow;
-
-        _provider.Images.RemoveRange(comment.Images);
-        _provider.Files.RemoveRange(comment.Files);
       }
     }
 
@@ -228,20 +225,32 @@ public class EventRepository : IEventRepository
       .Include(e => e.Users)
       .Include(e => e.Files)
       .Include(e => e.Images)
+      .Include(e => e.Comments)
+        .ThenInclude(c => c.Images)
+      .Include(e => e.Comments)
+        .ThenInclude(c => c.Files)
       .FirstOrDefaultAsync(p => p.Id == eventId);
 
     List<Guid> filesIds = dbEvent.Files.Select(file => file.FileId).ToList();
     List<Guid> imagesIds = dbEvent.Images.Select(image => image.ImageId).ToList();
     List<Guid> usersIds = dbEvent.Users.Select(user => user.UserId).ToList();
+    List<DbEventComment> comments = dbEvent.Comments
+       .Where(x => x.EventId == eventId && (x.Content != null)).ToList();
 
-    _provider.EventsUsers.RemoveRange(
-      _provider.EventsUsers.Where(u => usersIds.Contains(u.UserId) && u.EventId == eventId));
+    foreach (DbEventComment comment in comments)
+    {
+      filesIds.AddRange(comment.Files.Select(f => f.FileId).ToList());
+      imagesIds.AddRange(comment.Images.Select(f => f.ImageId).ToList());
 
-    _provider.Images.RemoveRange(
-      _provider.Images.Where(i => imagesIds.Contains(i.ImageId) && i.EntityId == eventId));
+      _provider.Images.RemoveRange(comment.Images);
+      _provider.Files.RemoveRange(comment.Files);
+    }
 
-    _provider.Files.RemoveRange(
-      _provider.Files.Where(f => filesIds.Contains(f.FileId) && f.EntityId == eventId));
+    _provider.EventsUsers.RemoveRange(dbEvent.Users);
+
+    _provider.Images.RemoveRange(dbEvent.Images);
+
+    _provider.Files.RemoveRange(dbEvent.Files);
 
     await _provider.SaveAsync();
 

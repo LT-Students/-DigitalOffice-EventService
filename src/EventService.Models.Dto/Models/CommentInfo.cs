@@ -12,5 +12,4 @@ public class CommentInfo
   public List<ImageInfo> CommentImages { get; set; }
   public List<FileInfo> CommentFiles { get; set; }
   public List<CommentInfo> Comment { get; set; }
-  
 }

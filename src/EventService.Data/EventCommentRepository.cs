@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Automatonymous;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
@@ -74,17 +73,17 @@ public class EventCommentRepository : IEventCommentRepository
 
     if (!await HasChildCommentsAsync(commentId))
     {
-      _provider.EventComments.Remove(_provider.EventComments.Where(ec => ec.Id == commentId).FirstOrDefault());
-
-      dbEventComment.Images.Clear();
-      dbEventComment.Files.Clear();
+      _provider.EventComments.RemoveRange(_provider.EventComments.Where(ec => ec.Id == commentId).FirstOrDefault());
+      _provider.Images.RemoveRange(dbEventComment.Images);
+      _provider.Files.RemoveRange(dbEventComment.Files);
     }
     else 
     {
+      _provider.Images.RemoveRange(dbEventComment.Images);
+      _provider.Files.RemoveRange(dbEventComment.Files);
+
       dbEventComment.IsActive = false;
       dbEventComment.Content = null;
-      dbEventComment.Images.Clear();
-      dbEventComment.Files.Clear();
       dbEventComment.ModifiedBy = _httpContextAccessor.HttpContext.GetUserId();
       dbEventComment.ModifiedAtUtc = DateTime.UtcNow;
     }

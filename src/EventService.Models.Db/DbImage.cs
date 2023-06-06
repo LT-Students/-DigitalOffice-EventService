@@ -33,7 +33,7 @@ public class DbImageConfiguration : IEntityTypeConfiguration<DbImage>
 
     builder
       .HasOne(ci => ci.EventComment)
-      .WithMany(e => e.Images)
+      .WithMany(c => c.Images)
       .HasForeignKey(ci => ci.EntityId);
   }
 }

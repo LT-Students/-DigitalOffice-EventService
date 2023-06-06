@@ -141,6 +141,7 @@ public class CreateEventCommand : ICreateEventCommand
     response.Body = await _eventRepository.CreateAsync(dbEvent);
 
     List<DbCategory> dbCategories = new();
+
     if (response.Body is not null)
     {
       await SendInviteEmailsAsync(dbEvent.Users.Select(x => x.UserId).ToList(), dbEvent.Name);
@@ -159,8 +160,6 @@ public class CreateEventCommand : ICreateEventCommand
 
         await _eventCategoryRepository.CreateAsync(eventCategories);
       }
-
-      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
     }
     else
     {

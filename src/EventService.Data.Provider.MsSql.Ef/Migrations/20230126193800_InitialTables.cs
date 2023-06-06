@@ -146,7 +146,7 @@ public class InitialTables : Migration
       },
       constraints: table =>
       {
-        table.PrimaryKey($"PK_{DbFile.TableName}", f => new { f.EntityId, f.FileId });
+        table.PrimaryKey($"PK_{DbFile.TableName}", f => f.Id);
       });
   }
 

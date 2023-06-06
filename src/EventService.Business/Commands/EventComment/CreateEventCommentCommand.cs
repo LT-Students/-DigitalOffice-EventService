@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using DigitalOffice.Models.Broker.Models.Image;
 using FluentValidation.Results;
+using LT.DigitalOffice.EventService.Broker.Publishes.Interfaces;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.EventComment.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
@@ -25,6 +26,7 @@ public class CreateEventCommentCommand : ICreateEventCommentCommand
   private readonly IResponseCreator _responseCreator;
   private readonly IHttpContextAccessor _contextAccessor;
   private readonly IImageService _imageService;
+  private readonly IPublish _publish;
 
   private const int ResizeMaxValue = 1000;
   private const int ConditionalWidth = 4;
@@ -36,7 +38,8 @@ public class CreateEventCommentCommand : ICreateEventCommentCommand
     IDbEventCommentMapper mapper,
     IResponseCreator responseCreator,
     IHttpContextAccessor contextAccessor,
-    IImageService imageService)
+    IImageService imageService,
+    IPublish publish)
   {
     _repository = repository;
     _mapper = mapper;
@@ -44,6 +47,7 @@ public class CreateEventCommentCommand : ICreateEventCommentCommand
     _responseCreator = responseCreator;
     _contextAccessor = contextAccessor;
     _imageService = imageService;
+    _publish = publish;
   }
 
   public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventCommentRequest request)
@@ -76,9 +80,16 @@ public class CreateEventCommentCommand : ICreateEventCommentCommand
     
     response.Body = await _repository.CreateAsync(_mapper.Map(request, imagesIds));
 
-    _contextAccessor.HttpContext.Response.StatusCode = response.Body is null
-      ? (int)HttpStatusCode.BadRequest
-      : (int)HttpStatusCode.Created;
+    if (response.Body is not null)
+    {
+      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+    }
+    else
+    {
+      await _publish.RemoveImagesAsync(imagesIds);
+
+      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+    }
 
     return response;
   }
