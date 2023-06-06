@@ -18,21 +18,23 @@ public class DbEventCommentMapper : IDbEventCommentMapper
 
   public DbEventComment Map(CreateEventCommentRequest request, List<Guid> imagesIds)
   {
+    if (request is null)
+    {
+      return null;
+    }
+
     Guid commentId = Guid.NewGuid();
 
-    return request is null
-      ? null
-      : new DbEventComment
-      {
-        Id = commentId,
-        Content = request.Content,
-        UserId = request.UserId,
-        EventId = request.EventId,
-        ParentId = request.ParentId,
-        IsActive = true,
-        CreatedAtUtc = DateTime.UtcNow,
-        Images = imagesIds?
-          .ConvertAll(imageId => _imageMapper.Map(imageId, commentId))
-      };
+    return new DbEventComment
+    {
+      Id = commentId,
+      Content = request.Content,
+      UserId = request.UserId,
+      EventId = request.EventId,
+      ParentId = request.ParentId,
+      IsActive = true,
+      CreatedAtUtc = DateTime.UtcNow,
+      Images = imagesIds?.ConvertAll(imageId => _imageMapper.Map(imageId, commentId))
+    };
   }
 }

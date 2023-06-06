@@ -43,9 +43,10 @@ public class CreateEventCommentRequestValidator : AbstractValidator<CreateEventC
       .MustAsync(async (userId, _) => await userService.CheckUsersExistenceAsync(new List<Guid>() { userId }, new List<string>()))
       .WithMessage("That user doesn't exist.");
 
-    When(x => !x.CommentImages.IsNullOrEmpty(),
-        () =>
-          RuleForEach(request => request.CommentImages)
-            .SetValidator(imageValidator));
+    When(x => !x.CommentImages.IsNullOrEmpty(), () =>
+    {
+      RuleForEach(request => request.CommentImages)
+        .SetValidator(imageValidator);
+    });
   }
 }

@@ -56,11 +56,14 @@ public class FileRepository : IFileRepository
       return default;
     }
 
-    IQueryable<DbFile> dbFilesQuery = _provider.Files.AsNoTracking();
+    IQueryable<DbFile> dbFilesQuery = _provider.Files.AsNoTracking()
+      .Where(file => file.EntityId == filter.EntityId);
 
     return (
-      await dbFilesQuery.Where(file => file.EntityId == filter.EntityId)
-        .Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(),
+      await dbFilesQuery
+        .Skip(filter.SkipCount)
+        .Take(filter.TakeCount)
+        .ToListAsync(),
       await dbFilesQuery.CountAsync());
   }
 
@@ -69,7 +72,7 @@ public class FileRepository : IFileRepository
     return _provider.Files.AsNoTracking().Where(x => filesIds.Contains(x.FileId)).ToListAsync();
   }
 
-  public async Task<bool> CheckFilesAsync(Guid entityId, List<Guid> filesIds)
+  public async Task<bool> DoExistAsync(Guid entityId, List<Guid> filesIds)
   {
     if (filesIds is null || !filesIds.Any())
     {

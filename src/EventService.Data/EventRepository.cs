@@ -179,12 +179,23 @@ public class EventRepository : IEventRepository
     }
   }
 
-  public Task<bool> IsEventCompletedAsync(Guid eventId)
+  public async Task<bool> IsEventCompletedAsync(Guid eventId)
   {
-    return _provider.Events.AnyAsync(
-      e => e.Id == eventId &&
-      (e.Date > DateTime.UtcNow && e.EndDate == null) ||
-      (e.Date > DateTime.UtcNow && e.EndDate > DateTime.UtcNow));
+    DbEvent dbEvent = await _provider.Events.FirstOrDefaultAsync(x => x.Id == eventId);
+
+    if (!dbEvent.IsActive)
+    {
+      return true;
+    }
+    else if (dbEvent.IsActive &&
+      (dbEvent.Date > DateTime.UtcNow && dbEvent.EndDate == null) ||
+      (dbEvent.Date > DateTime.UtcNow && dbEvent.EndDate > DateTime.UtcNow) ||
+      (dbEvent.Date < DateTime.UtcNow && dbEvent.EndDate > DateTime.UtcNow))
+    {
+      return true;
+    }
+
+    return false;
   }
 
   public Task<List<Guid>> GetExisting(List<Guid> eventsIds)

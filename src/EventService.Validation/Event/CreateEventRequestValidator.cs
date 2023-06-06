@@ -76,10 +76,11 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       RuleForEach(request => request.CategoriesRequests)
       .SetValidator(categoryValidator));
 
-    When(ev => !ev.EventImages.IsNullOrEmpty(),
-      () =>
+    When(ev => !ev.EventImages.IsNullOrEmpty(), () =>
+    {
       RuleForEach(request => request.EventImages)
-      .SetValidator(imageValidator));
+        .SetValidator(imageValidator);
+    });
 
     When(ev => !ev.CategoriesIds.IsNullOrEmpty() || !ev.CategoriesRequests.IsNullOrEmpty(), () =>
     {

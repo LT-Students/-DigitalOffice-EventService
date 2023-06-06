@@ -18,5 +18,5 @@ public interface IFileRepository
 
   Task<List<DbFile>> GetAsync(List<Guid> filesIds);
 
-  Task<bool> CheckFilesAsync(Guid eventId, List<Guid> filesIds);
+  Task<bool> DoExistAsync(Guid eventId, List<Guid> filesIds);
 }
