@@ -151,8 +151,8 @@ public class EventRepository : IEventRepository
 
     if (oldIsActive != newIsActive)
     {
-      List<DbEventComment> comments = dbEvent.Comments
-        .Where(x => x.EventId == eventId && (x.Content != null)).ToList();
+      IEnumerable<DbEventComment> comments = dbEvent.Comments
+        .Where(x => x.EventId == eventId && (x.Content != null));
 
       foreach (DbEventComment comment in comments)
       {

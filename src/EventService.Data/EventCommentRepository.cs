@@ -65,7 +65,7 @@ public class EventCommentRepository : IEventCommentRepository
 
     if (dbEventComment is null || request is null)
     {
-      return (false, null, null);
+      return default;
     }
 
     List<Guid> filesIds = dbEventComment.Files.Select(file => file.FileId).ToList();

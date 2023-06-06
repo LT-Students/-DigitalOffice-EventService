@@ -9,6 +9,7 @@ namespace LT.DigitalOffice.EventService.Mappers.Db;
 public class DbEventCommentMapper : IDbEventCommentMapper
 {
   private readonly IDbImageMapper _imageMapper;
+
   public DbEventCommentMapper(
     IDbImageMapper imageMapper)
   {
