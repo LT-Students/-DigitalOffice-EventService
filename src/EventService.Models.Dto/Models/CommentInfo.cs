@@ -9,5 +9,8 @@ public class CommentInfo
   public string Content { get; set; }
   public Guid UserId { get; set; }
   public Guid? ParentId { get; set; }
+  public List<ImageInfo> CommentImages { get; set; }
+  public List<FileInfo> CommentFiles { get; set; }
   public List<CommentInfo> Comment { get; set; }
+  
 }

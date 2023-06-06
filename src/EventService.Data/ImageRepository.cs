@@ -9,24 +9,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.EventService.Data;
 
-public class EventImageRepository : IEventImageRepository
+public class ImageRepository : IImageRepository
 {
   private readonly IDataProvider _provider;
 
-  public EventImageRepository(
+  public ImageRepository(
     IDataProvider provider)
   {
     _provider = provider;
   }
 
-  public async Task<List<Guid>> CreateAsync(List<DbEventImage> images)
+  public async Task<List<Guid>> CreateAsync(List<DbImage> images)
   {
     if (images is null || !images.Any())
     {
       return null;
     }
 
-    _provider.EventImages.AddRange(images);
+    _provider.Images.AddRange(images);
     await _provider.SaveAsync();
 
     return images.ConvertAll(x => x.ImageId);
@@ -39,10 +39,10 @@ public class EventImageRepository : IEventImageRepository
       return false;
     }
 
-    List<DbEventImage> images = await _provider.EventImages
+    List<DbImage> images = await _provider.Images
       .Where(x => imagesIds.Contains(x.ImageId)).ToListAsync();
 
-    _provider.EventImages.RemoveRange(images);
+    _provider.Images.RemoveRange(images);
 
     await _provider.SaveAsync();
 

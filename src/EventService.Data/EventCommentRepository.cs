@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Automatonymous;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
@@ -55,30 +57,41 @@ public class EventCommentRepository : IEventCommentRepository
     return true;
   }
 
-  public async Task<bool> EditIsActiveAsync(Guid commentId, JsonPatchDocument<DbEventComment> request)
+  public async Task<(bool, List<Guid> filesIds, List<Guid> imagesIds)> EditIsActiveAsync(Guid commentId, JsonPatchDocument<DbEventComment> request)
   {
-    DbEventComment dbEventComment = await _provider.EventComments.FirstOrDefaultAsync(x => x.Id == commentId);
+    DbEventComment dbEventComment = await _provider.EventComments
+      .Include(x => x.Images)
+      .Include(x => x.Files)
+      .FirstOrDefaultAsync(x => x.Id == commentId);
 
     if (dbEventComment is null || request is null)
     {
-      return false;
+      return (false, null, null);
     }
+
+    List<Guid> filesIds = dbEventComment.Files.Select(file => file.FileId).ToList();
+    List<Guid> imagesIds = dbEventComment.Images.Select(image => image.ImageId).ToList();
 
     if (!await HasChildCommentsAsync(commentId))
     {
       _provider.EventComments.Remove(_provider.EventComments.Where(ec => ec.Id == commentId).FirstOrDefault());
+
+      dbEventComment.Images.Clear();
+      dbEventComment.Files.Clear();
     }
     else 
     {
       dbEventComment.IsActive = false;
       dbEventComment.Content = null;
+      dbEventComment.Images.Clear();
+      dbEventComment.Files.Clear();
       dbEventComment.ModifiedBy = _httpContextAccessor.HttpContext.GetUserId();
       dbEventComment.ModifiedAtUtc = DateTime.UtcNow;
     }
 
     await _provider.SaveAsync();
 
-    return true;
+    return (true, filesIds, imagesIds);
   }
 
   public Task<DbEventComment> GetAsync(Guid commentId)

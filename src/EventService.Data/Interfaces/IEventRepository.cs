@@ -13,7 +13,7 @@ namespace LT.DigitalOffice.EventService.Data.Interfaces;
 public interface IEventRepository
 {
   Task<Guid?> CreateAsync(DbEvent dbEvent);
-  Task<bool> EditAsync(Guid eventId, JsonPatchDocument<DbEvent> request);
+  Task<bool> EditAsync(Guid eventId, Guid senderId, JsonPatchDocument<DbEvent> request);
   Task<bool> DoesExistAsync(Guid eventId, bool? isActive);
   Task<bool> IsEventCompletedAsync(Guid eventId);
   Task<List<Guid>> GetExisting(List<Guid> eventsIds);
@@ -22,5 +22,5 @@ public interface IEventRepository
     FindEventsFilter filter,
     CancellationToken ct);
   Task<DbEvent> GetAsync(Guid eventId);
-  Task<(List<Guid> filesIds, List<Guid> imagesIds)> RemoveImagesFilesAsync(Guid eventId);
+  Task<(List<Guid> filesIds, List<Guid> imagesIds)> RemoveDataAsync(Guid eventId);
 }

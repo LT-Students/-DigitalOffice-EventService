@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LT.DigitalOffice.EventService.Data.Provider.MsSql.Ef.Migrations;
 
 [DbContext(typeof(EventServiceDbContext))]
-[Migration("20230126193800_InitialTables")]
+[Migration("20230605150000_InitialTables")]
 public class InitialTables : Migration
 {
   private void CreateEventsTable(MigrationBuilder migrationBuilder)
@@ -118,35 +118,35 @@ public class InitialTables : Migration
       });
   }
 
-  private void CreateEventImagesTable(MigrationBuilder migrationBuilder)
+  private void CreateImagesTable(MigrationBuilder migrationBuilder)
   {
     migrationBuilder.CreateTable(
-      name: DbEventImage.TableName,
+      name: DbImage.TableName,
       columns: table => new
       {
         Id = table.Column<Guid>(nullable: false),
-        EventId = table.Column<Guid>(nullable: false),
+        EntityId = table.Column<Guid>(nullable: false),
         ImageId = table.Column<Guid>(nullable: false)
       },
       constraints: table =>
       {
-        table.PrimaryKey($"PK_{DbEventImage.TableName}", ei => ei.Id);
+        table.PrimaryKey($"PK_{DbImage.TableName}", i => i.Id);
       });
   }
 
-  private void CreateEventFilesTable(MigrationBuilder migrationBuilder)
+  private void CreateFilesTable(MigrationBuilder migrationBuilder)
   {
     migrationBuilder.CreateTable(
-      name: DbEventFile.TableName,
+      name: DbFile.TableName,
       columns: table => new
       {
         Id = table.Column<Guid>(nullable: false),
-        EventId = table.Column<Guid>(nullable: false),
+        EntityId = table.Column<Guid>(nullable: false),
         FileId = table.Column<Guid>(nullable: false)
       },
       constraints: table =>
       {
-        table.PrimaryKey($"PK_{DbEventFile.TableName}", ef => ef.Id);
+        table.PrimaryKey($"PK_{DbFile.TableName}", f => new { f.EntityId, f.FileId });
       });
   }
 
@@ -175,8 +175,8 @@ public class InitialTables : Migration
     CreateCategoriesTable(migrationBuilder);
     CreateEventsUsersTable(migrationBuilder);
     CreateEventCommentsTable(migrationBuilder);
-    CreateEventImagesTable(migrationBuilder);
-    CreateEventFilesTable(migrationBuilder);
+    CreateImagesTable(migrationBuilder);
+    CreateFilesTable(migrationBuilder);
     CreateUsersBitrthdaysTable(migrationBuilder);
   }
 
@@ -187,7 +187,7 @@ public class InitialTables : Migration
     migrationBuilder.DropTable(DbCategory.TableName);
     migrationBuilder.DropTable(DbEventUser.TableName);
     migrationBuilder.DropTable(DbEventComment.TableName);
-    migrationBuilder.DropTable(DbEventImage.TableName);
-    migrationBuilder.DropTable(DbEventFile.TableName);
+    migrationBuilder.DropTable(DbImage.TableName);
+    migrationBuilder.DropTable(DbFile.TableName);
   }
 }

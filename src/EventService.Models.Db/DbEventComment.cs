@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,8 +18,16 @@ public class DbEventComment
   public DateTime CreatedAtUtc { get; set; }
   public Guid? ModifiedBy { get; set; }
   public DateTime? ModifiedAtUtc { get; set; }
+  public ICollection<DbFile> Files { get; set; }
+  public ICollection<DbImage> Images { get; set; }
 
   public DbEvent Event { get; set; }
+
+  public DbEventComment()
+  {
+    Files = new HashSet<DbFile>();
+    Images = new HashSet<DbImage>();
+  }
 }
 
 public class DbEventCommentsConfiguration : IEntityTypeConfiguration<DbEventComment>
@@ -34,5 +43,14 @@ public class DbEventCommentsConfiguration : IEntityTypeConfiguration<DbEventComm
     builder
       .HasOne(e => e.Event)
       .WithMany(ec => ec.Comments);
+
+    builder
+      .HasMany(ec => ec.Images)
+      .WithOne(i => i.EventComment)
+      .HasForeignKey(i => i.EntityId);
+
+    builder
+      .HasMany(ec => ec.Files)
+      .WithOne(f => f.EventComment);
   }
 }

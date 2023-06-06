@@ -9,12 +9,12 @@ namespace LT.DigitalOffice.EventService.Broker.Consumers;
 
 public class CreateFilesConsumer : IConsumer<ICreateEventFilesPublish>
 {
-  private readonly IEventFileRepository _repository;
-  private readonly IDbEventFileMapper _mapper;
+  private readonly IFileRepository _repository;
+  private readonly IDbFileMapper _mapper;
 
   public CreateFilesConsumer(
-    IEventFileRepository repository,
-    IDbEventFileMapper mapper)
+    IFileRepository repository,
+    IDbFileMapper mapper)
   {
     _repository = repository;
     _mapper = mapper;
