@@ -1,6 +1,5 @@
-﻿using LT.DigitalOffice.EventService.Models.Dto.Enums;
+﻿using System;
 using System.Collections.Generic;
-using System;
 
 namespace LT.DigitalOffice.EventService.Models.Dto.Models;
 
@@ -10,5 +9,6 @@ public class EventInfo
   public string Name { get; set; }
   public string Description { get; set; }
   public DateTime Date { get; set; }
+  public DateTime? EndDate { get; set; }
   public List<CategoryInfo> EventsCategories { get; set; }
 }

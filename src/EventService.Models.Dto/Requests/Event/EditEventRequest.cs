@@ -11,5 +11,6 @@ public record EditEventRequest
   public DateTime Date { get; set; }
   public DateTime? EndDate { get; set; }
   public FormatType Format { get; set; }
+  public AccessType Access { get; set; }
   public bool IsActive { get; set; }
 }

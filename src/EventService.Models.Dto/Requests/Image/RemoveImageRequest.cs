@@ -5,6 +5,6 @@ namespace LT.DigitalOffice.EventService.Models.Dto.Requests.Image;
 
 public record RemoveImageRequest
 {
-  public Guid EventId { get; set; }
+  public Guid EntityId { get; set; }
   public List<Guid> ImagesIds { get; set; }
 }

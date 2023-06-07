@@ -15,14 +15,14 @@ namespace LT.DigitalOffice.EventService.Business.Commands.Image;
 
 public class RemoveImageCommand : IRemoveImageCommand
 {
-  private readonly IEventImageRepository _repository;
+  private readonly IImageRepository _repository;
   private readonly IAccessValidator _accessValidator;
   private readonly IRemoveImagesRequestValidator _validator;
   private readonly IResponseCreator _responseCreator;
   private readonly IPublish _publish;
 
   public RemoveImageCommand(
-    IEventImageRepository repository,
+    IImageRepository repository,
     IAccessValidator accessValidator,
     IRemoveImagesRequestValidator validator,
     IResponseCreator responseCreator,

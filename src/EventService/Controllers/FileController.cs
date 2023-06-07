@@ -14,7 +14,7 @@ public class FileController : ControllerBase
   [HttpGet("find")]
   public async Task<FindResultResponse<FileInfo>> FindAsync(
     [FromServices] IFindFilesCommand command,
-    [FromQuery] FindEventFilesFilter findFilter)
+    [FromQuery] FindFilesFilter findFilter)
   {
     return await command.ExecuteAsync(findFilter);
   }

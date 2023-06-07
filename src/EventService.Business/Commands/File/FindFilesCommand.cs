@@ -14,12 +14,12 @@ namespace LT.DigitalOffice.EventService.Business.Commands.File;
 
 public class FindFilesCommand : IFindFilesCommand
 {
-  private readonly IEventFileRepository _repository;
+  private readonly IFileRepository _repository;
   private readonly IFileService _fileService;
   private readonly IFileInfoMapper _fileMapper;
 
   public FindFilesCommand(
-    IEventFileRepository repository,
+    IFileRepository repository,
     IFileService fileService,
     IFileInfoMapper fileMapper)
   {
@@ -28,9 +28,9 @@ public class FindFilesCommand : IFindFilesCommand
     _fileMapper = fileMapper;
   }
 
-  public async Task<FindResultResponse<FileInfo>> ExecuteAsync(FindEventFilesFilter findFilter)
+  public async Task<FindResultResponse<FileInfo>> ExecuteAsync(FindFilesFilter findFilter)
   {
-    (List<DbEventFile> dbFiles, int totalCount) = await _repository.FindAsync(findFilter);
+    (List<DbFile> dbFiles, int totalCount) = await _repository.FindAsync(findFilter);
 
     List<FileCharacteristicsData> files = await _fileService.GetFilesCharacteristicsAsync(dbFiles?.ConvertAll(file => file.FileId));
 

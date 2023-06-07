@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using DigitalOffice.Models.Broker.Models.Image;
 using DigitalOffice.Models.Broker.Models.User;
 using FluentValidation.Results;
+using LT.DigitalOffice.EventService.Broker.Publishes.Interfaces;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.Event.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Db;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventCategory;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventUser;
@@ -41,6 +41,7 @@ public class CreateEventCommand : ICreateEventCommand
   private readonly IEmailService _emailService;
   private readonly IUserService _userService;
   private readonly IImageService _imageService;
+  private readonly IPublish _publish;
 
   private const int ResizeMaxValue = 1000;
   private const int ConditionalWidth = 4;
@@ -77,8 +78,8 @@ public class CreateEventCommand : ICreateEventCommand
     IHttpContextAccessor contextAccessor,
     IUserService userService,
     IEmailService emailService,
-    IImageService imageService
-    )
+    IImageService imageService,
+    IPublish publish)
   {
     _eventRepository = repository;
     _eventMapper = eventMapper;
@@ -93,6 +94,7 @@ public class CreateEventCommand : ICreateEventCommand
     _categoryRepository = categoryRepository;
     _eventCategoryMapper = eventCategoryMapper;
     _eventCategoryRepository = eventCategoryRepository;
+    _publish = publish;
   }
 
   public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateEventRequest request)
@@ -103,8 +105,6 @@ public class CreateEventCommand : ICreateEventCommand
     {
       return _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.Forbidden);
     }
-
-    OperationResultResponse<Guid?> response = new();
 
     request.Users.Add(new UserRequest { UserId = senderId });
     request.Users = request.Users.Distinct().ToList();
@@ -117,6 +117,8 @@ public class CreateEventCommand : ICreateEventCommand
         HttpStatusCode.BadRequest,
         validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
+
+    OperationResultResponse<Guid?> response = new();
 
     List<Guid> imagesIds = null;
     if (request.EventImages is not null && request.EventImages.Any())
@@ -138,11 +140,12 @@ public class CreateEventCommand : ICreateEventCommand
 
     response.Body = await _eventRepository.CreateAsync(dbEvent);
 
-    await SendInviteEmailsAsync(dbEvent.Users.Select(x => x.UserId).ToList(), dbEvent.Name);
-
     List<DbCategory> dbCategories = new();
+
     if (response.Body is not null)
     {
+      await SendInviteEmailsAsync(dbEvent.Users.Select(x => x.UserId).ToList(), dbEvent.Name);
+
       if (!request.CategoriesRequests.IsNullOrEmpty())
       {
         dbCategories.AddRange(request.CategoriesRequests.ConvertAll(_categoryMapper.Map));
@@ -157,11 +160,11 @@ public class CreateEventCommand : ICreateEventCommand
 
         await _eventCategoryRepository.CreateAsync(eventCategories);
       }
-
-      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
     }
     else
     {
+      await _publish.RemoveImagesAsync(imagesIds);
+
       _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
     }
 

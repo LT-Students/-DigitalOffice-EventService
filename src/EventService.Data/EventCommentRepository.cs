@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
@@ -55,21 +56,32 @@ public class EventCommentRepository : IEventCommentRepository
     return true;
   }
 
-  public async Task<bool> EditIsActiveAsync(Guid commentId, JsonPatchDocument<DbEventComment> request)
+  public async Task<(bool, List<Guid> filesIds, List<Guid> imagesIds)> EditIsActiveAsync(Guid commentId, JsonPatchDocument<DbEventComment> request)
   {
-    DbEventComment dbEventComment = await _provider.EventComments.FirstOrDefaultAsync(x => x.Id == commentId);
+    DbEventComment dbEventComment = await _provider.EventComments
+      .Include(x => x.Images)
+      .Include(x => x.Files)
+      .FirstOrDefaultAsync(x => x.Id == commentId);
 
     if (dbEventComment is null || request is null)
     {
-      return false;
+      return default;
     }
+
+    List<Guid> filesIds = dbEventComment.Files.Select(file => file.FileId).ToList();
+    List<Guid> imagesIds = dbEventComment.Images.Select(image => image.ImageId).ToList();
 
     if (!await HasChildCommentsAsync(commentId))
     {
-      _provider.EventComments.Remove(_provider.EventComments.Where(ec => ec.Id == commentId).FirstOrDefault());
+      _provider.EventComments.RemoveRange(_provider.EventComments.Where(ec => ec.Id == commentId).FirstOrDefault());
+      _provider.Images.RemoveRange(dbEventComment.Images);
+      _provider.Files.RemoveRange(dbEventComment.Files);
     }
     else 
     {
+      _provider.Images.RemoveRange(dbEventComment.Images);
+      _provider.Files.RemoveRange(dbEventComment.Files);
+
       dbEventComment.IsActive = false;
       dbEventComment.Content = null;
       dbEventComment.ModifiedBy = _httpContextAccessor.HttpContext.GetUserId();
@@ -78,7 +90,7 @@ public class EventCommentRepository : IEventCommentRepository
 
     await _provider.SaveAsync();
 
-    return true;
+    return (true, filesIds, imagesIds);
   }
 
   public Task<DbEventComment> GetAsync(Guid commentId)
@@ -89,6 +101,11 @@ public class EventCommentRepository : IEventCommentRepository
   public Task<bool> DoesExistAsync(Guid commentId)
   {
     return _provider.EventComments.AnyAsync(ec => ec.Id == commentId && ec.IsActive);
+  }
+
+  public Task<List<Guid>> GetExisting(List<Guid> commentsIds)
+  {
+    return _provider.EventComments.AsNoTracking().Where(p => commentsIds.Contains(p.Id)).Select(p => p.Id).ToListAsync();
   }
 
   public Task<bool> HasChildCommentsAsync(Guid commentId)

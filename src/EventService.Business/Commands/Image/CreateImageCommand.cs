@@ -21,10 +21,10 @@ namespace LT.DigitalOffice.EventService.Business.Commands.Image;
 
 public class CreateImageCommand : ICreateImageCommand
 {
-  private readonly IEventImageRepository _repository;
+  private readonly IImageRepository _repository;
   private readonly IAccessValidator _accessValidator;
   private readonly IHttpContextAccessor _httpContextAccessor;
-  private readonly IDbEventImageMapper _dbEventImageMapper;
+  private readonly IDbImageMapper _dbImageMapper;
   private readonly ICreateImagesRequestValidator _validator;
   private readonly IResponseCreator _responseCreator;
   private readonly IImageService _imageService;
@@ -34,10 +34,10 @@ public class CreateImageCommand : ICreateImageCommand
   private const int ConditionalHeight = 3;
 
   public CreateImageCommand(
-    IEventImageRepository repository,
+    IImageRepository repository,
     IAccessValidator accessValidator,
     IHttpContextAccessor httpContextAccessor,
-    IDbEventImageMapper dbEventImageMapper,
+    IDbImageMapper dbImageMapper,
     ICreateImagesRequestValidator validator,
     IResponseCreator responseCreator,
     IImageService imageService)
@@ -45,7 +45,7 @@ public class CreateImageCommand : ICreateImageCommand
     _repository = repository;
     _accessValidator = accessValidator;
     _httpContextAccessor = httpContextAccessor;
-    _dbEventImageMapper = dbEventImageMapper;
+    _dbImageMapper = dbImageMapper;
     _validator = validator;
     _responseCreator = responseCreator;
     _imageService = imageService;
@@ -88,9 +88,9 @@ public class CreateImageCommand : ICreateImageCommand
     }
 
     response.Body = await _repository.CreateAsync(imagesIds.ConvertAll(imageId =>
-      _dbEventImageMapper.Map(
+      _dbImageMapper.Map(
         imageId: imageId,
-        eventId: request.EventId)));
+        eventId: request.EntityId)));
 
     _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 

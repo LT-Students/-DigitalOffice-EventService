@@ -7,6 +7,7 @@ using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Validation.Category.Interfaces;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
+using LT.DigitalOffice.EventService.Validation.Image.Interfaces;
 using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +20,8 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
     IUserService userService,
     IHttpContextAccessor contextAccessor,
     ICategoryRepository categoryRepository,
-    ICreateCategoryRequestValidator categoryValidator)
+    ICreateCategoryRequestValidator categoryValidator,
+    IImageValidator imageValidator)
   {
     RuleFor(ev => ev.Name)
       .MaximumLength(150)
@@ -69,10 +71,17 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       .Must((ev, users) => users.All(user => user.NotifyAtUtc is null || (user.NotifyAtUtc > DateTime.UtcNow && user.NotifyAtUtc < ev.Date)))
       .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now or later than date of the event");
 
-    When(ev => !ev.CategoriesRequests.IsNullOrEmpty(),
-        () =>
-          RuleForEach(request => request.CategoriesRequests)
-            .SetValidator(categoryValidator));
+    When(ev => !ev.CategoriesRequests.IsNullOrEmpty(), () =>
+    {
+      RuleForEach(request => request.CategoriesRequests)
+        .SetValidator(categoryValidator);
+    });
+    
+    When(ev => !ev.EventImages.IsNullOrEmpty(), () =>
+    {
+      RuleForEach(request => request.EventImages)
+        .SetValidator(imageValidator);
+    });
 
     When(ev => !ev.CategoriesIds.IsNullOrEmpty() || !ev.CategoriesRequests.IsNullOrEmpty(), () =>
     {

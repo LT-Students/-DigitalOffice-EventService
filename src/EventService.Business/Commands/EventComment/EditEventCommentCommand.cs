@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
+using LT.DigitalOffice.EventService.Broker.Publishes.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.EventComment.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Patch.Interfaces;
@@ -27,6 +29,7 @@ public class EditEventCommentCommand : IEditEventCommentCommand
   private readonly IResponseCreator _responseCreator;
   private readonly IAccessValidator _accessValidator;
   private readonly IHttpContextAccessor _contextAccessor;
+  private readonly IPublish _publish;
 
   public EditEventCommentCommand(
     IEditEventCommentRequestValidator validator,
@@ -34,7 +37,8 @@ public class EditEventCommentCommand : IEditEventCommentCommand
     IPatchDbEventCommentMapper mapper,
     IResponseCreator responseCreator,
     IAccessValidator accessValidator,
-    IHttpContextAccessor contextAccessor)
+    IHttpContextAccessor contextAccessor,
+    IPublish publish)
   {
     _validator = validator;
     _repository = repository;
@@ -42,6 +46,7 @@ public class EditEventCommentCommand : IEditEventCommentCommand
     _responseCreator = responseCreator;
     _accessValidator = accessValidator;
     _contextAccessor = contextAccessor;
+    _publish = publish;
   }
 
   public async Task<OperationResultResponse<bool>> ExecuteAsync(
@@ -75,7 +80,22 @@ public class EditEventCommentCommand : IEditEventCommentCommand
 
     if (isActiveOperation is not null && bool.TryParse(isActiveOperation.ToString(), out bool isActive) && !isActive)
     {
-      response.Body = await _repository.EditIsActiveAsync(commentId, _mapper.Map(request));
+      (bool successfulEditing, List<Guid> filesIds, List<Guid> imagesIds) = await _repository.EditIsActiveAsync(commentId, _mapper.Map(request));
+
+      if (successfulEditing)
+      {
+        if (filesIds.Any())
+        {
+          await _publish.RemoveFilesAsync(filesIds);
+        }
+
+        if (imagesIds.Any())
+        {
+          await _publish.RemoveImagesAsync(imagesIds);
+        }
+      }
+
+      response.Body = successfulEditing;
     }
     else if (contentOperation is not null)
     {

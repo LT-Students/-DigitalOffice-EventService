@@ -8,7 +8,7 @@ namespace LT.DigitalOffice.EventService.Validation.File;
 public class RemoveFilesRequestValidator : AbstractValidator<RemoveFilesRequest>, IRemoveFilesRequestValidator
 {
   public RemoveFilesRequestValidator(
-    IEventFileRepository eventFileRepository)
+    IFileRepository fileRepository)
   {
     RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -17,7 +17,7 @@ public class RemoveFilesRequestValidator : AbstractValidator<RemoveFilesRequest>
       .WithMessage("List of files ids must not be null or empty.");
 
     RuleFor(request => request)
-      .MustAsync((x, _) => eventFileRepository.CheckEventFilesAsync(x.EventId, x.FilesIds))
+      .MustAsync((x, _) => fileRepository.DoExistAsync(x.EntityId, x.FilesIds))
       .WithMessage("All file ids must belong to the same event.");
   }
 }

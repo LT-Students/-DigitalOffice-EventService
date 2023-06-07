@@ -5,6 +5,8 @@ using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.EventComment;
 using LT.DigitalOffice.EventService.Validation.EventComment.Interfaces;
+using LT.DigitalOffice.EventService.Validation.Image.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LT.DigitalOffice.EventService.Validation.EventComment;
 
@@ -13,7 +15,8 @@ public class CreateEventCommentRequestValidator : AbstractValidator<CreateEventC
   public CreateEventCommentRequestValidator(
     IEventRepository eventRepository,
     IEventCommentRepository commentRepository,
-    IUserService userService)
+    IUserService userService,
+    IImageValidator imageValidator)
   {
     RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -39,5 +42,11 @@ public class CreateEventCommentRequestValidator : AbstractValidator<CreateEventC
       .WithMessage("User id must not be empty.") 
       .MustAsync(async (userId, _) => await userService.CheckUsersExistenceAsync(new List<Guid>() { userId }, new List<string>()))
       .WithMessage("That user doesn't exist.");
+
+    When(x => !x.CommentImages.IsNullOrEmpty(), () =>
+    {
+      RuleForEach(request => request.CommentImages)
+        .SetValidator(imageValidator);
+    });
   }
 }

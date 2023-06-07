@@ -5,7 +5,7 @@ using LT.DigitalOffice.Kernel.Attributes;
 namespace LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 
 [AutoInject]
-public interface IDbEventImageMapper
+public interface IDbFileMapper
 {
-  DbEventImage Map(Guid imageId, Guid eventId);
+  DbFile Map(Guid fileId, Guid eventId);
 }
