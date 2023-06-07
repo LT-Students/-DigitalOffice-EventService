@@ -7,5 +7,5 @@ namespace LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 [AutoInject]
 public interface IDbImageMapper
 {
-  DbImage Map(Guid imageId, Guid eventId);
+  DbImage Map(Guid imageId, Guid entityId);
 }

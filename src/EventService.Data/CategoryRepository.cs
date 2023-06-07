@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
+using LT.DigitalOffice.EventService.Models.Dto.Enums;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 using LT.DigitalOffice.Kernel.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -114,13 +115,28 @@ public class CategoryRepository : ICategoryRepository
       return false;
     }
 
+    bool isActive = dbCategory.IsActive;
+
     request.ApplyTo(dbCategory);
     dbCategory.ModifiedBy = _httpContextAccessor.HttpContext.GetUserId();
     dbCategory.ModifiedAtUtc = DateTime.UtcNow;
 
+    if (isActive != dbCategory.IsActive)
+    {
+      _provider.EventsCategories.RemoveRange(
+        _provider.EventsCategories.Where(ec => ec.CategoryId == dbCategory.Id));
+    }
+
     await _provider.SaveAsync();
 
     return true;
+  }
+
+  public Task<bool> DoesExistAsync(string name, CategoryColor color)
+  {
+    return _provider.Categories
+      .Where(c => c.Name == name && c.Color == color && c.IsActive)
+      .AnyAsync();
   }
 }
 

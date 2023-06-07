@@ -45,7 +45,7 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
     When(ev => ev.EndDate.HasValue, () =>
     {
       RuleFor(ev => ev)
-        .Must(ev => ev.EndDate > ev.Date )
+        .Must(ev => ev.EndDate > ev.Date)
         .WithMessage("The end date must be later than the event date.");
     });
 

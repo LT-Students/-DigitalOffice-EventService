@@ -53,11 +53,6 @@ public class CreateImageCommand : ICreateImageCommand
 
   public async Task<OperationResultResponse<List<Guid>>> ExecuteAsync(CreateImagesRequest request)
   {
-    if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
-    {
-      return _responseCreator.CreateFailureResponse<List<Guid>>(HttpStatusCode.Forbidden);
-    }
-
     ValidationResult validationResult = await _validator.ValidateAsync(request);
     if (!validationResult.IsValid)
     {
@@ -90,7 +85,7 @@ public class CreateImageCommand : ICreateImageCommand
     response.Body = await _repository.CreateAsync(imagesIds.ConvertAll(imageId =>
       _dbImageMapper.Map(
         imageId: imageId,
-        eventId: request.EntityId)));
+        entityId: request.EntityId)));
 
     _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 

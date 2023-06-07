@@ -25,12 +25,14 @@ public class EditCategoryRequestValidator : ExtendedEditRequestValidator<Guid, E
     AddСorrectPaths(
       new List<string>
       {
-      nameof(EditCategoryRequest.Color),
-      nameof(EditCategoryRequest.Name),
+        nameof(EditCategoryRequest.Color),
+        nameof(EditCategoryRequest.Name),
+        nameof(EditCategoryRequest.IsActive)
       });
 
     AddСorrectOperations(nameof(EditCategoryRequest.Color), new List<OperationType> { OperationType.Replace });
     AddСorrectOperations(nameof(EditCategoryRequest.Name), new List<OperationType> { OperationType.Replace });
+    AddСorrectOperations(nameof(EditCategoryRequest.IsActive), new List<OperationType> { OperationType.Replace });
 
     #endregion
 
@@ -56,6 +58,18 @@ public class EditCategoryRequestValidator : ExtendedEditRequestValidator<Guid, E
         { x => !string.IsNullOrEmpty(x.value?.ToString().Trim()), "Name must not be empty." },
         { x => x.value?.ToString().Length < 21, "Name is too long." }
       }, CascadeMode.Stop);
+
+    #endregion
+
+    #region IsActive
+
+    AddFailureForPropertyIf(
+      nameof(EditCategoryRequest.IsActive),
+      x => x == OperationType.Replace,
+      new()
+      {
+        { x => bool.TryParse(x.value?.ToString(), out bool _), "Incorrect IsActive value." },
+      });
 
     #endregion
   }
