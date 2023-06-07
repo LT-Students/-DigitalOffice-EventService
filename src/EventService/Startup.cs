@@ -36,6 +36,14 @@ public class Startup : BaseApiInfo
     usersBirthdaysGetter.Start();
   }
 
+  private void RemoveEvents(IApplicationBuilder app)
+  {
+    var scope = app.ApplicationServices.CreateScope();
+    var eventsRemover = scope.ServiceProvider.GetRequiredService<EventsRemover>();
+
+    eventsRemover.Start();
+  }
+
   public const string CorsPolicyName = "LtDoCorsPolicy";
   public IConfiguration Configuration { get; }
 
@@ -94,6 +102,7 @@ public class Startup : BaseApiInfo
     services.ConfigureMassTransit(_rabbitMqConfig);
 
     services.AddTransient<UsersBirthdaysGetter>();
+    services.AddTransient<EventsRemover>();
 
     services.AddControllers()
       .AddJsonOptions(options =>
@@ -108,6 +117,8 @@ public class Startup : BaseApiInfo
     app.UpdateDatabase<EventServiceDbContext>();
 
     CreateUsersBirthdays(app);
+
+    RemoveEvents(app);
 
     app.UseForwardedHeaders();
 

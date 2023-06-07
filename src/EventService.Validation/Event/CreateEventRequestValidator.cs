@@ -3,9 +3,7 @@ using System.Linq;
 using FluentValidation;
 using LT.DigitalOffice.EventService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
-using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Enums;
-using LT.DigitalOffice.EventService.Models.Dto.Requests.Category;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Validation.Category.Interfaces;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
@@ -45,7 +43,7 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
     When(ev => ev.EndDate.HasValue, () =>
     {
       RuleFor(ev => ev)
-        .Must(ev => ev.EndDate > ev.Date )
+        .Must(ev => ev.EndDate > ev.Date)
         .WithMessage("The end date must be later than the event date.");
     });
 

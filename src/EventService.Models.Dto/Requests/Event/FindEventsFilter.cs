@@ -10,7 +10,7 @@ public record FindEventsFilter : BaseFindFilter
   [FromQuery(Name = "userId")]
   public Guid? UserId { get; set; }
 
-  [FromQuery(Name = "categoryNameIncludeSubstring")]
+  [FromQuery(Name = "nameIncludeSubstring")]
   public string NameIncludeSubstring { get; set; }
 
   [FromQuery(Name = "categoryNameIncludeSubstring")]
