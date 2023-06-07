@@ -21,6 +21,11 @@ public class EventRepository : IEventRepository
   {
     IQueryable<DbEvent> query = _provider.Events.Include(e => e.EventsCategories).AsNoTracking();
 
+    if (!filter.IncludeDeactivated)
+    {
+      query = query.Where(p => p.IsActive);
+    }
+
     if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
     {
       query = query.Where(p =>
@@ -59,11 +64,6 @@ public class EventRepository : IEventRepository
     if (filter.EndTime.HasValue)
     {
       query = query.Where(p => p.Date <= filter.EndTime.Value);
-    }
-
-    if (filter.IncludeDeactivated)
-    {
-      query = query.Where(p => !p.IsActive);
     }
 
     return (
@@ -240,14 +240,13 @@ public class EventRepository : IEventRepository
 
     List<Guid> filesIds = dbEvent.Files.Select(file => file.FileId).ToList();
     List<Guid> imagesIds = dbEvent.Images.Select(image => image.ImageId).ToList();
-    List<Guid> usersIds = dbEvent.Users.Select(user => user.UserId).ToList();
     List<DbEventComment> comments = dbEvent.Comments
        .Where(x => x.EventId == eventId && (x.Content != null)).ToList();
 
     foreach (DbEventComment comment in comments)
     {
-      filesIds.AddRange(comment.Files.Select(f => f.FileId).ToList());
-      imagesIds.AddRange(comment.Images.Select(f => f.ImageId).ToList());
+      filesIds.AddRange(comment.Files.Select(f => f.FileId));
+      imagesIds.AddRange(comment.Images.Select(f => f.ImageId));
 
       _provider.Images.RemoveRange(comment.Images);
       _provider.Files.RemoveRange(comment.Files);
