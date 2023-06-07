@@ -135,7 +135,7 @@ public class CategoryRepository : ICategoryRepository
   public Task<bool> DoesExistAsync(string name, CategoryColor color)
   {
     return _provider.Categories
-      .Where(c => c.Name.ToLower() == name.ToLower() && c.Color == color)
+      .Where(c => c.Name == name && c.Color == color)
       .AnyAsync();
   }
 }

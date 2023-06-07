@@ -26,6 +26,7 @@ public class EventsRemover
     List<DbEvent> events = await dbContext.Events
       .Where(e => e.IsActive && ((e.Date <= date && e.EndDate == null) || e.EndDate <= date))
       .Include(e => e.Users)
+      .Include(e => e.EventsCategories)
       .Include(e => e.Files)
       .Include(e => e.Images)
       .Include(e => e.Comments)
@@ -61,6 +62,8 @@ public class EventsRemover
       }
 
       dbContext.EventsUsers.RemoveRange(dbEvent.Users);
+
+      dbContext.EventsCategories.RemoveRange(dbEvent.EventsCategories);
 
       dbContext.Images.RemoveRange(dbEvent.Images);
 
