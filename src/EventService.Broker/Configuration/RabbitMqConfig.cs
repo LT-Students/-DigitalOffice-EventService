@@ -21,8 +21,8 @@ public class RabbitMqConfig : BaseRabbitMqConfig
   [MassTransitEndpoint(typeof(CreateFilesConsumer))]
   public string CreateFilesEndpoint { get; init; }
 
-  [MassTransitEndpoint(typeof(CheckEventsExistenceConsumer))]
-  public string CheckEventsExistenceEndpoint { get; init; }
+  [MassTransitEndpoint(typeof(CheckEventsEntitiesExistenceConsumer))]
+  public string CheckEventsEntitiesExistenceEndpoint { get; init; }
 
   #endregion
 

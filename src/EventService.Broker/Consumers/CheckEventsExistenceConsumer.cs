@@ -9,12 +9,12 @@ using MassTransit;
 
 namespace LT.DigitalOffice.EventService.Broker;
 
-public class CheckEventsExistenceConsumer : IConsumer<ICheckEventsExistence>
+public class CheckEventsEntitiesExistenceConsumer : IConsumer<ICheckEventsExistence>
 {
   private readonly IEventRepository _eventRepository;
   private readonly IEventCommentRepository _commentRepository;
 
-  public CheckEventsExistenceConsumer(
+  public CheckEventsEntitiesExistenceConsumer(
     IEventRepository eventRepository,
     IEventCommentRepository commentRepository)
   {
