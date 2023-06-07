@@ -103,6 +103,11 @@ public class EventCommentRepository : IEventCommentRepository
     return _provider.EventComments.AnyAsync(ec => ec.Id == commentId && ec.IsActive);
   }
 
+  public Task<List<Guid>> GetExisting(List<Guid> commentsIds)
+  {
+    return _provider.EventComments.AsNoTracking().Where(p => commentsIds.Contains(p.Id)).Select(p => p.Id).ToListAsync();
+  }
+
   public Task<bool> HasChildCommentsAsync(Guid commentId)
   {
     return _provider.EventComments.AnyAsync(ec => ec.ParentId == commentId);

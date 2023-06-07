@@ -15,5 +15,6 @@ public interface IEventCommentRepository
   Task<(bool, List<Guid> filesIds, List<Guid> imagesIds)> EditIsActiveAsync(Guid commentId, JsonPatchDocument<DbEventComment> request);
   Task<DbEventComment> GetAsync(Guid commentId);
   Task<bool> DoesExistAsync(Guid commentId);
+  Task<List<Guid>> GetExisting(List<Guid> commentsIds);
   Task<bool> HasChildCommentsAsync(Guid commentId);
 }

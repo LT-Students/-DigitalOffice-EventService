@@ -33,7 +33,8 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
         nameof(EditEventRequest.Date),
         nameof(EditEventRequest.EndDate),
         nameof(EditEventRequest.Format),
-        nameof(EditEventRequest.IsActive),
+        nameof(EditEventRequest.Access),
+        nameof(EditEventRequest.IsActive)
       });
 
     AddСorrectOperations(nameof(EditEventRequest.Name), new List<OperationType> { OperationType.Replace });
@@ -42,6 +43,7 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
     AddСorrectOperations(nameof(EditEventRequest.Date), new List<OperationType> { OperationType.Replace });
     AddСorrectOperations(nameof(EditEventRequest.EndDate), new List<OperationType> { OperationType.Replace });
     AddСorrectOperations(nameof(EditEventRequest.Format), new List<OperationType> { OperationType.Replace });
+    AddСorrectOperations(nameof(EditEventRequest.Access), new List<OperationType> { OperationType.Replace });
     AddСorrectOperations(nameof(EditEventRequest.IsActive), new List<OperationType> { OperationType.Replace });
 
     #endregion
@@ -130,7 +132,7 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
       {
         { x => Enum.TryParse(x.value?.ToString(), out AccessType _), "Incorrect access value." },
         { x => (Enum.TryParse(x.value.ToString(), out AccessType accessType) &&
-                accessType == AccessType.Closed), "Cannot change to a closed event." }
+                accessType == AccessType.Opened), "Cannot change to a closed event." }
       });
 
     #endregion
@@ -157,9 +159,13 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
       .MustAsync((eventId, _) => repository.DoesExistAsync(eventId, null))
       .WithMessage("This event doesn't exist.");
 
-    RuleFor(request => request.Item1)
-      .MustAsync((eventId, _) => repository.IsEventCompletedAsync(eventId))
-      .WithMessage("Can not edit completed event.");
+    When(request => !request.Item2.Operations.Any(
+      o => o.path.Equals("/" + nameof(EditEventRequest.IsActive), StringComparison.OrdinalIgnoreCase)), () =>
+      {
+        RuleFor(request => request.Item1)
+        .MustAsync((eventId, _) => repository.IsEventCompletedAsync(eventId))
+        .WithMessage("Can not edit completed event.");
+      });
 
     When(request => request.Item2.Operations.Any(
       o => o.path.Equals("/" + nameof(EditEventRequest.IsActive), StringComparison.OrdinalIgnoreCase)),
@@ -183,7 +189,7 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
                   o => o.path.Equals("/" + nameof(EditEventRequest.EndDate), StringComparison.OrdinalIgnoreCase));
 
                 bool dateOp = request.Item2.Operations.Any(
-                  o => o.path.Equals("/" + nameof(EditEventRequest.EndDate), StringComparison.OrdinalIgnoreCase));
+                  o => o.path.Equals("/" + nameof(EditEventRequest.Date), StringComparison.OrdinalIgnoreCase));
 
                 return dateOp || endDateOp;
               }

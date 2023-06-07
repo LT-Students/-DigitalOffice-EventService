@@ -71,11 +71,12 @@ public class CreateEventRequestValidator : AbstractValidator<CreateEventRequest>
       .Must((ev, users) => users.All(user => user.NotifyAtUtc is null || (user.NotifyAtUtc > DateTime.UtcNow && user.NotifyAtUtc < ev.Date)))
       .WithMessage("Some notification time is not valid, notification time mustn't be earlier than now or later than date of the event");
 
-    When(ev => !ev.CategoriesRequests.IsNullOrEmpty(),
-      () =>
+    When(ev => !ev.CategoriesRequests.IsNullOrEmpty(), () =>
+    {
       RuleForEach(request => request.CategoriesRequests)
-      .SetValidator(categoryValidator));
-
+        .SetValidator(categoryValidator);
+    });
+    
     When(ev => !ev.EventImages.IsNullOrEmpty(), () =>
     {
       RuleForEach(request => request.EventImages)

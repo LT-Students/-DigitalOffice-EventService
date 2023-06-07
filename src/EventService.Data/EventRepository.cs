@@ -183,14 +183,10 @@ public class EventRepository : IEventRepository
   {
     DbEvent dbEvent = await _provider.Events.FirstOrDefaultAsync(x => x.Id == eventId);
 
-    if (!dbEvent.IsActive)
-    {
-      return true;
-    }
-    else if (dbEvent.IsActive &&
-      (dbEvent.Date > DateTime.UtcNow && dbEvent.EndDate == null) ||
-      (dbEvent.Date > DateTime.UtcNow && dbEvent.EndDate > DateTime.UtcNow) ||
-      (dbEvent.Date < DateTime.UtcNow && dbEvent.EndDate > DateTime.UtcNow))
+    if (!dbEvent.IsActive ||
+         dbEvent.IsActive &&
+            (dbEvent.EndDate is null && dbEvent.Date > DateTime.UtcNow  ||
+            dbEvent.EndDate > DateTime.UtcNow))
     {
       return true;
     }
