@@ -7,8 +7,6 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Data.Provider;
 using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
-using LT.DigitalOffice.Kernel.Extensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -18,7 +16,6 @@ namespace LT.DigitalOffice.EventService.Data;
 public class EventRepository : IEventRepository
 {
   private readonly IDataProvider _provider;
-  private readonly IHttpContextAccessor _httpContextAccessor;
 
   private async Task<(List<DbEvent>, int totalCount)> CreateFindPredicate(FindEventsFilter filter, CancellationToken ct)
   {
@@ -110,11 +107,9 @@ public class EventRepository : IEventRepository
   }
 
   public EventRepository(
-    IDataProvider provider,
-    IHttpContextAccessor httpContextAccessor)
+    IDataProvider provider)
   {
     _provider = provider;
-    _httpContextAccessor = httpContextAccessor;
   }
 
   public async Task<Guid?> CreateAsync(DbEvent dbEvent)
@@ -137,9 +132,9 @@ public class EventRepository : IEventRepository
     return dbEvent.Id;
   }
 
-  public async Task<bool> EditAsync(Guid eventId, JsonPatchDocument<DbEvent> request)
+  public async Task<bool> EditAsync(Guid eventId, Guid senderId, JsonPatchDocument<DbEvent> request)
   {
-    DbEvent dbEvent = await _provider.Events.FirstOrDefaultAsync(x => x.Id == eventId);
+    DbEvent dbEvent = await _provider.Events.Include(e => e.Comments).FirstOrDefaultAsync(x => x.Id == eventId);
 
     if (dbEvent is null || request is null)
     {
@@ -147,7 +142,6 @@ public class EventRepository : IEventRepository
     }
 
     bool oldIsActive = dbEvent.IsActive;
-    Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
 
     request.ApplyTo(dbEvent);
     dbEvent.ModifiedBy = senderId;
@@ -157,9 +151,9 @@ public class EventRepository : IEventRepository
 
     if (oldIsActive != newIsActive)
     {
-      _provider.EventsUsers.RemoveRange(_provider.EventsUsers.Where(x => x.EventId == eventId));
+      IEnumerable<DbEventComment> comments = dbEvent.Comments
+        .Where(x => x.EventId == eventId && (x.Content != null));
 
-      List<DbEventComment> comments = _provider.EventComments.Where(x => x.EventId == eventId && (x.Content != null)).ToList();
       foreach (DbEventComment comment in comments)
       {
         comment.IsActive = newIsActive;
@@ -185,12 +179,19 @@ public class EventRepository : IEventRepository
     }
   }
 
-  public Task<bool> IsEventCompletedAsync(Guid eventId)
+  public async Task<bool> IsEventCompletedAsync(Guid eventId)
   {
-    return _provider.Events.AnyAsync(
-      e => e.Id == eventId && e.IsActive &&
-      (e.Date > DateTime.UtcNow && e.EndDate == null) ||
-      (e.Date > DateTime.UtcNow && e.EndDate > DateTime.UtcNow));
+    DbEvent dbEvent = await _provider.Events.FirstOrDefaultAsync(x => x.Id == eventId);
+
+    if (!dbEvent.IsActive ||
+         dbEvent.IsActive &&
+            (dbEvent.EndDate is null && dbEvent.Date > DateTime.UtcNow  ||
+            dbEvent.EndDate > DateTime.UtcNow))
+    {
+      return true;
+    }
+
+    return false;
   }
 
   public Task<List<Guid>> GetExisting(List<Guid> eventsIds)
@@ -225,18 +226,38 @@ public class EventRepository : IEventRepository
     return _provider.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId);
   }
 
-  public async Task<(List<Guid> filesIds, List<Guid> imagesIds)> RemoveImagesFilesAsync(Guid eventId)
+  public async Task<(List<Guid> filesIds, List<Guid> imagesIds)> RemoveDataAsync(Guid eventId)
   {
     DbEvent dbEvent = await _provider.Events
-      .Include(x => x.Files)
-      .Include(x => x.Images)
+      .Include(e => e.Users)
+      .Include(e => e.Files)
+      .Include(e => e.Images)
+      .Include(e => e.Comments)
+        .ThenInclude(c => c.Images)
+      .Include(e => e.Comments)
+        .ThenInclude(c => c.Files)
       .FirstOrDefaultAsync(p => p.Id == eventId);
 
     List<Guid> filesIds = dbEvent.Files.Select(file => file.FileId).ToList();
     List<Guid> imagesIds = dbEvent.Images.Select(image => image.ImageId).ToList();
+    List<Guid> usersIds = dbEvent.Users.Select(user => user.UserId).ToList();
+    List<DbEventComment> comments = dbEvent.Comments
+       .Where(x => x.EventId == eventId && (x.Content != null)).ToList();
 
-    dbEvent.Images.Clear();
-    dbEvent.Files.Clear();
+    foreach (DbEventComment comment in comments)
+    {
+      filesIds.AddRange(comment.Files.Select(f => f.FileId).ToList());
+      imagesIds.AddRange(comment.Images.Select(f => f.ImageId).ToList());
+
+      _provider.Images.RemoveRange(comment.Images);
+      _provider.Files.RemoveRange(comment.Files);
+    }
+
+    _provider.EventsUsers.RemoveRange(dbEvent.Users);
+
+    _provider.Images.RemoveRange(dbEvent.Images);
+
+    _provider.Files.RemoveRange(dbEvent.Files);
 
     await _provider.SaveAsync();
 

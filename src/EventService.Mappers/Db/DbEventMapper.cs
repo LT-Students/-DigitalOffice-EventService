@@ -10,7 +10,7 @@ namespace LT.DigitalOffice.EventService.Mappers.Db;
 
 public class DbEventMapper : IDbEventMapper
 {
-  private readonly IDbEventImageMapper _imageMapper;
+  private readonly IDbImageMapper _imageMapper;
 
   private List<DbEventUser> MapEventUsers(
     CreateEventRequest request,
@@ -49,7 +49,7 @@ public class DbEventMapper : IDbEventMapper
   }
 
   public DbEventMapper(
-    IDbEventImageMapper imageMapper)
+    IDbImageMapper imageMapper)
   {
     _imageMapper = imageMapper;
   }

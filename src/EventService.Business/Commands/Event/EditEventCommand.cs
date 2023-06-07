@@ -8,13 +8,14 @@ using LT.DigitalOffice.EventService.Broker.Publishes.Interfaces;
 using LT.DigitalOffice.EventService.Business.Commands.Event.Interfaces;
 using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Patch.Interfaces;
-using LT.DigitalOffice.EventService.Models.Db;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Event;
 using LT.DigitalOffice.EventService.Validation.Event.Interfaces;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
+using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.Event;
@@ -26,6 +27,7 @@ public class EditEventCommand : IEditEventCommand
   private readonly IPatchDbEventMapper _mapper;
   private readonly IResponseCreator _responseCreator;
   private readonly IAccessValidator _accessValidator;
+  private readonly IHttpContextAccessor _httpContextAccessor;
   private readonly IPublish _publish;
 
   public EditEventCommand(
@@ -34,6 +36,7 @@ public class EditEventCommand : IEditEventCommand
     IPatchDbEventMapper mapper,
     IResponseCreator responseCreator,
     IAccessValidator accessValidator,
+    IHttpContextAccessor httpContextAccessor,
     IPublish publish)
   {
     _validator = validator;
@@ -41,6 +44,7 @@ public class EditEventCommand : IEditEventCommand
     _mapper = mapper;
     _responseCreator = responseCreator;
     _accessValidator = accessValidator;
+    _httpContextAccessor = httpContextAccessor;
     _publish = publish;
   }
 
@@ -61,14 +65,16 @@ public class EditEventCommand : IEditEventCommand
         validationResult.Errors.ConvertAll(er => er.ErrorMessage));
     }
 
-    OperationResultResponse<bool> response = new(body: await _repository.EditAsync(eventId, _mapper.Map(request)));
+    Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
+
+    OperationResultResponse<bool> response = new(body: await _repository.EditAsync(eventId, senderId, _mapper.Map(request)));
 
     object isActiveOperation = request.Operations.FirstOrDefault(o =>
         o.path.EndsWith(nameof(EditEventRequest.IsActive), StringComparison.OrdinalIgnoreCase))?.value;
 
     if (isActiveOperation is not null && bool.TryParse(isActiveOperation.ToString(), out bool isActive) && !isActive && response.Body)
     {
-      (List<Guid> filesIds, List<Guid> imagesIds) = await _repository.RemoveImagesFilesAsync(eventId);
+      (List<Guid> filesIds, List<Guid> imagesIds) = await _repository.RemoveDataAsync(eventId);
 
       if (filesIds.Any())
       {

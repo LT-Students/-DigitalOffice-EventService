@@ -9,7 +9,8 @@ public class CreateImagesRequestValidator : AbstractValidator<CreateImagesReques
 {
   public CreateImagesRequestValidator(
     IImageValidator imageValidator,
-    IEventRepository eventRepository)
+    IEventRepository eventRepository,
+    IEventCommentRepository commentRepository)
   {
     RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -24,10 +25,10 @@ public class CreateImagesRequestValidator : AbstractValidator<CreateImagesReques
           .SetValidator(imageValidator);
       });
 
-    RuleFor(request => request.EventId)
+    RuleFor(request => request.EntityId)
       .NotEmpty()
-      .WithMessage("Event id must not be empty.")
-      .MustAsync((eventId, _) => eventRepository.DoesExistAsync(eventId, true))
-      .WithMessage("Invalid event id.");
+      .WithMessage("Entity id must not be empty.")
+      .MustAsync(async (entityId, _) => await eventRepository.DoesExistAsync(entityId, true) || await commentRepository.DoesExistAsync(entityId))
+      .WithMessage("Invalid entity id.");
   }
 }

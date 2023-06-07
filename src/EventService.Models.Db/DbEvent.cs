@@ -23,16 +23,16 @@ public class DbEvent
   public Guid? ModifiedBy { get; set; }
   public DateTime? ModifiedAtUtc { get; set; }
   public ICollection<DbEventCategory> EventsCategories { get; set; }
-  public ICollection<DbEventFile> Files { get; set; }
-  public ICollection<DbEventImage> Images { get; set; }
+  public ICollection<DbFile> Files { get; set; }
+  public ICollection<DbImage> Images { get; set; }
   public ICollection<DbEventUser> Users { get; set; }
   public ICollection<DbEventComment> Comments { get; set; }
   
   public DbEvent()
   {
     EventsCategories = new HashSet<DbEventCategory>();
-    Files = new HashSet<DbEventFile>();
-    Images = new HashSet<DbEventImage>();
+    Files = new HashSet<DbFile>();
+    Images = new HashSet<DbImage>();
     Users = new HashSet<DbEventUser>();
     Comments = new HashSet<DbEventComment>();
   }
@@ -57,11 +57,16 @@ public class DbEvent
 
       builder
         .HasMany(e => e.Images)
-        .WithOne(ei => ei.Event);
+        .WithOne(ei => ei.Event)
+        .HasForeignKey(i => i.EntityId);
 
       builder
         .HasMany(e => e.Users)
         .WithOne(eu => eu.Event);
+
+      builder
+        .HasMany(e => e.Comments)
+        .WithOne(c => c.Event);
     }
   }
 }

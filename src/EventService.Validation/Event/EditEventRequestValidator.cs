@@ -33,7 +33,8 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
         nameof(EditEventRequest.Date),
         nameof(EditEventRequest.EndDate),
         nameof(EditEventRequest.Format),
-        nameof(EditEventRequest.IsActive),
+        nameof(EditEventRequest.Access),
+        nameof(EditEventRequest.IsActive)
       });
 
     AddСorrectOperations(nameof(EditEventRequest.Name), new List<OperationType> { OperationType.Replace });
@@ -42,6 +43,7 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
     AddСorrectOperations(nameof(EditEventRequest.Date), new List<OperationType> { OperationType.Replace });
     AddСorrectOperations(nameof(EditEventRequest.EndDate), new List<OperationType> { OperationType.Replace });
     AddСorrectOperations(nameof(EditEventRequest.Format), new List<OperationType> { OperationType.Replace });
+    AddСorrectOperations(nameof(EditEventRequest.Access), new List<OperationType> { OperationType.Replace });
     AddСorrectOperations(nameof(EditEventRequest.IsActive), new List<OperationType> { OperationType.Replace });
 
     #endregion
@@ -116,7 +118,21 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
       x => x == OperationType.Replace,
       new()
       {
-        { x => Enum.TryParse(x.value?.ToString(), out FormatType _), "Incorrect format value." },
+        { x => Enum.TryParse(x.value?.ToString(), out FormatType _), "Incorrect format value." }
+      });
+
+    #endregion
+
+    #region Access
+
+    AddFailureForPropertyIf(
+      nameof(EditEventRequest.Access),
+      x => x == OperationType.Replace,
+      new()
+      {
+        { x => Enum.TryParse(x.value?.ToString(), out AccessType _), "Incorrect access value." },
+        { x => (Enum.TryParse(x.value.ToString(), out AccessType accessType) &&
+                accessType == AccessType.Opened), "Cannot change to a closed event." }
       });
 
     #endregion
@@ -143,9 +159,46 @@ public class EditEventRequestValidator : ExtendedEditRequestValidator<Guid, Edit
       .MustAsync((eventId, _) => repository.DoesExistAsync(eventId, null))
       .WithMessage("This event doesn't exist.");
 
-    RuleFor(request => request.Item1)
-      .MustAsync((eventId, _) => repository.IsEventCompletedAsync(eventId))
-      .WithMessage("Can not edit completed event.");
+    When(request => !request.Item2.Operations.Any(
+      o => o.path.Equals("/" + nameof(EditEventRequest.IsActive), StringComparison.OrdinalIgnoreCase)), () =>
+      {
+        RuleFor(request => request.Item1)
+        .MustAsync((eventId, _) => repository.IsEventCompletedAsync(eventId))
+        .WithMessage("Can not edit completed event.");
+      });
+
+    When(request => request.Item2.Operations.Any(
+      o => o.path.Equals("/" + nameof(EditEventRequest.IsActive), StringComparison.OrdinalIgnoreCase)),
+        () =>
+        {
+          RuleFor(request => request)
+          .MustAsync(async (request, _) =>
+          {
+            bool isActive = (bool.TryParse(request.Item2.Operations.FirstOrDefault(
+                x => x.path.Equals("/" + nameof(EditEventRequest.IsActive), StringComparison.OrdinalIgnoreCase))?.value?.ToString(),
+                out bool isActiveValue) && isActiveValue);
+
+            if (isActive)
+            {
+              DbEvent editedEvent = await repository.GetAsync(request.Item1);
+
+              if ((editedEvent.EndDate is not null && editedEvent.EndDate < DateTime.UtcNow) ||
+              editedEvent.Date < DateTime.UtcNow)
+              {
+                bool endDateOp = request.Item2.Operations.Any(
+                  o => o.path.Equals("/" + nameof(EditEventRequest.EndDate), StringComparison.OrdinalIgnoreCase));
+
+                bool dateOp = request.Item2.Operations.Any(
+                  o => o.path.Equals("/" + nameof(EditEventRequest.Date), StringComparison.OrdinalIgnoreCase));
+
+                return dateOp || endDateOp;
+              }
+            }
+
+            return true;
+          })
+          .WithMessage("Must specify a new date.");
+        });
 
     When(request => request.Item2.Operations.Any(
       o => o.path.Equals("/" + nameof(EditEventRequest.EndDate), StringComparison.OrdinalIgnoreCase)

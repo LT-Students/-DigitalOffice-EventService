@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LT.DigitalOffice.EventService.Models.Dto.Requests.File;
 
-public record FindEventFilesFilter : BaseFindFilter
+public record FindFilesFilter : BaseFindFilter
 {
-  [FromQuery(Name = "eventid")]
-  public Guid EventId { get; set; }
+  [FromQuery(Name = "entityid")]
+  public Guid EntityId { get; set; }
 }

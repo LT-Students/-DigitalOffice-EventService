@@ -4,15 +4,15 @@ using LT.DigitalOffice.EventService.Models.Db;
 
 namespace LT.DigitalOffice.EventService.Mappers.Db;
 
-public class DbEventFileMapper : IDbEventFileMapper
+public class DbImageMapper : IDbImageMapper
 {
-  public DbEventFile Map(Guid fileId, Guid eventId)
+  public DbImage Map(Guid imageId, Guid entityId)
   {
-    return new DbEventFile
+    return new DbImage
     {
       Id = Guid.NewGuid(),
-      FileId = fileId,
-      EventId = eventId
+      ImageId = imageId,
+      EntityId = entityId
     };
   }
 }

@@ -9,5 +9,5 @@ namespace LT.DigitalOffice.EventService.Business.Commands.File.Interfaces;
 [AutoInject]
 public interface IFindFilesCommand
 {
-  Task<FindResultResponse<FileInfo>> ExecuteAsync(FindEventFilesFilter findFilter);
+  Task<FindResultResponse<FileInfo>> ExecuteAsync(FindFilesFilter findFilter);
 }

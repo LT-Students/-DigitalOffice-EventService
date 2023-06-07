@@ -5,6 +5,6 @@ namespace LT.DigitalOffice.EventService.Models.Dto.Requests.File;
 
 public record RemoveFilesRequest
 {
-  public Guid EventId { get; set; }
+  public Guid EntityId { get; set; }
   public List<Guid> FilesIds { get; set; }
 }

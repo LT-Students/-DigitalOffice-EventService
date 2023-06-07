@@ -41,15 +41,15 @@ public class ImageService : IImageService
     _httpContextAccessor = httpContextAccessor;
   }
 
-  public async Task<List<Guid>> CreateImagesAsync(List<ImageContent> eventImages, ResizeParameters resizeParameters, List<string> errors = null)
+  public async Task<List<Guid>> CreateImagesAsync(List<ImageContent> images, ResizeParameters resizeParameters, List<string> errors = null)
   {
-    return eventImages is null || !eventImages.Any()
+    return images is null || !images.Any()
       ? null
       : (await RequestHandler
         .ProcessRequest<ICreateImagesRequest, ICreateImagesResponse>(
           _rcCreateImages,
           ICreateImagesRequest.CreateObj(
-            images: eventImages.ConvertAll(x => new CreateImageData(x.Name, x.Content, x.Extension, resizeParameters)),
+            images: images.ConvertAll(x => new CreateImageData(x.Name, x.Content, x.Extension, resizeParameters)),
             imageSource: ImageSource.Event,
             createdBy: _httpContextAccessor.HttpContext.GetUserId()),
           errors,

@@ -10,30 +10,26 @@ using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
-using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.EventService.Business.Commands.File;
 
 public class RemoveFilesCommand : IRemoveFilesCommand
 {
-  private readonly IEventFileRepository _repository;
+  private readonly IFileRepository _repository;
   private readonly IAccessValidator _accessValidator;
-  private readonly IHttpContextAccessor _httpContextAccessor;
   private readonly IResponseCreator _responseCreator;
   private readonly IPublish _publish;
   private readonly IRemoveFilesRequestValidator _validator;
 
   public RemoveFilesCommand(
-    IEventFileRepository repository,
+    IFileRepository repository,
     IAccessValidator accessValidator,
-    IHttpContextAccessor httpContextAccessor,
     IResponseCreator responseCreator,
     IPublish publish,
     IRemoveFilesRequestValidator validator)
   {
     _repository = repository;
     _accessValidator = accessValidator;
-    _httpContextAccessor = httpContextAccessor;
     _responseCreator = responseCreator;
     _publish = publish;
     _validator = validator;
