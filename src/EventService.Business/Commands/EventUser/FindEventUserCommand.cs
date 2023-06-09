@@ -49,7 +49,7 @@ public class FindEventUserCommand : IFindEventUserCommand
   {
     if (!await _eventRepository.DoesExistAsync(eventId, true))
     {
-      return _responseCreator.CreateFailureFindResponse<EventUserInfo>(HttpStatusCode.BadRequest);
+      return _responseCreator.CreateFailureFindResponse<EventUserInfo>(HttpStatusCode.NotFound);
     }
 
     List<DbEventUser> eventUsers =
