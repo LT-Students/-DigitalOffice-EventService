@@ -11,8 +11,6 @@ using LT.DigitalOffice.EventService.Data.Interfaces;
 using LT.DigitalOffice.EventService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.EventService.Models.Dto.Requests.Image;
 using LT.DigitalOffice.EventService.Validation.Image.Interfaces;
-using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
-using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +20,6 @@ namespace LT.DigitalOffice.EventService.Business.Commands.Image;
 public class CreateImageCommand : ICreateImageCommand
 {
   private readonly IImageRepository _repository;
-  private readonly IAccessValidator _accessValidator;
   private readonly IHttpContextAccessor _httpContextAccessor;
   private readonly IDbImageMapper _dbImageMapper;
   private readonly ICreateImagesRequestValidator _validator;
@@ -35,7 +32,6 @@ public class CreateImageCommand : ICreateImageCommand
 
   public CreateImageCommand(
     IImageRepository repository,
-    IAccessValidator accessValidator,
     IHttpContextAccessor httpContextAccessor,
     IDbImageMapper dbImageMapper,
     ICreateImagesRequestValidator validator,
@@ -43,7 +39,6 @@ public class CreateImageCommand : ICreateImageCommand
     IImageService imageService)
   {
     _repository = repository;
-    _accessValidator = accessValidator;
     _httpContextAccessor = httpContextAccessor;
     _dbImageMapper = dbImageMapper;
     _validator = validator;
