@@ -59,7 +59,7 @@ public class Startup : BaseApiInfo
       .GetSection(BaseRabbitMqConfig.SectionName)
       .Get<RabbitMqConfig>();
 
-    Version = "1.0.0.0";
+    Version = "1.0";
     Description = "EventService is an API that intended to work with events.";
     StartTime = DateTime.UtcNow;
     ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";

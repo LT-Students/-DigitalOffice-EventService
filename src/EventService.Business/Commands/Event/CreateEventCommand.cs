@@ -160,6 +160,8 @@ public class CreateEventCommand : ICreateEventCommand
 
         await _eventCategoryRepository.CreateAsync(eventCategories);
       }
+
+      _contextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
     }
     else
     {

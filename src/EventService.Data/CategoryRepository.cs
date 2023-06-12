@@ -57,7 +57,7 @@ public class CategoryRepository : ICategoryRepository
   public async Task<bool> DoExistAllAsync(List<Guid> categoriesIds)
   {
     return (await _provider.Categories
-      .Where(p => categoriesIds.Contains(p.Id))
+      .Where(p => categoriesIds.Contains(p.Id) && p.IsActive)
       .Select(p => p.Id)
       .ToListAsync()).Count == categoriesIds.Count;
   }
