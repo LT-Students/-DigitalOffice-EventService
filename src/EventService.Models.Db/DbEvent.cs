@@ -9,6 +9,7 @@ namespace LT.DigitalOffice.EventService.Models.Db;
 public class DbEvent
 {
   public const string TableName = "Events";
+
   public Guid Id { get; set; }
   public string Name { get; set; }
   public string Address { get; set; }
@@ -22,6 +23,7 @@ public class DbEvent
   public DateTime CreatedAtUtc { get; set; }
   public Guid? ModifiedBy { get; set; }
   public DateTime? ModifiedAtUtc { get; set; }
+
   public ICollection<DbEventCategory> EventsCategories { get; set; }
   public ICollection<DbFile> Files { get; set; }
   public ICollection<DbImage> Images { get; set; }
